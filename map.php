@@ -19,9 +19,9 @@ class MapBase {
 	public $filename='';
 	private $xml=NULL;
 	private static $tmx_url=array(
-		'tmw'=>'https://github.com/themanaworld/tmwa-client-data/raw/master/maps/',
-		'evol'=>'https://github.com/EvolOnline/clientdata-beta/raw/master/maps/',
-		'tales'=>'https://github.com/tales/sourceoftales/raw/master/maps/',
+		'tmw'=>'https://github.com/themanaworld/tmwa-client-data/raw/master/',
+		'evol'=>'https://github.com/EvolOnline/clientdata-beta/raw/master/',
+		'tales'=>'https://github.com/tales/sourceoftales/raw/master/',
 		);
 
 	//constructors

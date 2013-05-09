@@ -23,10 +23,24 @@ elseif(!array_key_exists('map',$_REQUEST)) {
 <?php
 $data=file_get_contents($map_url[$_REQUEST['ref']]);
 $ar=json_decode($data, true);
+$dirs=array();
 foreach($ar as $entry) {
 	//var_dump($entry);die();
 	if(substr($entry['name'],-4)=='.tmx') {
-		echo '<option value="'.$entry['name'].'">'.$entry['name'].'</option>'."\r\n";
+		echo '<option value="'.$entry['path'].'">'.$entry['path'].'</option>'."\r\n";
+	}
+	else if($entry['type']=='dir') {
+		$dirs[]=$entry['url'];
+	}
+}
+foreach($dirs as $dir) {
+	$data=file_get_contents($dir);
+	$ar=json_decode($data, true);
+	foreach($ar as $entry) {
+		//var_dump($entry);die();
+		if(substr($entry['name'],-4)=='.tmx') {
+			echo '<option value="'.$entry['path'].'">'.$entry['path'].'</option>'."\r\n";
+		}
 	}
 }
 ?></select>
