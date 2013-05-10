@@ -12,10 +12,6 @@ It could be done with the gMagick or iMagick / MagickWand extension, but they ar
 TODO
 ====
 
-improve path support
-
-continue online.php to allow viewing The Mana World, Evol Online and Source of Tales maps directly from the repositories
-
 make partial rendering
 
 improve ui
