@@ -21,10 +21,10 @@ class TilesetBase {
 	public $tiles=array();
 	private $filename='';
 	//private $xml=NULL;
-	private static $tsx_urls=array(
-		'tmw'=>'https://github.com/themanaworld/tmwa-client-data/raw/master/tilesets/',
-		'evol'=>'https://github.com/EvolOnline/clientdata-beta/raw/master/graphics/',
-		'tales'=>'https://github.com/tales/sourceoftales/raw/master/tiles/',
+	private static $urls=array(
+		'tmw'=>'https://github.com/themanaworld/tmwa-client-data/raw/master/',
+		'evol'=>'https://github.com/EvolOnline/clientdata-beta/raw/master/',
+		'tales'=>'https://github.com/tales/sourceoftales/raw/master/',
 		);
 
 	//constructors
@@ -32,7 +32,7 @@ class TilesetBase {
 	//static methods
 	public static function load_xml_from_file($filename) {
 		if(!file_exists($filename)) {
-			throw new Exception('File not found.');
+			throw new Exception('File \''.$filename.'\' not found.');
 		}
 		return simplexml_load_file($filename);
 	}
@@ -46,11 +46,11 @@ class TilesetBase {
 			return TilesetBase::load_xml_from_file($filename);
 			//return self::load_xml_from_file($filename);
 		}
-		else if(array_key_exists($ref, TilesetBase::$tsx_urls)) {
-		//else if(array_key_exists($ref, self::$tsx_urls)) {
-			return TilesetBase::load_xml_from_url(TilesetBase::$tsx_urls[$ref].$filename);
-			//var_dump(self::$tsx_urls[$ref].$filename);
-			//return self::load_xml_from_url(self::$tsx_urls[$ref].$filename);
+		else if(array_key_exists($ref, TilesetBase::$urls)) {
+		//else if(array_key_exists($ref, self::$urls)) {
+			return TilesetBase::load_xml_from_url(TilesetBase::$urls[$ref].$filename);
+			//var_dump(self::$urls[$ref].$filename);
+			//return self::load_xml_from_url(self::$urls[$ref].$filename);
 		}
 		else {
 			throw new Exception('Incorrect Tileset ref.');
@@ -69,6 +69,9 @@ class TilesetBase {
 		$this->filename=$filename;
 		//$xml=Tileset::load_xml($filename, $ref);
 		$xml=self::load_xml($filename, $ref);
+		if($xml===false) {
+			throw new Exception('File \''.$filename.'\' not found with ref \''.$ref.'\'.');
+		}
 		return $this->load_from_element($xml);
 	}
 

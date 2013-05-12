@@ -18,7 +18,7 @@ class MapBase {
 	public $objectlayers=array();
 	public $filename='';
 	private $xml=NULL;
-	private static $tmx_url=array(
+	private static $urls=array(
 		'tmw'=>'https://github.com/themanaworld/tmwa-client-data/raw/master/',
 		'evol'=>'https://github.com/EvolOnline/clientdata-beta/raw/master/',
 		'tales'=>'https://github.com/tales/sourceoftales/raw/master/',
@@ -29,7 +29,7 @@ class MapBase {
 	//static methods
 	public static function load_xml_from_file($filename, $ref='') {
 		if(!file_exists($filename)) {
-			throw new Exception('File not found.');
+			throw new Exception('File \''.$filename.'\' not found with ref \''.$ref.'\'.');
 		}
 		return simplexml_load_file($filename);
 	}
@@ -43,11 +43,11 @@ class MapBase {
 			return MapBase::load_xml_from_file($filename);
 			//return self::load_xml_from_file($filename);
 		}
-		//else if(array_key_exists($ref, self::$tmx_url)) {
-		else if(array_key_exists($ref, MapBase::$tmx_url)) {
-			//var_dump(self::$tmx_url[$ref].$filename);
-			//return self::load_xml_from_url(self::$tmx_url[$ref].$filename);
-			return MapBase::load_xml_from_url(MapBase::$tmx_url[$ref].$filename);
+		//else if(array_key_exists($ref, self::$urls)) {
+		else if(array_key_exists($ref, MapBase::$urls)) {
+			//var_dump(self::$urls[$ref].$filename);
+			//return self::load_xml_from_url(self::$urls[$ref].$filename);
+			return MapBase::load_xml_from_url(MapBase::$urls[$ref].$filename);
 		}
 		else {
 			throw new Exception('Incorrect Map ref.');
@@ -100,6 +100,9 @@ class MapBase {
 	public function load($filename, $ref='') {
 		$this->filename=$filename;
 		$this->xml=Map::load_xml($filename, $ref);
+		if($this->xml===false) {
+			throw new Exception('File \''.$filename.'\' not found with ref \''.$ref.'\'.');
+		}
 		$this->load_map($ref);
 		if((bool)$this->xml->properties!==false) {
 			$this->loadProperties_from_element($this->xml->properties, $ref);

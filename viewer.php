@@ -11,14 +11,10 @@ class Viewer {
 	private $map=NULL;
 	private $data='';
 	public $draw_objects=false;
-	private static $img_urls=array(
-		//'tmw'=>'https://gitorious.org/tmw/tmwa-client-data/blobs/raw/master/graphics/tiles/',
-		//'tmw'=>'https://github.com/themanaworld/tmwa-client-data/raw/master/graphics/',
-		//'evol'=>'https://github.com/EvolOnline/clientdata-beta/raw/master/graphics/',
-		//'tales'=>'https://github.com/tales/sourceoftales/raw/master/tiles/',
-		'tmw'=>'https://raw.github.com/themanaworld/tmwa-client-data/master/graphics/',
-		'evol'=>'https://raw.github.com/EvolOnline/clientdata-beta/master/graphics/',
-		'tales'=>'https://raw.github.com/tales/sourceoftales/master/tiles/',
+	private static $urls=array(
+		'tmw'=>'https://raw.github.com/themanaworld/tmwa-client-data/master/',
+		'evol'=>'https://raw.github.com/EvolOnline/clientdata-beta/master/',
+		'tales'=>'https://raw.github.com/tales/sourceoftales/master/',
 		);
 	//constructors
 
@@ -37,9 +33,11 @@ class Viewer {
 		foreach($this->map->tilesets as $i=>$ts) {
 			if( array_key_exists('ref', $_REQUEST) ) {
 				//if( $_REQUEST['ref']=='tmw' ) {
-				if(array_key_exists($_REQUEST['ref'], Viewer::$img_urls)) {
-					//$images[$i]=create_image_from(Viewer::$img_urls[$_REQUEST['ref']].basename($ts->source));
-					$images[$i]=create_image_from(Viewer::$img_urls[$_REQUEST['ref']].$ts->source);
+				if(array_key_exists($_REQUEST['ref'], Viewer::$urls)) {
+					$url=Viewer::$urls[$_REQUEST['ref']].dirname($this->map->filename).'/';
+					if(strlen($ts->sourceTSX)>0) $url.=dirname($ts->sourceTSX).'/';
+					$url.=$ts->source;
+					$images[$i]=create_image_from($url);
 				}
 				else {
 					$images[$i]=create_image_from(dirname($this->map->filename).'/'.dirname($ts->sourceTSX).'/'.$ts->source);
