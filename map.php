@@ -18,10 +18,12 @@ class MapBase {
 	public $objectlayers=array();
 	public $filename='';
 	private $xml=NULL;
+	public $ref='';
 	private static $urls=array(
 		'tmw'=>'https://github.com/themanaworld/tmwa-client-data/raw/master/',
 		'evol'=>'https://github.com/EvolOnline/clientdata-beta/raw/master/',
 		'tales'=>'https://github.com/tales/sourceoftales/raw/master/',
+		'stendhal'=>'http://arianne.cvs.sourceforge.net/viewvc/arianne/stendhal/tiled/',
 		);
 
 	//constructors
@@ -55,7 +57,7 @@ class MapBase {
 	}
 
 	//methods
-	private function load_map($ref='') {
+	private function load_map() {
 		$this->version = (string)$this->xml['version'];
 		$this->orientation = (string)$this->xml['orientation'];
 		$this->width =(int)$this->xml['width' ];
@@ -64,52 +66,56 @@ class MapBase {
 		$this->tileheight=(int)$this->xml['tileheight'];
 	}
 
-	private function load_tilesets($ref='') {
+	private function load_tilesets() {
 		$i=0;
 		foreach($this->xml->tileset as $ts) {
 			$this->tilesets[$i]=new Tileset();
+			$this->tilesets[$i]->ref=$this->ref;
 			$this->tilesets[$i]->setMap($this);
-			$this->tilesets[$i]->load_from_element($ts, $ref);
+			$this->tilesets[$i]->load_from_element($ts, $this->ref);
 			++$i;
 		}
 		return $i;
 	}
 
-	private function load_layers($ref='') {
+	private function load_layers() {
 		$i=0;
 		foreach($this->xml->layer as $ly) {
 			$this->layers[$i]=new Layer();
 			$this->layers[$i]->setMap($this);
-			$this->layers[$i]->load_from_element($ly, $ref);
+			$this->layers[$i]->ref=$this->ref;
+			$this->layers[$i]->load_from_element($ly, $this->ref);
 			++$i;
 		}
 		return $i;
 	}
 	
-	private function load_objectlayers($ref='') {
+	private function load_objectlayers() {
 		$i=0;
 		foreach($this->xml->objectgroup as $ol) {
 			$this->objectlayers[$i]=new ObjectLayer();
 			$this->objectlayers[$i]->setMap($this);
-			$this->objectlayers[$i]->load_from_element($ol, $ref);
+			$this->objectlayers[$i]->ref=$this->ref;
+			$this->objectlayers[$i]->load_from_element($ol, $this->ref);
 			++$i;
 		}
 		return $i;
 	}
 
 	public function load($filename, $ref='') {
+		$this->ref=$ref;
 		$this->filename=$filename;
 		$this->xml=Map::load_xml($filename, $ref);
 		if($this->xml===false) {
 			throw new Exception('File \''.$filename.'\' not found with ref \''.$ref.'\'.');
 		}
-		$this->load_map($ref);
+		$this->load_map();
 		if((bool)$this->xml->properties!==false) {
 			$this->loadProperties_from_element($this->xml->properties, $ref);
 		}
-		$this->load_tilesets($ref);
-		$this->load_layers($ref);
-		$this->load_objectlayers($ref);
+		$this->load_tilesets();
+		$this->load_layers();
+		$this->load_objectlayers();
 		return $this->xml;
 	}
 

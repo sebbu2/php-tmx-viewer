@@ -25,6 +25,7 @@ class TilesetBase {
 		'tmw'=>'https://github.com/themanaworld/tmwa-client-data/raw/master/',
 		'evol'=>'https://github.com/EvolOnline/clientdata-beta/raw/master/',
 		'tales'=>'https://github.com/tales/sourceoftales/raw/master/',
+		'stendhal'=>'http://arianne.cvs.sourceforge.net/viewvc/arianne/stendhal/tiled/',
 		);
 
 	//constructors
@@ -66,6 +67,7 @@ class TilesetBase {
 	}
 	
 	public function load_from_tsx($filename, $ref='') {
+		$this->ref=$ref;
 		$this->filename=$filename;
 		//$xml=Tileset::load_xml($filename, $ref);
 		$xml=self::load_xml($filename, $ref);
@@ -76,6 +78,7 @@ class TilesetBase {
 	}
 
 	public function load_from_element(SimpleXMLElement $xml, $ref='') {
+		$this->ref=$ref;
 		if((bool)$xml['source']!=FALSE) {
 			$this->sourceTSX=(string)$xml['source'];
 			$this->firstgid=(int)$xml['firstgid'];
@@ -94,14 +97,22 @@ class TilesetBase {
 		$this->width =(int)$xml->image['width' ];
 		$this->height=(int)$xml->image['height'];
 		if( $this->width ==0 || $this->height==0 ) {
-			if(file_exists(dirname($this->filename).'/'.$this->source)) {
-				$ar=getimagesize(dirname($this->filename).'/'.$this->source);
+			if($this->ref=='') {
+				if(file_exists(dirname($this->filename).'/'.$this->source)) {
+					$ar=getimagesize(dirname($this->filename).'/'.$this->source);
+					$this->width =$ar[0];
+					$this->height=$ar[1];
+					unset($ar);
+				}
+				else {
+					trigger_error('Image not found', E_USER_NOTICE);
+				}
+			}
+			else {
+				$ar=getimagesize(TilesetBase::$urls[$ref].dirname($this->map->filename).'/'.dirname($this->filename).'/'.$this->source);
 				$this->width =$ar[0];
 				$this->height=$ar[1];
 				unset($ar);
-			}
-			else {
-				trigger_error('Image not found', E_USER_NOTICE);
 			}
 		}
 		$j=0;

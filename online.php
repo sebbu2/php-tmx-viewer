@@ -59,7 +59,7 @@ if(in_array($_REQUEST['ref'], $github)) {
 	}
 }
 elseif(in_array($_REQUEST['ref'], $viewvc)) {
-	if(!file_exists($_REQUEST['ref'].'.htm') || $_REQUEST['force']==='1') {
+	if(!file_exists($_REQUEST['ref'].'.htm') || (array_key_exists('force',$_REQUEST)&&$_REQUEST['force']==='1')) {
 	ob_start();
 	function filter_dir_1($dir) {
 		return ($dir==='world');

@@ -3,7 +3,12 @@ function exception_handler($exception) {
 	global $header;
 	$header='text/plain';
 
-	echo "Uncaught exception: " , $exception->getMessage(), "\n";
+	//echo "Uncaught exception: " , $exception->getMessage(), "\n";
+	printf('Uncaught exception: %s on %s:%d\n',
+		$exception->getMessage(),
+		$exception->getFile(),
+		$exception->getLine()
+	);
 }
 
 set_exception_handler('exception_handler');
@@ -28,15 +33,15 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
 		break;
 
 	case E_USER_WARNING:
-		echo "<b>My WARNING</b> [$errno] $errstr<br />\n";
+		echo "<b>My WARNING</b> [$errno] $errstr in $errfile:$errline<br />\n";
 		break;
 
 	case E_USER_NOTICE:
-		echo "<b>My NOTICE</b> [$errno] $errstr<br />\n";
+		echo "<b>My NOTICE</b> [$errno] $errstr in $errfile:$errline<br />\n";
 		break;
 
 	default:
-		echo "Unknown error type: [$errno] $errstr<br />\n";
+		echo "Unknown error type: [$errno] $errstr in $errfile:$errline<br />\n";
 		break;
 	}
 

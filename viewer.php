@@ -15,6 +15,7 @@ class Viewer {
 		'tmw'=>'https://raw.github.com/themanaworld/tmwa-client-data/master/',
 		'evol'=>'https://raw.github.com/EvolOnline/clientdata-beta/master/',
 		'tales'=>'https://raw.github.com/tales/sourceoftales/master/',
+		'stendhal'=>'http://arianne.cvs.sourceforge.net/viewvc/arianne/stendhal/tiled/',
 		);
 	//constructors
 
