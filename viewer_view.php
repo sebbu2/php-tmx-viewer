@@ -143,6 +143,8 @@ $header='';
 
 ob_start();
 
+$viewer->layers_nodraw[]='collision';
+
 $viewer->draw();
 
 $data=ob_get_clean();
