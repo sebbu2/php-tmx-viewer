@@ -11,7 +11,6 @@ class Viewer {
 	private $map=NULL;
 	private $data='';
 	public $draw_objects=false;
-	public $layers_nodraw=array();
 	private static $urls=array(
 		'tmw'=>'https://raw.github.com/themanaworld/tmwa-client-data/master/',
 		'evol'=>'https://raw.github.com/EvolOnline/clientdata-beta/master/',
@@ -104,7 +103,7 @@ class Viewer {
 
 		foreach($this->map->layers as $index=>$ly) {
 			//break;
-			if(strlen($ly->name)>0&&in_array($ly->name, $this->layers_nodraw)) continue;
+			if(strlen($ly->name)>0&&in_array($ly->name, $_SESSION['layers_nodraw'])) continue;
 			for($j=0;$j<$ly->height;++$j) {
 				for($i=0;$i<$ly->width;++$i) {
 					$cgid=$ly->get_tile($j*$ly->width+$i);

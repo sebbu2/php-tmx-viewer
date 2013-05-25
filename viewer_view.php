@@ -6,7 +6,7 @@ ob_start();
 
 libxml_use_internal_errors(true);
 
-
+session_start();
 
 require_once('viewer.php');
 
@@ -143,7 +143,9 @@ $header='';
 
 ob_start();
 
-$viewer->layers_nodraw[]='collision';
+if(!array_key_exists('layers_nodraw', $_SESSION)) {
+	$_SESSION['layers_nodraw']=array('collision');
+}
 
 $viewer->draw();
 
