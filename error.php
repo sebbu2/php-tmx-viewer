@@ -26,7 +26,7 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
 	switch ($errno) {
 	case E_USER_ERROR:
 		echo "<b>My ERROR</b> [$errno] $errstr<br />\n";
-		echo "  Fatal error on line $errline in file $errfile";
+		echo "Fatal error on line $errline in file $errfile";
 		echo ", PHP " . PHP_VERSION . " (" . PHP_OS . ")<br />\n";
 		echo "Aborting...<br />\n";
 		exit(1);

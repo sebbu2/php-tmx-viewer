@@ -3,9 +3,9 @@ $version=array();
 // PHP_VERSION_ID est disponible depuis PHP 5.2.7,
 // si votre version est antérieure, émulez-le.
 if (!defined('PHP_VERSION_ID')) {
-   $version = explode('.',PHP_VERSION);
+	$version = explode('.',PHP_VERSION);
 
-   define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
+	define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
 }
 
 // PHP_VERSION_ID est défini comme un nombre : plus il est grand, plus
@@ -21,8 +21,8 @@ if (!defined('PHP_VERSION_ID')) {
 // disponibles avant 5.2.7
 
 if (PHP_VERSION_ID < 50207) {
-	define('PHP_MAJOR_VERSION',   $version[0]);
-	define('PHP_MINOR_VERSION',   $version[1]);
+	define( 'PHP_MAJOR_VERSION' , $version[0]);
+	define( 'PHP_MINOR_VERSION' , $version[1]);
 	define('PHP_RELEASE_VERSION', $version[2]);
 
 	// etc.
