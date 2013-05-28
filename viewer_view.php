@@ -146,6 +146,9 @@ ob_start();
 if(!array_key_exists('layers_nodraw', $_SESSION)) {
 	$_SESSION['layers_nodraw']=array('collision');
 }
+if(!array_key_exists('tilesets_nodraw', $_SESSION)) {
+	$_SESSION['tilesets_nodraw']=array('collision');
+}
 
 $viewer->draw();
 

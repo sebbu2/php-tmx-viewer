@@ -113,6 +113,7 @@ class Viewer {
 						var_dump($cgid);
 						die();
 					}
+					if(strlen($this->map->tilesets[$ti]->name)>0&&in_array($this->map->tilesets[$ti]->name, $_SESSION['tilesets_nodraw'])) continue;
 					$lid=$cgid-$this->map->tilesets[$ti]->firstgid;
 					//var_dump($lid);print('<br/>'."\n");continue;
 					//$largeur=$ly->width;
