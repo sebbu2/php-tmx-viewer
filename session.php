@@ -1,7 +1,7 @@
 <?php
 session_start();
-if(!is_array($_SESSION['layers_nodraw'])) $_SESSION['layers_nodraw']=array();
-if(!is_array($_SESSION['tilesets_nodraw'])) $_SESSION['tilesets_nodraw']=array();
+if(!array_key_exists('layers_nodraw',$_SESSION) || !is_array($_SESSION['layers_nodraw'])) $_SESSION['layers_nodraw']=array();
+if(!array_key_exists('tilesets_nodraw',$_SESSION) || !is_array($_SESSION['tilesets_nodraw'])) $_SESSION['tilesets_nodraw']=array();
 if(array_key_exists('act', $_REQUEST)) {
 	@assert(array_key_exists('l', $_REQUEST) || array_key_exists('t', $_REQUEST)) or die('Hacking attempt.');
 	switch($_REQUEST['act']) {
