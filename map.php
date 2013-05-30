@@ -105,9 +105,14 @@ class MapBase {
 	public function load($filename, $ref='') {
 		$this->ref=$ref;
 		$this->filename=$filename;
-		$this->xml=Map::load_xml($filename, $ref);
+		$this->xml=self::load_xml($filename, $ref);
 		if($this->xml===false) {
-			throw new Exception('File \''.$filename.'\' not found with ref \''.$ref.'\'.');
+			if($ref==='') {
+				throw new Exception('File \''.$filename.'\' not found.');
+			}
+			else {
+				throw new Exception('File \''.$filename'\' not found or inaccessible with ref \''.$ref.'\'.');
+			}
 		}
 		$this->load_map();
 		if((bool)$this->xml->properties!==false) {

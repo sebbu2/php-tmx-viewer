@@ -72,7 +72,12 @@ class TilesetBase {
 		//$xml=Tileset::load_xml($filename, $ref);
 		$xml=self::load_xml($filename, $ref);
 		if($xml===false) {
-			throw new Exception('File \''.$filename.'\' not found with ref \''.$ref.'\'.');
+			if($ref==='') {
+				throw new Exception('File \''.$filename.'\' not found.');
+			}
+			else {
+				throw new Exception('File \''.$filename'\' not found or inaccessible with ref \''.$ref.'\'.');
+			}
 		}
 		return $this->load_from_element($xml);
 	}
