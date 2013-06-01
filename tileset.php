@@ -76,7 +76,7 @@ class TilesetBase {
 				throw new Exception('File \''.$filename.'\' not found.');
 			}
 			else {
-				throw new Exception('File \''.$filename'\' not found or inaccessible with ref \''.$ref.'\'.');
+				throw new Exception('File \''.$filename.'\' not found or inaccessible with ref \''.$ref.'\'.');
 			}
 		}
 		return $this->load_from_element($xml);

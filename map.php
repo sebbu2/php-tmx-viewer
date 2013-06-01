@@ -111,7 +111,7 @@ class MapBase {
 				throw new Exception('File \''.$filename.'\' not found.');
 			}
 			else {
-				throw new Exception('File \''.$filename'\' not found or inaccessible with ref \''.$ref.'\'.');
+				throw new Exception('File \''.$filename.'\' not found or inaccessible with ref \''.$ref.'\'.');
 			}
 		}
 		$this->load_map();

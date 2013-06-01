@@ -11,6 +11,7 @@ class Viewer {
 	private $map=NULL;
 	private $data='';
 	public $draw_objects=false;
+	private $img=NULL;
 	private static $urls=array(
 		'tmw'=>'https://raw.github.com/themanaworld/tmwa-client-data/master/',
 		'evol'=>'https://raw.github.com/EvolOnline/clientdata-beta/master/',
@@ -27,7 +28,7 @@ class Viewer {
 		return $this->map;
 	}
 
-	public function draw($file=NULL) {
+	public function draw() {
 		//ob_start();
 		$zoom=1;
 		$images=array();
@@ -67,14 +68,14 @@ class Viewer {
 		}
 		unset($i,$ts,$transc,$trans,$r,$g,$b,$color);
 
-		$img=imagecreatetruecolor($this->map->width*$this->map->tilewidth*$zoom, $this->map->height*$this->map->tileheight*$zoom);
+		$this->img=imagecreatetruecolor($this->map->width*$this->map->tilewidth*$zoom, $this->map->height*$this->map->tileheight*$zoom);
 		//$img=imagecreatetruecolor($width*$tilewidth/2, $height*$tileheight/2);
 
 		if(function_exists('imageantialias')) {
-			imageantialias($img, false);
+			imageantialias($this->img, false);
 		}
-		imagealphablending($img, true);
-		//imagealphablending($img, false);
+		imagealphablending($this->img, true);
+		//imagealphablending($this->img, false);
 		/*
 		imagecolorallocatealpha
 		0		opaque
@@ -89,16 +90,16 @@ class Viewer {
 		127		gris
 		255		noir
 		*/
-		//$color=imagecolorallocatealpha($img, 255, 255, 255, 0);//blanc
-		//$color=imagecolorallocatealpha($img, 255, 255, 255, 127);//blanc
-		$trans=imagecolorallocatealpha($img, 255, 255, 255, 127);//transparent
-		$color=imagecolorallocatealpha($img, 0, 0, 0, 0);//noir
-		$ligr=imagecolorallocatealpha($img, 0xcc, 0xcc, 0xcc, 0);//light gray
-		$red=imagecolorallocatealpha($img, 255, 0, 0, 0);//rouge
-		$green=imagecolorallocatealpha($img, 0, 255, 0, 0);//vert
-		$blue=imagecolorallocatealpha($img, 0, 0, 255, 0);//bleu
+		//$color=imagecolorallocatealpha($this->img, 255, 255, 255, 0);//blanc
+		//$color=imagecolorallocatealpha($this->img, 255, 255, 255, 127);//blanc
+		$trans=imagecolorallocatealpha($this->img, 255, 255, 255, 127);//transparent
+		$color=imagecolorallocatealpha($this->img, 0, 0, 0, 0);//noir
+		$ligr=imagecolorallocatealpha($this->img, 0xcc, 0xcc, 0xcc, 0);//light gray
+		$red=imagecolorallocatealpha($this->img, 255, 0, 0, 0);//rouge
+		$green=imagecolorallocatealpha($this->img, 0, 255, 0, 0);//vert
+		$blue=imagecolorallocatealpha($this->img, 0, 0, 255, 0);//bleu
 
-		imagefill($img, 0, 0, $trans);
+		imagefill($this->img, 0, 0, $trans);
 
 
 		foreach($this->map->layers as $index=>$ly) {
@@ -153,10 +154,10 @@ class Viewer {
 							$sh+=$dy2;
 						}
 						if($zoom==1) {
-							image_copy_and_resize($img, $images[$ti], $dx, $dy, $sx, $sy, $sw, $sh);
+							image_copy_and_resize($this->img, $images[$ti], $dx, $dy, $sx, $sy, $sw, $sh);
 						}
 						else {
-							image_copy_and_resize($img, $images[$ti], $dx*$zoom, $dy*$zoom, $sx, $sy, $sw*$zoom, $sh*$zoom, $sw, $sh);
+							image_copy_and_resize($this->img, $images[$ti], $dx*$zoom, $dy*$zoom, $sx, $sy, $sw*$zoom, $sh*$zoom, $sw, $sh);
 						}
 					}
 					elseif($this->map->orientation=='isometric') {
@@ -181,10 +182,10 @@ class Viewer {
 							//die();
 						}
 						if($zoom==1) {
-							image_copy_and_resize($img, $images[$ti], $dx, $dy, $sx, $sy, $sw, $sh);
+							image_copy_and_resize($this->img, $images[$ti], $dx, $dy, $sx, $sy, $sw, $sh);
 						}
 						else {
-							image_copy_and_resize($img, $images[$ti], $dx*$zoom, $dy*$zoom, $sx, $sy, $sw*$zoom, $sh*$zoom, $sw, $sh);
+							image_copy_and_resize($this->img, $images[$ti], $dx*$zoom, $dy*$zoom, $sx, $sy, $sw*$zoom, $sh*$zoom, $sw, $sh);
 						}
 						//if($lid==1) break(3);
 					}
@@ -203,20 +204,20 @@ class Viewer {
 			foreach($this->map->objectlayers as $index=>$ol) {
 				foreach($ol->getAllObjects() as $o) {
 					if($o->polygon || $o->polyline) {
-						imagerectangle($img, $o->x-$o->getWidthL(), $o->y-$o->getHeightT(),
+						imagerectangle($this->img, $o->x-$o->getWidthL(), $o->y-$o->getHeightT(),
 							$o->x + $o->getWidthR(), $o->y + $o->getHeightB(),
 							$ligr);
 						if($o->polyline) {
 							assert(count($o->points)/2>1);
 							$x=$o->x+$o->points[0];
 							$y=$o->y+$o->points[1];
-							imagesetthickness($img, 2);
+							imagesetthickness($this->img, 2);
 							for($i=2;$i<count($o->points);$i+=2) {
-								imageline($img, $x, $y, $o->x+$o->points[$i], $o->y+$o->points[$i+1], $green);
+								imageline($this->img, $x, $y, $o->x+$o->points[$i], $o->y+$o->points[$i+1], $green);
 								$x=$o->x+$o->points[$i];
 								$y=$o->y+$o->points[$i+1];
 							}
-							imagesetthickness($img, 1);
+							imagesetthickness($this->img, 1);
 						}
 						if($o->polygon) {
 							$ar=$o->points;
@@ -224,48 +225,40 @@ class Viewer {
 								$ar[$i]+=$o->x;
 								$ar[$i+1]+=$o->y;
 							}
-							imagesetthickness($img, 2);
-							imagepolygon($img, $ar, count($ar)/2, $green);
-							imagesetthickness($img, 1);
+							imagesetthickness($this->img, 2);
+							imagepolygon($this->img, $ar, count($ar)/2, $green);
+							imagesetthickness($this->img, 1);
 						}
 						if($o->name!='') {
-							imagettftext($img, 10, 0, $o->x-$o->getWidthL(), $o->y-$o->getHeightT()-4, $blue, './courbd.ttf', $o->name);
-							//imagefttext($img, 10, 0, $o->x-$o->getWidthL(), $o->y-$o->getHeightT()-4, $blue, './courbd.ttf', $o->name);
-							//imagefttext($img, 10, 0, $o->x-$o->getWidthL(), $o->y-$o->getHeightT()-4, $red, './cour.ttf', $o->name);
-							//imagestring($img, 3, $o->x-$o->getWidthL(), $o->y-$o->getHeightT()-16, $o->name, $blue);
+							imagettftext($this->img, 10, 0, $o->x-$o->getWidthL(), $o->y-$o->getHeightT()-4, $blue, './courbd.ttf', $o->name);
+							//imagefttext($this->img, 10, 0, $o->x-$o->getWidthL(), $o->y-$o->getHeightT()-4, $blue, './courbd.ttf', $o->name);
+							//imagefttext($this->img, 10, 0, $o->x-$o->getWidthL(), $o->y-$o->getHeightT()-4, $red, './cour.ttf', $o->name);
+							//imagestring($this->img, 3, $o->x-$o->getWidthL(), $o->y-$o->getHeightT()-16, $o->name, $blue);
 						}
 					}
 					else {
-						imagesetthickness($img, 2);
-						imagerectangle($img, $o->x, $o->y, $o->x + $o->width, $o->y + $o->height, $green);
-						imagesetthickness($img, 1);
+						imagesetthickness($this->img, 2);
+						imagerectangle($this->img, $o->x, $o->y, $o->x + $o->width, $o->y + $o->height, $green);
+						imagesetthickness($this->img, 1);
 						if($o->name!='') {
-							imagettftext($img, 10, 0, $o->x, $o->y-4, $blue, './courbd.ttf', $o->name);
-							//imagefttext($img, 10, 0, $o->x, $o->y-4, $blue, './courbd.ttf', $o->name);
-							//imagefttext($img, 10, 0, $o->x, $o->y-4, $red, './cour.ttf', $o->name);
-							//imagestring($img, 3, $o->x, $o->y-16, $o->name, $blue);
+							imagettftext($this->img, 10, 0, $o->x, $o->y-4, $blue, './courbd.ttf', $o->name);
+							//imagefttext($this->img, 10, 0, $o->x, $o->y-4, $blue, './courbd.ttf', $o->name);
+							//imagefttext($this->img, 10, 0, $o->x, $o->y-4, $red, './cour.ttf', $o->name);
+							//imagestring($this->img, 3, $o->x, $o->y-16, $o->name, $blue);
 						}
 					}
 				}
 			}
 		}
-		/*$data=ob_get_clean();
-		if(!empty($data)) {
-			header('Content-Type: text/plain'."\r\n");
-			echo $data;
-			die();
-		}
-
-		if(!defined('DEBUG')||DEBUG!==true) {
-			header('Content-Type: image/jpeg'."\r\n");
-		}*/
-
-		imagesavealpha($img, true);
+	}
+	
+	public function render($file=NULL) {
+		imagesavealpha($this->img, true);
 
 		//ini_set('output_buffering','off');
 
-		//imagejpeg($img, $file, 80);
-		imagepng($img, $file, 7);
+		//imagejpeg($this->img, $file, 80);
+		imagepng($this->img, $file, 7);
 	}
 };
 

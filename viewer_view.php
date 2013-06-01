@@ -137,10 +137,6 @@ if(!empty($data)) {
 
 }
 
-
-
-$header='';
-
 ob_start();
 
 if(!array_key_exists('layers_nodraw', $_SESSION)) {
@@ -152,26 +148,23 @@ if(!array_key_exists('tilesets_nodraw', $_SESSION)) {
 
 $viewer->draw();
 
+$data=ob_get_contents();
+
+if(strlen($data)!=0) {
+	header('Content-Type: text/plain'."\r\n");
+	echo $data;
+	die();
+}
+
+$viewer->render();
+
 $data=ob_get_clean();
 
-if($header!='') {
-
-	header('Content-Type: '.$header."\r\n");
-
-	echo $data;
-
+if(!defined('DEBUG')||DEBUG!==true) {
+	//header('Content-Type: image/jpeg'."\r\n");
+	header('Content-Type: image/png'."\r\n");
 }
 
-else {
-
-	if(!defined('DEBUG')||DEBUG!==true) {
-
-		header('Content-Type: image/jpeg'."\r\n");
-
-	}
-
-	echo $data;
-
-}
+echo $data;
 
 ?>
