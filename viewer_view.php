@@ -146,6 +146,8 @@ if(!array_key_exists('tilesets_nodraw', $_SESSION)) {
 	$_SESSION['tilesets_nodraw']=array('collision');
 }
 
+$viewer->load_ts();
+
 $viewer->draw();
 
 $data=ob_get_contents();

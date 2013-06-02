@@ -12,6 +12,7 @@ class Viewer {
 	private $data='';
 	public $draw_objects=false;
 	private $img=NULL;
+	private $ts_imgs=array();
 	private static $urls=array(
 		'tmw'=>'https://raw.github.com/themanaworld/tmwa-client-data/master/',
 		'evol'=>'https://raw.github.com/EvolOnline/clientdata-beta/master/',
@@ -28,10 +29,8 @@ class Viewer {
 		return $this->map;
 	}
 
-	public function draw() {
-		//ob_start();
-		$zoom=1;
-		$images=array();
+	public function load_ts() {
+		$this->ts_imgs=array();
 		foreach($this->map->tilesets as $i=>$ts) {
 			if( array_key_exists('ref', $_REQUEST) ) {
 				//if( $_REQUEST['ref']=='tmw' ) {
@@ -39,35 +38,42 @@ class Viewer {
 					$url=Viewer::$urls[$_REQUEST['ref']].dirname($this->map->filename).'/';
 					if(strlen($ts->sourceTSX)>0) $url.=dirname($ts->sourceTSX).'/';
 					$url.=$ts->source;
-					$images[$i]=create_image_from($url);
+					$this->ts_imgs[$i]=create_image_from($url);
 				}
 				else {
-					$images[$i]=create_image_from(dirname($this->map->filename).'/'.dirname($ts->sourceTSX).'/'.$ts->source);
+					$this->ts_imgs[$i]=create_image_from(dirname($this->map->filename).'/'.dirname($ts->sourceTSX).'/'.$ts->source);
 				}
 			}
 			else {
-				$images[$i]=create_image_from(dirname($this->map->filename).'/'.dirname($ts->sourceTSX).'/'.$ts->source);
+				$this->ts_imgs[$i]=create_image_from(dirname($this->map->filename).'/'.dirname($ts->sourceTSX).'/'.$ts->source);
 			}
 			if(function_exists('imageantialias')) {
-				imageantialias($images[$i], false);
+				imageantialias($this->ts_imgs[$i], false);
 			}
-			//imagealphablending($images[$i], true);
-			imagealphablending($images[$i], false);
+			//imagealphablending($this->ts_imgs[$i], true);
+			imagealphablending($this->ts_imgs[$i], false);
 			$transc=$ts->trans;
-			$trans = imagecolorallocatealpha($images[$i], 255, 255, 255, 127);//transparent
-			//$trans = imagecolorallocatealpha($images[$i], 255, 255, 255, 0);//opaque
+			$trans = imagecolorallocatealpha($this->ts_imgs[$i], 255, 255, 255, 127);//transparent
+			//$trans = imagecolorallocatealpha($this->ts_imgs[$i], 255, 255, 255, 0);//opaque
 			if((bool)$transc && $transc!='') {
 				$r=hexdec(substr($transc,0,2));
 				$g=hexdec(substr($transc,2,2));
 				$b=hexdec(substr($transc,4,2));
-				$color = imagecolorallocatealpha($images[$i], $r, $g, $b, 0);//opaque
-				//var_dump(imagesx($images[$i]), imagesy($images[$i]));die();
-				my_transparent($images[$i], $r, $g, $b, $trans);
-				imagecolortransparent($images[$i], $color);
+				$color = imagecolorallocatealpha($this->ts_imgs[$i], $r, $g, $b, 0);//opaque
+				//var_dump(imagesx($this->ts_imgs[$i]), imagesy($this->ts_imgs[$i]));die();
+				my_transparent($this->ts_imgs[$i], $r, $g, $b, $trans);
+				imagecolortransparent($this->ts_imgs[$i], $color);
 			}
 		}
 		unset($i,$ts,$transc,$trans,$r,$g,$b,$color);
+	}
+	
+	public function draw() {
+		//ob_start();
+		$zoom=1;
 
+		assert(count($this->ts_imgs)==count($this->map->tilesets)) or die('tilesets not loaded.');
+		
 		$this->img=imagecreatetruecolor($this->map->width*$this->map->tilewidth*$zoom, $this->map->height*$this->map->tileheight*$zoom);
 		//$img=imagecreatetruecolor($width*$tilewidth/2, $height*$tileheight/2);
 
@@ -100,7 +106,6 @@ class Viewer {
 		$blue=imagecolorallocatealpha($this->img, 0, 0, 255, 0);//bleu
 
 		imagefill($this->img, 0, 0, $trans);
-
 
 		foreach($this->map->layers as $index=>$ly) {
 			//break;
@@ -143,10 +148,10 @@ class Viewer {
 						$sy=$ty2+$ty*$this->map->tilesets[$ti]->tileheight;
 						$sw=$this->map->tilesets[$ti]->tilewidth;
 						$sh=$this->map->tilesets[$ti]->tileheight;
-						if($sx+$sw>imagesx($images[$ti])) {
+						if($sx+$sw>imagesx($this->ts_imgs[$ti])) {
 							trigger_error('width exceeded.');
 						}
-						if($sy+$sh>imagesy($images[$ti])) {
+						if($sy+$sh>imagesy($this->ts_imgs[$ti])) {
 							trigger_error('height exceeded.');
 						}
 						if($dy2 < 0) {
@@ -154,10 +159,10 @@ class Viewer {
 							$sh+=$dy2;
 						}
 						if($zoom==1) {
-							image_copy_and_resize($this->img, $images[$ti], $dx, $dy, $sx, $sy, $sw, $sh);
+							image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx, $dy, $sx, $sy, $sw, $sh);
 						}
 						else {
-							image_copy_and_resize($this->img, $images[$ti], $dx*$zoom, $dy*$zoom, $sx, $sy, $sw*$zoom, $sh*$zoom, $sw, $sh);
+							image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx*$zoom, $dy*$zoom, $sx, $sy, $sw*$zoom, $sh*$zoom, $sw, $sh);
 						}
 					}
 					elseif($this->map->orientation=='isometric') {
@@ -168,10 +173,10 @@ class Viewer {
 						$sy=$ty2+$ty*$this->map->tilesets[$ti]->tileheight;
 						$sw=$this->map->tilesets[$ti]->tilewidth;
 						$sh=$this->map->tilesets[$ti]->tileheight;
-						if($sx+$sw>imagesx($images[$ti])) {
+						if($sx+$sw>imagesx($this->ts_imgs[$ti])) {
 							trigger_error('width exceeded.');
 						}
-						if($sy+$sh>imagesy($images[$ti])) {
+						if($sy+$sh>imagesy($this->ts_imgs[$ti])) {
 							trigger_error('height exceeded.');
 						}
 						if($dy2 < 0) {
@@ -182,14 +187,14 @@ class Viewer {
 							//die();
 						}
 						if($zoom==1) {
-							image_copy_and_resize($this->img, $images[$ti], $dx, $dy, $sx, $sy, $sw, $sh);
+							image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx, $dy, $sx, $sy, $sw, $sh);
 						}
 						else {
-							image_copy_and_resize($this->img, $images[$ti], $dx*$zoom, $dy*$zoom, $sx, $sy, $sw*$zoom, $sh*$zoom, $sw, $sh);
+							image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx*$zoom, $dy*$zoom, $sx, $sy, $sw*$zoom, $sh*$zoom, $sw, $sh);
 						}
 						//if($lid==1) break(3);
 					}
-					/*if( $dy2 < 0) {// || $sx+$sw>imagesx($images[$ti]) || $sy+$sh>imagesy($images[$ti]) ) {
+					/*if( $dy2 < 0) {// || $sx+$sw>imagesx($this->ts_imgs[$ti]) || $sy+$sh>imagesy($this->ts_imgs[$ti]) ) {
 						/*var_dump($dx, $dy2, $sx, $sy, $sw, $sh);
 						echo '<br/>'."\r\n";
 						var_dump($dx, $dy, $sx, $sy-$dy2, $sw, $sh+$dy2);
