@@ -148,6 +148,8 @@ if(!array_key_exists('tilesets_nodraw', $_SESSION)) {
 
 $viewer->load_ts();
 
+$viewer->init_draw();
+
 $viewer->draw();
 
 $data=ob_get_contents();
