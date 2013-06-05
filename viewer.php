@@ -254,7 +254,7 @@ class Viewer {
 						imagerectangle($this->img, $o->x*$this->zoom, $o->y*$this->zoom, ($o->x + $o->width)*$this->zoom, ($o->y + $o->height)*$this->zoom, $this->colors['green']);
 						imagesetthickness($this->img, 1);
 						if($o->name!='') {
-							imagettftext($this->img, 10, 0, $o->x*$this->zoom, ($o->y-4)*$this->zoom, $this->colors['blue'], './courbd.ttf', $o->name);
+							imagettftext($this->img, 10*$this->zoom, 0, $o->x*$this->zoom, ($o->y-4)*$this->zoom, $this->colors['blue'], './courbd.ttf', $o->name);
 							//imagestring($this->img, 3, $o->x*$this->zoom, ($o->y-16)*$this->zoom, $o->name, $this->colors['blue']);
 						}
 					}
