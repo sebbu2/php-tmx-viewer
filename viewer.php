@@ -13,6 +13,7 @@ class Viewer {
 	public $draw_objects=false;
 	private $img=NULL;
 	private $ts_imgs=array();
+	private $ts_largeur=array();
 	private $colors=array();
 	public $zoom=1;
 	private static $urls=array(
@@ -66,6 +67,15 @@ class Viewer {
 				my_transparent($this->ts_imgs[$i], $r, $g, $b, $trans);
 				imagecolortransparent($this->ts_imgs[$i], $color);
 			}
+			//$this->ts_largeur[$i]=$ly->width;
+			$this->ts_largeur[$i]=0;
+			for( $a=0; $a<$this->map->tilesets[$i]->width-$this->map->tilesets[$i]->margin; $a+=$this->map->tilesets[$i]->tilewidth ) {
+				++$this->ts_largeur[$i];
+				if($this->map->tilesets[$i]->spacing>0) $a+=$this->map->tilesets[$i]->spacing;
+			}
+			//var_dump($this->ts_largeur[$i]);
+			assert($this->ts_largeur[$i]>0) or die('ts_largeur == 0');
+			//var_dump($this->ts_largeur);die();
 		}
 		unset($i,$ts,$transc,$trans,$r,$g,$b,$color);
 	}
@@ -129,20 +139,11 @@ class Viewer {
 					if(strlen($this->map->tilesets[$ti]->name)>0&&in_array($this->map->tilesets[$ti]->name, $_SESSION['tilesets_nodraw'])) continue;
 					$lid=$cgid-$this->map->tilesets[$ti]->firstgid;
 					//var_dump($lid);print('<br/>'."\n");continue;
-					//$largeur=$ly->width;
-					$largeur=0;
-					for( $a=0; $a<$this->map->tilesets[$ti]->width-$this->map->tilesets[$ti]->margin; $a+=$this->map->tilesets[$ti]->tilewidth ) {
-						++$largeur;
-						if($this->map->tilesets[$ti]->spacing>0) $a+=$this->map->tilesets[$ti]->spacing;
-					}
-					//var_dump($largeur);
-					assert($largeur>0) or die('largeur == 0');
-					//var_dump($largeur);die();
-					$tx=$lid%($largeur*$this->zoom);
+					$tx=$lid%($this->ts_largeur[$ti]*$this->zoom);
 					$tx2=0;
 					if($this->map->tilesets[$ti]->spacing>0) $tx2+=$this->map->tilesets[$ti]->spacing*$tx;
 					if($this->map->tilesets[$ti]->margin>0) $tx2+=$this->map->tilesets[$ti]->margin;
-					$ty=(int)($lid/($largeur*$this->zoom));
+					$ty=(int)($lid/($this->ts_largeur[$ti]*$this->zoom));
 					$ty2=0;
 					if($this->map->tilesets[$ti]->spacing>0) $ty2+=$this->map->tilesets[$ti]->spacing*$ty;
 					if($this->map->tilesets[$ti]->margin>0) $ty2+=$this->map->tilesets[$ti]->margin;
