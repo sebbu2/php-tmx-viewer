@@ -10,7 +10,7 @@ class Viewer {
 	public $name='';
 	private $map=NULL;
 	private $data='';
-	public $draw_objects=false;
+	public $draw_objects=true;
 	private $img=NULL;
 	private $ts_imgs=array();
 	private $ts_largeur=array();
@@ -139,11 +139,11 @@ class Viewer {
 					if(strlen($this->map->tilesets[$ti]->name)>0&&in_array($this->map->tilesets[$ti]->name, $_SESSION['tilesets_nodraw'])) continue;
 					$lid=$cgid-$this->map->tilesets[$ti]->firstgid;
 					//var_dump($lid);print('<br/>'."\n");continue;
-					$tx=$lid%($this->ts_largeur[$ti]*$this->zoom);
+					$tx=$lid%($this->ts_largeur[$ti]);
 					$tx2=0;
 					if($this->map->tilesets[$ti]->spacing>0) $tx2+=$this->map->tilesets[$ti]->spacing*$tx;
 					if($this->map->tilesets[$ti]->margin>0) $tx2+=$this->map->tilesets[$ti]->margin;
-					$ty=(int)($lid/($this->ts_largeur[$ti]*$this->zoom));
+					$ty=(int)($lid/($this->ts_largeur[$ti]));
 					$ty2=0;
 					if($this->map->tilesets[$ti]->spacing>0) $ty2+=$this->map->tilesets[$ti]->spacing*$ty;
 					if($this->map->tilesets[$ti]->margin>0) $ty2+=$this->map->tilesets[$ti]->margin;
@@ -217,47 +217,45 @@ class Viewer {
 			foreach($this->map->objectlayers as $index=>$ol) {
 				foreach($ol->getAllObjects() as $o) {
 					if($o->polygon || $o->polyline) {
-						imagerectangle($this->img, $o->x-$o->getWidthL(), $o->y-$o->getHeightT(),
-							$o->x + $o->getWidthR(), $o->y + $o->getHeightB(),
+						imagerectangle($this->img, ($o->x-$o->getWidthL())*$this->zoom, ($o->y-$o->getHeightT())*$this->zoom,
+							($o->x + $o->getWidthR())*$this->zoom, ($o->y + $o->getHeightB())*$this->zoom,
 							$this->colors['ligr']);
 						if($o->polyline) {
 							assert(count($o->points)/2>1);
-							$x=$o->x+$o->points[0];
-							$y=$o->y+$o->points[1];
+							$x=($o->x+$o->points[0])*$this->zoom;
+							$y=($o->y+$o->points[1])*$this->zoom;
 							imagesetthickness($this->img, 2);
 							for($i=2;$i<count($o->points);$i+=2) {
-								imageline($this->img, $x, $y, $o->x+$o->points[$i], $o->y+$o->points[$i+1], $this->colors['green']);
-								$x=$o->x+$o->points[$i];
-								$y=$o->y+$o->points[$i+1];
+								imageline($this->img, $x, $y, ($o->x+$o->points[$i])*$this->zoom, ($o->y+$o->points[$i+1])*$this->zoom, $this->colors['green']);
+								$x=($o->x+$o->points[$i])*$this->zoom;
+								$y=($o->y+$o->points[$i+1])*$this->zoom;
 							}
 							imagesetthickness($this->img, 1);
 						}
 						if($o->polygon) {
 							$ar=$o->points;
 							for($i=0;$i<count($ar);$i+=2) {
-								$ar[$i]+=$o->x;
-								$ar[$i+1]+=$o->y;
+								$ar[$i]*=$this->zoom;
+								$ar[$i]+=$o->x*$this->zoom;
+								$ar[$i+1]*=$this->zoom;
+								$ar[$i+1]+=$o->y*$this->zoom;
 							}
 							imagesetthickness($this->img, 2);
 							imagepolygon($this->img, $ar, count($ar)/2, $this->colors['green']);
 							imagesetthickness($this->img, 1);
 						}
 						if($o->name!='') {
-							imagettftext($this->img, 10, 0, $o->x-$o->getWidthL(), $o->y-$o->getHeightT()-4, $this->colors['blue'], './courbd.ttf', $o->name);
-							//imagefttext($this->img, 10, 0, $o->x-$o->getWidthL(), $o->y-$o->getHeightT()-4, $this->colors['blue'], './courbd.ttf', $o->name);
-							//imagefttext($this->img, 10, 0, $o->x-$o->getWidthL(), $o->y-$o->getHeightT()-4, $this->colors['red'], './cour.ttf', $o->name);
-							//imagestring($this->img, 3, $o->x-$o->getWidthL(), $o->y-$o->getHeightT()-16, $o->name, $this->colors['blue']);
+							imagettftext($this->img, 10*$this->zoom, 0, ($o->x-$o->getWidthL())*$this->zoom, ($o->y-$o->getHeightT()-4)*$this->zoom, $this->colors['blue'], './courbd.ttf', $o->name);
+							//imagestring($this->img, 3, ($o->x-$o->getWidthL())*$this->zoom, ($o->y-$o->getHeightT()-16)*$this->zoom, $o->name, $this->colors['blue']);
 						}
 					}
 					else {
 						imagesetthickness($this->img, 2);
-						imagerectangle($this->img, $o->x, $o->y, $o->x + $o->width, $o->y + $o->height, $this->colors['green']);
+						imagerectangle($this->img, $o->x*$this->zoom, $o->y*$this->zoom, ($o->x + $o->width)*$this->zoom, ($o->y + $o->height)*$this->zoom, $this->colors['green']);
 						imagesetthickness($this->img, 1);
 						if($o->name!='') {
-							imagettftext($this->img, 10, 0, $o->x, $o->y-4, $this->colors['blue'], './courbd.ttf', $o->name);
-							//imagefttext($this->img, 10, 0, $o->x, $o->y-4, $this->colors['blue'], './courbd.ttf', $o->name);
-							//imagefttext($this->img, 10, 0, $o->x, $o->y-4, $this->colors['red'], './cour.ttf', $o->name);
-							//imagestring($this->img, 3, $o->x, $o->y-16, $o->name, $this->colors['blue']);
+							imagettftext($this->img, 10, 0, $o->x*$this->zoom, ($o->y-4)*$this->zoom, $this->colors['blue'], './courbd.ttf', $o->name);
+							//imagestring($this->img, 3, $o->x*$this->zoom, ($o->y-16)*$this->zoom, $o->name, $this->colors['blue']);
 						}
 					}
 				}
