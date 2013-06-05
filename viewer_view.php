@@ -148,7 +148,11 @@ if(!array_key_exists('tilesets_nodraw', $_SESSION)) {
 
 $viewer->load_ts();
 
-$viewer->zoom=2;
+if(array_key_exists('zoom',$_REQUEST)) {
+	assert(is_numeric($_REQUEST['zoom'])) or die('bad zoom value');
+	$viewer->zoom=intval($_REQUEST['zoom']);
+	assert($viewer->zoom>=0.1 && $viewer->zoom<=10) or die('bad zoom range');
+}
 
 $viewer->init_draw();
 
