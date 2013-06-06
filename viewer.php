@@ -143,14 +143,14 @@ class Viewer {
 					$tx2=0;
 					if($this->map->tilesets[$ti]->spacing>0) $tx2+=$this->map->tilesets[$ti]->spacing*$tx;
 					if($this->map->tilesets[$ti]->margin>0) $tx2+=$this->map->tilesets[$ti]->margin;
-					$ty=(int)($lid/($this->ts_largeur[$ti]));
+					$ty=(int)($lid/$this->ts_largeur[$ti]);
 					$ty2=0;
 					if($this->map->tilesets[$ti]->spacing>0) $ty2+=$this->map->tilesets[$ti]->spacing*$ty;
 					if($this->map->tilesets[$ti]->margin>0) $ty2+=$this->map->tilesets[$ti]->margin;
 					//var_dump($tx,$tx2,$ty,$ty2);die();
 					if($this->map->orientation=='orthogonal') {
 						$dx=$i*$this->map->tilewidth;
-						$dy2=$j*$this->map->tileheight-($this->map->tilesets[$ti]->tileheight-$this->map->tileheight);
+						$dy2=($j+1)*$this->map->tileheight-$this->map->tilesets[$ti]->tileheight;
 							$dy=max($dy2, 0);
 						$sx=$tx2+$tx*$this->map->tilesets[$ti]->tilewidth;
 						$sy=$ty2+$ty*$this->map->tilesets[$ti]->tileheight;
@@ -174,8 +174,8 @@ class Viewer {
 						}
 					}
 					elseif($this->map->orientation=='isometric') {
-						$dx=($this->map->width*$this->map->tilewidth/2)-$this->map->tilewidth/2-($j*$this->map->tilewidth/2)+($i*$this->map->tilewidth/2);
-						$dy2=($i+$j)*$this->map->tileheight/2-($this->map->tilesets[$ti]->tileheight-$this->map->tileheight)/2;
+						$dx=(($this->map->width-1+$i-$j)*$this->map->tilewidth/2);
+						$dy2=($i+$j+1)*$this->map->tileheight/2-$this->map->tilesets[$ti]->tileheight/2;
 							$dy=max($dy2, 0);
 						$sx=$tx2+$tx*$this->map->tilesets[$ti]->tilewidth;
 						$sy=$ty2+$ty*$this->map->tilesets[$ti]->tileheight;
@@ -202,13 +202,6 @@ class Viewer {
 						}
 						//if($lid==1) break(3);
 					}
-					/*if( $dy2 < 0) {// || $sx+$sw>imagesx($this->ts_imgs[$ti]) || $sy+$sh>imagesy($this->ts_imgs[$ti]) ) {
-						/*var_dump($dx, $dy2, $sx, $sy, $sw, $sh);
-						echo '<br/>'."\r\n";
-						var_dump($dx, $dy, $sx, $sy-$dy2, $sw, $sh+$dy2);
-						echo '<br/>'."\r\n";//
-						//die();
-					}//*/
 				}
 			}
 		}
