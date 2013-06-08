@@ -120,6 +120,11 @@ class Viewer {
 	}
 	
 	public function draw() {
+		$this->draw_layers();
+		$this->draw_objects();
+	}
+	
+	public function draw_layers() {
 		//ob_start();
 
 		assert(count($this->ts_imgs)==count($this->map->tilesets)) or die('tilesets not loaded.');
@@ -205,6 +210,9 @@ class Viewer {
 				}
 			}
 		}
+	}
+	
+	public function draw_objects() {
 		//die();
 		if($this->draw_objects) {
 			foreach($this->map->objectlayers as $index=>$ol) {
