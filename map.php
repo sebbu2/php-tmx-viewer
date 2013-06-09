@@ -13,6 +13,7 @@ class MapBase {
 	public $height=0;
 	public $tilewidth=0;
 	public $tileheight=0;
+	public $backgroundcolor='';
 	public $tilesets=array();
 	public $layers=array();
 	public $objectlayers=array();
@@ -64,6 +65,7 @@ class MapBase {
 		$this->height=(int)$this->xml['height'];
 		$this->tilewidth =(int)$this->xml['tilewidth' ];
 		$this->tileheight=(int)$this->xml['tileheight'];
+		$this->backgroundcolor=(string)$this->xml['backgroundcolor'];
 	}
 
 	private function load_tilesets() {
@@ -156,6 +158,10 @@ class MapBase {
 		}
 		if(!is_int($this->tileheight) || $this->tileheight<0) {
 			throw new Exception('Incorrect map tileheight.');
+			return false;
+		}
+		if(!is_string($this->backgroundcolor)) {
+			throw new Exception('Incorrect map backgroundcolor.');
 			return false;
 		}
 		return true;

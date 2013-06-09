@@ -15,6 +15,7 @@ class ObjectBase {
 	public $ellipse=false;
 	public $polygon=false;
 	public $polyline=false;
+	public $rotation=0;//deg clockwise
 	public $points=array();
 	
 	//methods
@@ -28,6 +29,7 @@ class ObjectBase {
 		$this->height=(int)$xml['height'];
 		$this->gid=(int)$xml['gid'];
 		$this->visible=(int)$xml['visible'];
+		$this->rotation=(int)$xml['rotation'];
 		if((bool)$xml->ellipse!==false) {
 			$this->ellipse=true;
 		}
@@ -39,7 +41,6 @@ class ObjectBase {
 		}
 		if($this->ellipse + $this->polygon + $this->polyline > 1) die('ERROR : ellipse & polygon & polyline.');
 		if($this->polygon||$this->polyline) {
-			$this->polygon=true;
 			$p='';
 			if((bool)$xml->polygon['points']!==false) {
 				$p=strtok($xml->polygon['points'],', ');
@@ -127,6 +128,10 @@ class ObjectBase {
 		}
 		if(!is_null($this->gid) && !is_int($this->gid)) {
 			throw new Exception('Incorrect gid value.');
+			return false;
+		}
+		if(!is_int($this->rotation)) {
+			throw new Exception('Incorrect rotation value.');
 			return false;
 		}
 		if(!is_int($this->visible) || ($this->visible!=0 && $this->visible!=1)) {

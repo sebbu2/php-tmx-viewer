@@ -262,6 +262,13 @@ class Viewer {
 							//imagestring($this->img, 3, ($o->x-$o->getWidthL())*$this->zoom, ($o->y-$o->getHeightT()-16)*$this->zoom, $o->name, $this->colors['blue']);
 						}
 					}
+					elseif($o->ellipse) {
+						trigger_error('not yet implemented');
+					}
+					elseif(!is_null($o->gid) && !is_int($o->gid)) {
+						$cgid=$o->gid;
+						trigger_error('not yet implemented');
+					}
 					else {
 						imagesetthickness($this->img, 2);
 						imagerectangle($this->img, $o->x*$this->zoom, $o->y*$this->zoom, ($o->x + $o->width)*$this->zoom, ($o->y + $o->height)*$this->zoom, $this->colors['green']);
