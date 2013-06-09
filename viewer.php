@@ -124,6 +124,16 @@ class Viewer {
 		$this->draw_objects();
 	}
 	
+	public function draw_inside_layer($li, $lname, $j, $i) {
+	/*
+	li	layer index
+	lname	layer name
+	j	row
+	i	col
+	*/
+		return false;
+	}
+	
 	public function draw_layers() {
 		//ob_start();
 
@@ -177,6 +187,7 @@ class Viewer {
 						else {
 							image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx*$this->zoom, $dy*$this->zoom, $sx, $sy, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
 						}
+						$this->draw_inside_layer($index, $ly->name, $j, $i);
 					}
 					elseif($this->map->orientation=='isometric') {
 						$dx=(($this->map->width-1+$i-$j)*$this->map->tilewidth/2);
@@ -205,6 +216,7 @@ class Viewer {
 						else {
 							image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx*$this->zoom, $dy*$this->zoom, $sx, $sy, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
 						}
+						$this->draw_inside_layer($index, $ly->name, $j, $i);
 						//if($lid==1) break(3);
 					}
 				}
