@@ -131,6 +131,12 @@ class Viewer {
 	j	row
 	i	col
 	*/
+		if($this->map->orientation=='orthogonal') {
+			//
+		}
+		elseif($this->map->orientation=='isometric') {
+			//
+		}
 		return false;
 	}
 	
@@ -245,7 +251,7 @@ class Viewer {
 							}
 							imagesetthickness($this->img, 1);
 						}
-						if($o->polygon) {
+						else if($o->polygon) {
 							$ar=$o->points;
 							for($i=0;$i<count($ar);$i+=2) {
 								$ar[$i]*=$this->zoom;
@@ -257,7 +263,7 @@ class Viewer {
 							imagepolygon($this->img, $ar, count($ar)/2, $this->colors['green']);
 							imagesetthickness($this->img, 1);
 						}
-						if($o->name!='') {
+						else if($o->name!='') {
 							imagettftext($this->img, 10*$this->zoom, 0, ($o->x-$o->getWidthL())*$this->zoom, ($o->y-$o->getHeightT()-4)*$this->zoom, $this->colors['blue'], './courbd.ttf', $o->name);
 							//imagestring($this->img, 3, ($o->x-$o->getWidthL())*$this->zoom, ($o->y-$o->getHeightT()-16)*$this->zoom, $o->name, $this->colors['blue']);
 						}
