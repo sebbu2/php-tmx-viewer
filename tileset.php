@@ -158,6 +158,29 @@ class TilesetBase {
 		return $xml;
 	}
 
+	public function get_tile_from_terrain($id) {
+		if(is_int($id)) {
+			return $this->terrains[$id]['tile'];
+		}
+		else if(is_string($id)) {
+			foreach($this->terrains as $terrain) {
+				if($terrain['name']===$id) return $terrain['tile'];
+			}
+			throw new Exception('terrain not found');
+		}
+		else {
+			throw new Exception('bad terrain identifiant.');
+		}
+	}
+
+	public function get_tile_from_terrains($tl, $tr, $bl, $br) {
+		$value=$tl.','.$tr.','.$bl.','.$br;
+		foreach($this->tiles as $id=>$tile) {
+			if($tile['terrain']===$value) return $id;
+		}
+		throw new Exception('terrain tile not found');
+	}
+
 	public function isValid() {
 		if(!is_string($this->sourceTSX)) {
 			throw new Exception('Incorrect tileset source.');
