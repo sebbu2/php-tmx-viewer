@@ -98,10 +98,19 @@ class Viewer {
 		//$this->colors['white']=imagecolorallocatealpha($this->img, 255, 255, 255, 0);//blanc
 		$this->colors['trans']=imagecolorallocatealpha($this->img, 255, 255, 255, 127);//transparent
 		$this->colors['default']=imagecolorallocatealpha($this->img, 0, 0, 0, 0);//noir
-		$this->colors['ligr']=imagecolorallocatealpha($this->img, 0xcc, 0xcc, 0xcc, 0);//light gray
+		$this->colors['ligra']=imagecolorallocatealpha($this->img, 0xcc, 0xcc, 0xcc, 0);//light gray
 		$this->colors['red']=imagecolorallocatealpha($this->img, 255, 0, 0, 0);//rouge
 		$this->colors['green']=imagecolorallocatealpha($this->img, 0, 255, 0, 0);//vert
 		$this->colors['blue']=imagecolorallocatealpha($this->img, 0, 0, 255, 0);//bleu
+		$this->colors['yellow']=imagecolorallocatealpha($this->img, 255, 255, 0, 0);//yellow
+		$this->colors['rose']=imagecolorallocatealpha($this->img, 255, 0, 255, 0);//rose
+		$this->colors['cyan']=imagecolorallocatealpha($this->img, 0, 255, 255, 0);//cyan
+		$this->colors['orange']=imagecolorallocatealpha($this->img, 255, 128, 0, 0);//orange
+		$this->colors['magenta']=imagecolorallocatealpha($this->img, 255, 0, 128, 0);//magenta
+		$this->colors['ligre']=imagecolorallocatealpha($this->img, 128, 255, 0, 0);//light green
+		$this->colors['purple']=imagecolorallocatealpha($this->img, 128, 0, 255, 0);//purple
+		$this->colors['licya']=imagecolorallocatealpha($this->img, 0, 255, 128, 0);//light cyan
+		$this->colors['violet']=imagecolorallocatealpha($this->img, 0, 128, 255, 0);//violet
 	}
 	
 	public function init_draw() {
@@ -238,7 +247,7 @@ class Viewer {
 					if($o->polygon || $o->polyline) {
 						imagerectangle($this->img, ($o->x-$o->getWidthL())*$this->zoom, ($o->y-$o->getHeightT())*$this->zoom,
 							($o->x + $o->getWidthR())*$this->zoom, ($o->y + $o->getHeightB())*$this->zoom,
-							$this->colors['ligr']);
+							$this->colors['ligra']);
 						if($o->polyline) {
 							assert(count($o->points)/2>1);
 							$x=($o->x+$o->points[0])*$this->zoom;
@@ -269,7 +278,11 @@ class Viewer {
 						}
 					}
 					elseif($o->ellipse) {
-						trigger_error('not yet implemented');
+						imagesetthickness($this->img, 2);
+						//imageellipse($this->img, $o->x+$o->width/2, $o->y+$o->height/2, $o->width, $o->height, $this->colors['purple']);//NOTE: doesn't work with setthickness, known bug (
+						imagearc($this->img, $o->x+$o->width/2, $o->y+$o->height/2, $o->width, $o->height, 0, 180, $this->colors['purple']);
+						imagearc($this->img, $o->x+$o->width/2, $o->y+$o->height/2, $o->width, $o->height, 180, 360, $this->colors['purple']);
+						imagesetthickness($this->img, 1);
 					}
 					elseif(!is_null($o->gid) && !is_int($o->gid)) {
 						$cgid=$o->gid;
