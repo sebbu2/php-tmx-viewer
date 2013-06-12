@@ -103,55 +103,55 @@ class ObjectBase {
 	
 	public function isValid() {
 		if(!is_string($this->name)) {
-			throw new Exception('Incorrect name value.');
+			throw new Exception('Incorrect object name value.');
 			return false;
 		}
 		if(!is_string($this->type)) {
-			throw new Exception('Incorrect type value.');
+			throw new Exception('Incorrect object type value.');
 			return false;
 		}
 		if(!is_int($this->x)) {
-			throw new Exception('Incorrect x value.');
+			throw new Exception('Incorrect object x value.');
 			return false;
 		}
 		if(!is_int($this->y)) {
-			throw new Exception('Incorrect y value.');
+			throw new Exception('Incorrect object y value.');
 			return false;
 		}
 		if(!is_int($this->width)) {
-			throw new Exception('Incorrect width value.');
+			throw new Exception('Incorrect object width value.');
 			return false;
 		}
 		if(!is_int($this->height)) {
-			throw new Exception('Incorrect height value.');
+			throw new Exception('Incorrect object height value.');
 			return false;
 		}
 		if(!is_null($this->gid) && !is_int($this->gid)) {
-			throw new Exception('Incorrect gid value.');
+			throw new Exception('Incorrect object gid value.');
 			return false;
 		}
 		if(!is_int($this->rotation)) {
-			throw new Exception('Incorrect rotation value.');
+			throw new Exception('Incorrect object rotation value.');
 			return false;
 		}
 		if(!is_int($this->visible) || ($this->visible!=0 && $this->visible!=1)) {
-			throw new Exception('Incorrect visible value.');
+			throw new Exception('Incorrect object visible value.');
 			return false;
 		}
 		if(!is_bool($this->ellipse)) {
-			throw new Exception('Incorrect ellipse node.');
+			throw new Exception('Incorrect object ellipse node.');
 			return false;
 		}
 		if(!is_bool($this->polygon)) {
-			throw new Exception('Incorrect polygon node.');
+			throw new Exception('Incorrect object polygon node.');
 			return false;
 		}
 		if(!is_bool($this->polyline)) {
-			throw new Exception('Incorrect polyline node.');
+			throw new Exception('Incorrect object polyline node.');
 			return false;
 		}
 		if(!is_array($this->points) || count($this->points)%2!=0) {
-			throw new Exception('Incorrect points list.');
+			throw new Exception('Incorrect object points list.');
 			return false;
 		}
 		return true;

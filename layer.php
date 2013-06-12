@@ -7,6 +7,8 @@ require_once('tileset.php');
 class LayerBase {
 	//attributes
 	public $name='';
+	public $x=0;
+	public $y=0;
 	public $width=0;
 	public $height=0;
 	public $visible=1;
@@ -26,6 +28,8 @@ class LayerBase {
 
 	public function load_from_element(SimpleXMLElement $xml, $ref='') {
 		$this->name=(string)$xml['name'];
+		$this->x=(int)$xml['x'];
+		$this->y=(int)$xml['y'];
 		$this->width =(int)$xml['width' ];
 		$this->height=(int)$xml['height'];
 		$this->encoding=(string)$xml->data['encoding'];
@@ -111,6 +115,14 @@ class LayerBase {
 	public function isValid() {
 		if(!is_string($this->name)) {
 			throw new Exception('Incorrect layer name.');
+			return false;
+		}
+		if(!is_int($this->x)) {
+			throw new Exception('Incorrect layer x value.');
+			return false;
+		}
+		if(!is_int($this->y)) {
+			throw new Exception('Incorrect layer y value.');
 			return false;
 		}
 		if(!is_int($this->width ) || $this->width <0) {
