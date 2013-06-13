@@ -11,6 +11,7 @@ class Viewer {
 	private $map=NULL;
 	private $data='';
 	public $draw_objects=true;
+	public $draw_imagelayers=true;
 	private $img=NULL;
 	private $ts_imgs=array();
 	private $ts_largeur=array();
@@ -130,6 +131,7 @@ class Viewer {
 	
 	public function draw() {
 		$this->draw_layers();
+		$this->draw_imagelayers();
 		$this->draw_objects();
 	}
 	
@@ -239,6 +241,48 @@ class Viewer {
 		}
 	}
 	
+	public function draw_imagelayers() {
+		if($this->draw_imagelayers) {
+			foreach($this->map->imagelayers as $index=>$il) {
+				$img_=create_image_from(dirname($this->map->filename).'/'.$il->source);
+			if(function_exists('imageantialias')) {
+				imageantialias($img_, false);
+			}
+			//imagealphablending($img_, true);
+			imagealphablending($img_, false);
+				$transc=$il->trans;
+			$trans = imagecolorallocatealpha($img_, 255, 255, 255, 127);//transparent
+			//$trans = imagecolorallocatealpha($img_, 255, 255, 255, 0);//opaque
+			if((bool)$transc && $transc!='') {
+				$r=hexdec(substr($transc,0,2));
+				$g=hexdec(substr($transc,2,2));
+				$b=hexdec(substr($transc,4,2));
+				//var_dump($transc, $r, $g, $b);
+				$color = imagecolorallocatealpha($img_, $r, $g, $b, 0);//opaque
+				//var_dump(imagesx($img_), imagesy($this->ts_imgs[$i]));die();
+				my_transparent($img_, $r, $g, $b, $trans);
+				imagecolortransparent($img_, $color);
+			}
+				if($this->map->orientation=='orthogonal') {
+					$sw=min($il->width *$this->map->tilewidth , $this->map->width *$this->map->tilewidth , imagesx($img_));
+					$sh=min($il->height*$this->map->tileheight, $this->map->height*$this->map->tileheight, imagesy($img_));
+					if($this->zoom==1) {
+						image_copy_and_resize($this->img, $img_, $il->x, $il->y, 0, 0, $sw, $sh);
+					}
+					else {
+						image_copy_and_resize($this->img, $img_, $il->x*$this->zoom, $il->y*$this->zoom, 0, 0, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
+					}
+				}
+				elseif($this->map->orientation=='isometric') {
+					throw new Exception('image layer on isometric map not yet implemented.');
+				}
+				imagedestroy($img_);
+				unset($img_);
+				$img_=NULL;
+			}
+		}
+	}
+	
 	public function draw_objects() {
 		//die();
 		if($this->draw_objects) {
@@ -284,7 +328,7 @@ class Viewer {
 						imagearc($this->img, $o->x+$o->width/2, $o->y+$o->height/2, $o->width, $o->height, 180, 360, $this->colors['purple']);
 						imagesetthickness($this->img, 1);
 					}
-					elseif(!is_null($o->gid) && !is_int($o->gid)) {
+					elseif(is_int($o->gid)) {
 						$cgid=$o->gid;
 						trigger_error('not yet implemented');
 					}

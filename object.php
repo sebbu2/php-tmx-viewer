@@ -27,7 +27,9 @@ class ObjectBase {
 		$this->y=(int)$xml['y'];
 		$this->width=(int)$xml['width'];
 		$this->height=(int)$xml['height'];
-		$this->gid=(int)$xml['gid'];
+		if((bool)$xml['gid']!==false) {
+			$this->gid=(int)$xml['gid'];
+		}
 		$this->visible=(int)$xml['visible'];
 		$this->rotation=(int)$xml['rotation'];
 		if((bool)$xml->ellipse!==false) {

@@ -74,6 +74,24 @@ class ObjectLayer extends ObjectLayerBase {
 	}
 };
 
+class ImageLayer extends ImageLayerBase {
+	private $_properties=array();
+	function __construct() {
+		if(method_exists(get_parent_class($this), '__construct')) {
+			parent::__construct();
+		}
+		$this->_properties[]=new properties();
+	}
+	public function __call($name, $args) {
+		//print('You called the method '.$name.' with '.count($args).' arguments.<br/>'."\r\n");
+		foreach($this->_properties as $prop) {
+			if(method_exists($prop, $name)) {
+				return call_user_func_array(array($prop, $name), $args);
+			}
+		}
+	}
+};
+
 class Object extends ObjectBase {
 	private $_properties=array();
 	function __construct() {

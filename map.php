@@ -4,6 +4,7 @@ require_once('properties.php');
 require_once('tileset.php');
 require_once('layer.php');
 require_once('objectlayer.php');
+require_once('imagelayer.php');
 
 class MapBase {
 	//attributes
@@ -17,6 +18,7 @@ class MapBase {
 	public $tilesets=array();
 	public $layers=array();
 	public $objectlayers=array();
+	public $imagelayers=array();
 	public $filename='';
 	private $xml=NULL;
 	public $ref='';
@@ -92,6 +94,18 @@ class MapBase {
 		return $i;
 	}
 	
+	private function load_imagelayers() {
+		$i=0;
+		foreach($this->xml->imagelayer as $il) {
+			$this->imagelayers[$i]=new ImageLayer();
+			$this->imagelayers[$i]->setMap($this);
+			$this->imagelayers[$i]->ref=$this->ref;
+			$this->imagelayers[$i]->load_from_element($il, $this->ref);
+			++$i;
+		}
+		return $i;
+	}
+	
 	private function load_objectlayers() {
 		$i=0;
 		foreach($this->xml->objectgroup as $ol) {
@@ -123,6 +137,7 @@ class MapBase {
 		$this->load_tilesets();
 		$this->load_layers();
 		$this->load_objectlayers();
+		$this->load_imagelayers();
 		return $this->xml;
 	}
 
@@ -205,6 +220,19 @@ class MapBase {
 			}
 			catch(Exception $ex) {
 				print('ObjectLayer n°'.$i."\n");
+				throw $ex;
+			}
+		}
+		foreach($this->imagelayers as $i=>$il) {
+			if(!($il instanceof ImageLayer)) {
+				throw new Exception('Incorrect map imagelayer.');
+				return false;
+			}
+			try {
+				$il->isValid();
+			}
+			catch(Exception $ex) {
+				print('ImageLayer n°'.$i."\n");
 				throw $ex;
 			}
 		}

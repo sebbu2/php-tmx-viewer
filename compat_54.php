@@ -17,6 +17,10 @@ class ObjectLayer extends ObjectLayerBase {
 	use properties;
 };
 
+class ImageLayer extends ImageLayerBase {
+	use properties;
+};
+
 class Object extends ObjectBase {
 	use properties;
 };
