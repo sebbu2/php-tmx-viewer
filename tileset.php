@@ -110,7 +110,7 @@ class TilesetBase {
 					unset($ar);
 				}
 				else {
-					trigger_error('Image not found', E_USER_NOTICE);
+					trigger_error('Image \''.$this->source.'\' not found', E_USER_NOTICE);
 				}
 			}
 			else {
