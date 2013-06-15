@@ -330,7 +330,50 @@ class Viewer {
 					}
 					elseif(is_int($o->gid)) {
 						$cgid=$o->gid;
-						trigger_error('not yet implemented');
+						if($cgid==0) continue;
+						$ti=$this->map->get_tileset_index($cgid);
+						if($ti==-1) {
+							var_dump($cgid);
+							die();
+						}
+						//if(strlen($this->map->tilesets[$ti]->name)>0&&in_array($this->map->tilesets[$ti]->name, $_SESSION['tilesets_nodraw'])) continue;
+						$lid=$cgid-$this->map->tilesets[$ti]->firstgid;
+						//var_dump($lid);print('<br/>'."\n");continue;
+						$tx=$lid%($this->ts_largeur[$ti]);
+						$tx2=0;
+						if($this->map->tilesets[$ti]->spacing>0) $tx2+=$this->map->tilesets[$ti]->spacing*$tx;
+						if($this->map->tilesets[$ti]->margin>0) $tx2+=$this->map->tilesets[$ti]->margin;
+						$ty=(int)($lid/$this->ts_largeur[$ti]);
+						$ty2=0;
+						if($this->map->tilesets[$ti]->spacing>0) $ty2+=$this->map->tilesets[$ti]->spacing*$ty;
+						if($this->map->tilesets[$ti]->margin>0) $ty2+=$this->map->tilesets[$ti]->margin;
+						//var_dump($tx,$tx2,$ty,$ty2);die();
+						if($this->map->orientation=='orthogonal') {
+							$dx=$o->x;
+							$dy2=$o->y-$this->map->tilesets[$ti]->tileheight;;
+								$dy=max($dy2, 0);
+							$sx=$tx2+$tx*$this->map->tilesets[$ti]->tilewidth;
+							$sy=$ty2+$ty*$this->map->tilesets[$ti]->tileheight;
+							$sw=$this->map->tilesets[$ti]->tilewidth;
+							$sh=$this->map->tilesets[$ti]->tileheight;
+							if($sx+$sw>imagesx($this->ts_imgs[$ti])) {
+								trigger_error('width exceeded.');
+							}
+							if($sy+$sh>imagesy($this->ts_imgs[$ti])) {
+								trigger_error('height exceeded.');
+							}
+							if($dy2 < 0) {
+								$sy-=$dy2;
+								$sh+=$dy2;
+							}
+							if($this->zoom==1) {
+								image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx, $dy, $sx, $sy, $sw, $sh);
+							}
+							else {
+								image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx*$this->zoom, $dy*$this->zoom, $sx, $sy, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
+							}
+						}
+						//trigger_error('not yet implemented');
 					}
 					else {
 						imagesetthickness($this->img, 2);
