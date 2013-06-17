@@ -2,7 +2,7 @@
 
 require_once('map.php');
 require_once('tileset.php');
-require_once('layer.php');
+require_once('tilelayer.php');
 require_once('functions.inc.php');
 
 class Viewer {
@@ -130,15 +130,15 @@ class Viewer {
 	}
 	
 	public function draw() {
-		$this->draw_layers();
+		$this->draw_tilelayers();
 		$this->draw_imagelayers();
 		$this->draw_objects();
 	}
 	
-	public function draw_inside_layer($li, $lname, $j, $i) {
+	public function draw_inside_tilelayer($li, $lname, $j, $i) {
 	/*
-	li	layer index
-	lname	layer name
+	li	tile layer index
+	lname	tile layer name
 	j	row
 	i	col
 	*/
@@ -151,12 +151,12 @@ class Viewer {
 		return false;
 	}
 	
-	public function draw_layers() {
+	public function draw_tilelayers() {
 		//ob_start();
 
 		assert(count($this->ts_imgs)==count($this->map->tilesets)) or die('tilesets not loaded.');
 
-		foreach($this->map->layers as $index=>$ly) {
+		foreach($this->map->tilelayers as $index=>$ly) {
 			//break;
 			if(strlen($ly->name)>0&&in_array($ly->name, $_SESSION['layers_nodraw'])) continue;
 			for($j=0;$j<$ly->height;++$j) {
@@ -204,7 +204,7 @@ class Viewer {
 						else {
 							image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx*$this->zoom, $dy*$this->zoom, $sx, $sy, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
 						}
-						$this->draw_inside_layer($index, $ly->name, $j, $i);
+						$this->draw_inside_tilelayer($index, $ly->name, $j, $i);
 					}
 					elseif($this->map->orientation=='isometric') {
 						$dx=(($this->map->width-1+$i-$j)*$this->map->tilewidth/2);

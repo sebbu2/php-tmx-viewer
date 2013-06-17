@@ -9,7 +9,7 @@ class Tileset extends TilesetBase {
 	use properties, idproperties;
 };
 
-class Layer extends LayerBase {
+class TileLayer extends TileLayerBase {
 	use properties;
 };
 

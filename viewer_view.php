@@ -14,7 +14,7 @@ require_once('map.php');
 
 require_once('tileset.php');
 
-require_once('layer.php');
+require_once('tilelayer.php');
 
 require_once('compat.php');
 

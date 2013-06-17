@@ -2,7 +2,7 @@
 
 require_once('properties.php');
 require_once('tileset.php');
-require_once('layer.php');
+require_once('tilelayer.php');
 require_once('objectlayer.php');
 require_once('imagelayer.php');
 
@@ -16,7 +16,7 @@ class MapBase {
 	public $tileheight=0;
 	public $backgroundcolor='';
 	public $tilesets=array();
-	public $layers=array();
+	public $tilelayers=array();
 	public $objectlayers=array();
 	public $imagelayers=array();
 	public $filename='';
@@ -82,13 +82,13 @@ class MapBase {
 		return $i;
 	}
 
-	private function load_layers() {
+	private function load_tilelayers() {
 		$i=0;
 		foreach($this->xml->layer as $ly) {
-			$this->layers[$i]=new Layer();
-			$this->layers[$i]->setMap($this);
-			$this->layers[$i]->ref=$this->ref;
-			$this->layers[$i]->load_from_element($ly, $this->ref);
+			$this->tilelayers[$i]=new TileLayer();
+			$this->tilelayers[$i]->setMap($this);
+			$this->tilelayers[$i]->ref=$this->ref;
+			$this->tilelayers[$i]->load_from_element($ly, $this->ref);
 			++$i;
 		}
 		return $i;
@@ -135,7 +135,7 @@ class MapBase {
 			$this->loadProperties_from_element($this->xml->properties, $ref);
 		}
 		$this->load_tilesets();
-		$this->load_layers();
+		$this->load_tilelayers();
 		$this->load_objectlayers();
 		$this->load_imagelayers();
 		return $this->xml;
@@ -197,9 +197,9 @@ class MapBase {
 				throw $ex;
 			}
 		}
-		foreach($this->layers as $i=>$ly) {
-			if(!($ly instanceof Layer)) {
-				throw new Exception('Incorrect map layer.');
+		foreach($this->tilelayers as $i=>$ly) {
+			if(!($ly instanceof TileLayer)) {
+				throw new Exception('Incorrect map tilelayer.');
 				return false;
 			}
 			try {

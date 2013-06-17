@@ -4,7 +4,7 @@ require_once('properties.php');
 require_once('map.php');
 require_once('tileset.php');
 
-class LayerBase {
+class TileLayerBase {
 	//attributes
 	public $name='';
 	public $x=0;
@@ -114,35 +114,35 @@ class LayerBase {
 
 	public function isValid() {
 		if(!is_string($this->name)) {
-			throw new Exception('Incorrect layer name.');
+			throw new Exception('Incorrect tilelayer name.');
 			return false;
 		}
 		if(!is_int($this->x)) {
-			throw new Exception('Incorrect layer x value.');
+			throw new Exception('Incorrect tilelayer x value.');
 			return false;
 		}
 		if(!is_int($this->y)) {
-			throw new Exception('Incorrect layer y value.');
+			throw new Exception('Incorrect tilelayer y value.');
 			return false;
 		}
 		if(!is_int($this->width ) || $this->width <0) {
-			throw new Exception('Incorrect layer width .');
+			throw new Exception('Incorrect tilelayer width .');
 			return false;
 		}
 		if(!is_int($this->height) || $this->height<0) {
-			throw new Exception('Incorrect layer height.');
+			throw new Exception('Incorrect tilelayer height.');
 			return false;
 		}
 		if(!is_int($this->visible) || ($this->visible!=0 && $this->visible!=1)) {
-			throw new Exception('Incorrect layer visible.');
+			throw new Exception('Incorrect tilelayer visible.');
 			return false;
 		}
 		if(!in_array($this->encoding, array('base64', 'csv', 'xml', 'none'))) {
-			throw new Exception('Incorrect layer encoding.');
+			throw new Exception('Incorrect tilelayer encoding.');
 			return false;
 		}
 		if(!in_array($this->compression, array('zlib', 'gzip', 'bz2', 'bzip2', 'none'))) {
-			throw new Exception('Incorrect layer compression.');
+			throw new Exception('Incorrect tilelayer compression.');
 			return false;
 		}
 		if($this->map!=NULL) {
@@ -150,7 +150,7 @@ class LayerBase {
 			//if( strlen($this->data) != (4*$this->map->width*$this->map->height) ) {
 			if( strlen($this->data) != (4*$this->width*$this->height) ) {
 				var_dump(strlen($this->data),4*$this->width*$this->height);
-				throw new Exception('Incorrect layer data.');
+				throw new Exception('Incorrect tilelayer data.');
 				return false;
 			}
 		}

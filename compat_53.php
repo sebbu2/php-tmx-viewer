@@ -38,7 +38,7 @@ class Tileset extends TilesetBase {
 	}
 };
 
-class Layer extends LayerBase {
+class TileLayer extends TileLayerBase {
 	private $_properties=array();
 	function __construct() {
 		if(method_exists(get_parent_class($this), '__construct')) {
