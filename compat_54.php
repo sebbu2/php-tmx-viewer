@@ -1,5 +1,6 @@
 <?php
 require_once('map.php');
+require_once('layer.php');
 
 class Map extends MapBase {
 	use properties;

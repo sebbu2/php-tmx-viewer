@@ -2,10 +2,11 @@
 
 require_once('properties.php');
 require_once('map.php');
+require_once('layer.php');
 require_once('tileset.php');
 require_once('object.php');
 
-class ObjectLayerBase {
+class ObjectLayerBase extends Layer {
 	//attributes
 	public $name='';
 	public $color='';

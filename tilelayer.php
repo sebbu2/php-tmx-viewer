@@ -2,9 +2,10 @@
 
 require_once('properties.php');
 require_once('map.php');
+require_once('layer.php');
 require_once('tileset.php');
 
-class TileLayerBase {
+class TileLayerBase extends Layer {
 	//attributes
 	public $name='';
 	public $x=0;

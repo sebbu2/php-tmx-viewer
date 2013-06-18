@@ -2,8 +2,9 @@
 
 require_once('properties.php');
 require_once('map.php');
+require_once('layer.php');
 
-class ImageLayerBase {
+class ImageLayerBase extends Layer {
 	//attributes
 	public $name='';
 	public $x=0;
