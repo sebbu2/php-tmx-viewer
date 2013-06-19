@@ -131,9 +131,7 @@ class Viewer {
 	}
 	
 	public function draw() {
-		$this->draw_tilelayers();
-		$this->draw_imagelayers();
-		$this->draw_objects();
+		return $this->draw_layers();
 	}
 	
 	public function draw_inside_tilelayer($li, $lname, $j, $i) {
@@ -152,192 +150,27 @@ class Viewer {
 		return false;
 	}
 	
-	public function draw_tilelayers() {
+	public function draw_layers() {
 		//ob_start();
 
 		assert(count($this->ts_imgs)==count($this->map->tilesets)) or die('tilesets not loaded.');
 
-		foreach($this->map->tilelayers as $index=>$ly) {
-			//break;
-			if(strlen($ly->name)>0&&in_array($ly->name, $_SESSION['layers_nodraw'])) continue;
-			for($j=0;$j<$ly->height;++$j) {
-				for($i=0;$i<$ly->width;++$i) {
-					$cgid=$ly->get_tile($j*$ly->width+$i);
-					if($cgid==0) continue;
-					$ti=$this->map->get_tileset_index($cgid);
-					if($ti==-1) {
-						var_dump($cgid);
-						die();
-					}
-					if(strlen($this->map->tilesets[$ti]->name)>0&&in_array($this->map->tilesets[$ti]->name, $_SESSION['tilesets_nodraw'])) continue;
-					$lid=$cgid-$this->map->tilesets[$ti]->firstgid;
-					//var_dump($lid);print('<br/>'."\n");continue;
-					$tx=$lid%($this->ts_largeur[$ti]);
-					$tx2=0;
-					if($this->map->tilesets[$ti]->spacing>0) $tx2+=$this->map->tilesets[$ti]->spacing*$tx;
-					if($this->map->tilesets[$ti]->margin>0) $tx2+=$this->map->tilesets[$ti]->margin;
-					$ty=(int)($lid/$this->ts_largeur[$ti]);
-					$ty2=0;
-					if($this->map->tilesets[$ti]->spacing>0) $ty2+=$this->map->tilesets[$ti]->spacing*$ty;
-					if($this->map->tilesets[$ti]->margin>0) $ty2+=$this->map->tilesets[$ti]->margin;
-					//var_dump($tx,$tx2,$ty,$ty2);die();
-					if($this->map->orientation=='orthogonal') {
-						$dx=$i*$this->map->tilewidth;
-						$dy2=($j+1)*$this->map->tileheight-$this->map->tilesets[$ti]->tileheight;
-							$dy=max($dy2, 0);
-						$sx=$tx2+$tx*$this->map->tilesets[$ti]->tilewidth;
-						$sy=$ty2+$ty*$this->map->tilesets[$ti]->tileheight;
-						$sw=$this->map->tilesets[$ti]->tilewidth;
-						$sh=$this->map->tilesets[$ti]->tileheight;
-						if($sx+$sw>imagesx($this->ts_imgs[$ti])) {
-							trigger_error('width exceeded.');
-						}
-						if($sy+$sh>imagesy($this->ts_imgs[$ti])) {
-							trigger_error('height exceeded.');
-						}
-						if($dy2 < 0) {
-							$sy-=$dy2;
-							$sh+=$dy2;
-						}
-						if($this->zoom==1) {
-							image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx, $dy, $sx, $sy, $sw, $sh);
-						}
-						else {
-							image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx*$this->zoom, $dy*$this->zoom, $sx, $sy, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
-						}
-						$this->draw_inside_tilelayer($index, $ly->name, $j, $i);
-					}
-					elseif($this->map->orientation=='isometric') {
-						$dx=(($this->map->width-1+$i-$j)*$this->map->tilewidth/2);
-						$dy2=($i+$j+1)*$this->map->tileheight/2-$this->map->tilesets[$ti]->tileheight/2;
-							$dy=max($dy2, 0);
-						$sx=$tx2+$tx*$this->map->tilesets[$ti]->tilewidth;
-						$sy=$ty2+$ty*$this->map->tilesets[$ti]->tileheight;
-						$sw=$this->map->tilesets[$ti]->tilewidth;
-						$sh=$this->map->tilesets[$ti]->tileheight;
-						if($sx+$sw>imagesx($this->ts_imgs[$ti])) {
-							trigger_error('width exceeded.');
-						}
-						if($sy+$sh>imagesy($this->ts_imgs[$ti])) {
-							trigger_error('height exceeded.');
-						}
-						if($dy2 < 0) {
-							//var_dump($dx, $dy2, $sx, $sy, $sw, $sh);echo '<br/>'."\r\n";
-							$sy+=abs($dy2);
-							$sh-=abs($dy2);
-							//var_dump($dx, $dy, $sx, $sy, $sw, $sh);echo '<br/>'."\r\n";
-							//die();
-						}
-						if($this->zoom==1) {
-							image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx, $dy, $sx, $sy, $sw, $sh);
-						}
-						else {
-							image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx*$this->zoom, $dy*$this->zoom, $sx, $sy, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
-						}
-						$this->draw_inside_layer($index, $ly->name, $j, $i);
-						//if($lid==1) break(3);
-					}
-				}
-			}
-		}
-	}
-	
-	public function draw_imagelayers() {
-		if($this->draw_imagelayers) {
-			foreach($this->map->imagelayers as $index=>$il) {
-				$img_=create_image_from(dirname($this->map->filename).'/'.$il->source);
-			if(function_exists('imageantialias')) {
-				imageantialias($img_, false);
-			}
-			//imagealphablending($img_, true);
-			imagealphablending($img_, false);
-				$transc=$il->trans;
-			$trans = imagecolorallocatealpha($img_, 255, 255, 255, 127);//transparent
-			//$trans = imagecolorallocatealpha($img_, 255, 255, 255, 0);//opaque
-			if((bool)$transc && $transc!='') {
-				$r=hexdec(substr($transc,0,2));
-				$g=hexdec(substr($transc,2,2));
-				$b=hexdec(substr($transc,4,2));
-				//var_dump($transc, $r, $g, $b);
-				$color = imagecolorallocatealpha($img_, $r, $g, $b, 0);//opaque
-				//var_dump(imagesx($img_), imagesy($this->ts_imgs[$i]));die();
-				my_transparent($img_, $r, $g, $b, $trans);
-				imagecolortransparent($img_, $color);
-			}
-				if($this->map->orientation=='orthogonal') {
-					$sw=min($il->width *$this->map->tilewidth , $this->map->width *$this->map->tilewidth , imagesx($img_));
-					$sh=min($il->height*$this->map->tileheight, $this->map->height*$this->map->tileheight, imagesy($img_));
-					if($this->zoom==1) {
-						image_copy_and_resize($this->img, $img_, $il->x, $il->y, 0, 0, $sw, $sh);
-					}
-					else {
-						image_copy_and_resize($this->img, $img_, $il->x*$this->zoom, $il->y*$this->zoom, 0, 0, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
-					}
-				}
-				elseif($this->map->orientation=='isometric') {
-					throw new Exception('image layer on isometric map not yet implemented.');
-				}
-				imagedestroy($img_);
-				unset($img_);
-				$img_=NULL;
-			}
-		}
-	}
-	
-	public function draw_objects() {
-		//die();
-		if($this->draw_objects) {
-			foreach($this->map->objectlayers as $index=>$ol) {
-				foreach($ol->getAllObjects() as $o) {
-					if($o->polygon || $o->polyline) {
-						imagerectangle($this->img, ($o->x-$o->getWidthL())*$this->zoom, ($o->y-$o->getHeightT())*$this->zoom,
-							($o->x + $o->getWidthR())*$this->zoom, ($o->y + $o->getHeightB())*$this->zoom,
-							$this->colors['ligra']);
-						if($o->polyline) {
-							assert(count($o->points)/2>1);
-							$x=($o->x+$o->points[0])*$this->zoom;
-							$y=($o->y+$o->points[1])*$this->zoom;
-							imagesetthickness($this->img, 2);
-							for($i=2;$i<count($o->points);$i+=2) {
-								imageline($this->img, $x, $y, ($o->x+$o->points[$i])*$this->zoom, ($o->y+$o->points[$i+1])*$this->zoom, $this->colors['green']);
-								$x=($o->x+$o->points[$i])*$this->zoom;
-								$y=($o->y+$o->points[$i+1])*$this->zoom;
-							}
-							imagesetthickness($this->img, 1);
-						}
-						else if($o->polygon) {
-							$ar=$o->points;
-							for($i=0;$i<count($ar);$i+=2) {
-								$ar[$i]*=$this->zoom;
-								$ar[$i]+=$o->x*$this->zoom;
-								$ar[$i+1]*=$this->zoom;
-								$ar[$i+1]+=$o->y*$this->zoom;
-							}
-							imagesetthickness($this->img, 2);
-							imagepolygon($this->img, $ar, count($ar)/2, $this->colors['green']);
-							imagesetthickness($this->img, 1);
-						}
-						else if($o->name!='') {
-							imagettftext($this->img, 10*$this->zoom, 0, ($o->x-$o->getWidthL())*$this->zoom, ($o->y-$o->getHeightT()-4)*$this->zoom, $this->colors['blue'], './courbd.ttf', $o->name);
-							//imagestring($this->img, 3, ($o->x-$o->getWidthL())*$this->zoom, ($o->y-$o->getHeightT()-16)*$this->zoom, $o->name, $this->colors['blue']);
-						}
-					}
-					elseif($o->ellipse) {
-						imagesetthickness($this->img, 2);
-						//imageellipse($this->img, $o->x+$o->width/2, $o->y+$o->height/2, $o->width, $o->height, $this->colors['purple']);//NOTE: doesn't work with setthickness, known bug (
-						imagearc($this->img, $o->x+$o->width/2, $o->y+$o->height/2, $o->width, $o->height, 0, 180, $this->colors['purple']);
-						imagearc($this->img, $o->x+$o->width/2, $o->y+$o->height/2, $o->width, $o->height, 180, 360, $this->colors['purple']);
-						imagesetthickness($this->img, 1);
-					}
-					elseif(is_int($o->gid)) {
-						$cgid=$o->gid;
+		foreach($this->map->layers as $index=>$ly) {
+			//var_dump($index, $ly);die();
+			if($ly instanceof TileLayer) {
+				$tl=$ly;
+				//break;
+				if(strlen($tl->name)>0&&in_array($tl->name, $_SESSION['layers_nodraw'])) continue;
+				for($j=0;$j<$tl->height;++$j) {
+					for($i=0;$i<$tl->width;++$i) {
+						$cgid=$tl->get_tile($j*$tl->width+$i);
 						if($cgid==0) continue;
 						$ti=$this->map->get_tileset_index($cgid);
 						if($ti==-1) {
 							var_dump($cgid);
 							die();
 						}
-						//if(strlen($this->map->tilesets[$ti]->name)>0&&in_array($this->map->tilesets[$ti]->name, $_SESSION['tilesets_nodraw'])) continue;
+						if(strlen($this->map->tilesets[$ti]->name)>0&&in_array($this->map->tilesets[$ti]->name, $_SESSION['tilesets_nodraw'])) continue;
 						$lid=$cgid-$this->map->tilesets[$ti]->firstgid;
 						//var_dump($lid);print('<br/>'."\n");continue;
 						$tx=$lid%($this->ts_largeur[$ti]);
@@ -350,8 +183,8 @@ class Viewer {
 						if($this->map->tilesets[$ti]->margin>0) $ty2+=$this->map->tilesets[$ti]->margin;
 						//var_dump($tx,$tx2,$ty,$ty2);die();
 						if($this->map->orientation=='orthogonal') {
-							$dx=$o->x;
-							$dy2=$o->y-$this->map->tilesets[$ti]->tileheight;;
+							$dx=$i*$this->map->tilewidth;
+							$dy2=($j+1)*$this->map->tileheight-$this->map->tilesets[$ti]->tileheight;
 								$dy=max($dy2, 0);
 							$sx=$tx2+$tx*$this->map->tilesets[$ti]->tilewidth;
 							$sy=$ty2+$ty*$this->map->tilesets[$ti]->tileheight;
@@ -373,20 +206,186 @@ class Viewer {
 							else {
 								image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx*$this->zoom, $dy*$this->zoom, $sx, $sy, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
 							}
+							$this->draw_inside_tilelayer($index, $tl->name, $j, $i);
 						}
-						//trigger_error('not yet implemented');
-					}
-					else {
-						imagesetthickness($this->img, 2);
-						imagerectangle($this->img, $o->x*$this->zoom, $o->y*$this->zoom, ($o->x + $o->width)*$this->zoom, ($o->y + $o->height)*$this->zoom, $this->colors['green']);
-						imagesetthickness($this->img, 1);
-						if($o->name!='') {
-							imagettftext($this->img, 10*$this->zoom, 0, $o->x*$this->zoom, ($o->y-4)*$this->zoom, $this->colors['blue'], './courbd.ttf', $o->name);
-							//imagestring($this->img, 3, $o->x*$this->zoom, ($o->y-16)*$this->zoom, $o->name, $this->colors['blue']);
+						elseif($this->map->orientation=='isometric') {
+							$dx=(($this->map->width-1+$i-$j)*$this->map->tilewidth/2);
+							$dy2=($i+$j+1)*$this->map->tileheight/2-$this->map->tilesets[$ti]->tileheight/2;
+								$dy=max($dy2, 0);
+							$sx=$tx2+$tx*$this->map->tilesets[$ti]->tilewidth;
+							$sy=$ty2+$ty*$this->map->tilesets[$ti]->tileheight;
+							$sw=$this->map->tilesets[$ti]->tilewidth;
+							$sh=$this->map->tilesets[$ti]->tileheight;
+							if($sx+$sw>imagesx($this->ts_imgs[$ti])) {
+								trigger_error('width exceeded.');
+							}
+							if($sy+$sh>imagesy($this->ts_imgs[$ti])) {
+								trigger_error('height exceeded.');
+							}
+							if($dy2 < 0) {
+								//var_dump($dx, $dy2, $sx, $sy, $sw, $sh);echo '<br/>'."\r\n";
+								$sy+=abs($dy2);
+								$sh-=abs($dy2);
+								//var_dump($dx, $dy, $sx, $sy, $sw, $sh);echo '<br/>'."\r\n";
+								//die();
+							}
+							if($this->zoom==1) {
+								image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx, $dy, $sx, $sy, $sw, $sh);
+							}
+							else {
+								image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx*$this->zoom, $dy*$this->zoom, $sx, $sy, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
+							}
+							$this->draw_inside_layer($index, $tl->name, $j, $i);
+							//if($lid==1) break(3);
 						}
 					}
 				}
 			}
+			elseif($ly instanceof ObjectLayer) {
+				//die();
+				$ol=$ly;
+				if($this->draw_objects) {
+					foreach($ol->getAllObjects() as $o) {
+						if($o->polygon || $o->polyline) {
+							imagerectangle($this->img, ($o->x-$o->getWidthL())*$this->zoom, ($o->y-$o->getHeightT())*$this->zoom,
+								($o->x + $o->getWidthR())*$this->zoom, ($o->y + $o->getHeightB())*$this->zoom,
+								$this->colors['ligra']);
+							if($o->polyline) {
+								assert(count($o->points)/2>1);
+								$x=($o->x+$o->points[0])*$this->zoom;
+								$y=($o->y+$o->points[1])*$this->zoom;
+								imagesetthickness($this->img, 2);
+								for($i=2;$i<count($o->points);$i+=2) {
+									imageline($this->img, $x, $y, ($o->x+$o->points[$i])*$this->zoom, ($o->y+$o->points[$i+1])*$this->zoom, $this->colors['green']);
+									$x=($o->x+$o->points[$i])*$this->zoom;
+									$y=($o->y+$o->points[$i+1])*$this->zoom;
+								}
+								imagesetthickness($this->img, 1);
+							}
+							else if($o->polygon) {
+								$ar=$o->points;
+								for($i=0;$i<count($ar);$i+=2) {
+									$ar[$i]*=$this->zoom;
+									$ar[$i]+=$o->x*$this->zoom;
+									$ar[$i+1]*=$this->zoom;
+									$ar[$i+1]+=$o->y*$this->zoom;
+								}
+								imagesetthickness($this->img, 2);
+								imagepolygon($this->img, $ar, count($ar)/2, $this->colors['green']);
+								imagesetthickness($this->img, 1);
+							}
+							else if($o->name!='') {
+								imagettftext($this->img, 10*$this->zoom, 0, ($o->x-$o->getWidthL())*$this->zoom, ($o->y-$o->getHeightT()-4)*$this->zoom, $this->colors['blue'], './courbd.ttf', $o->name);
+								//imagestring($this->img, 3, ($o->x-$o->getWidthL())*$this->zoom, ($o->y-$o->getHeightT()-16)*$this->zoom, $o->name, $this->colors['blue']);
+							}
+						}
+						elseif($o->ellipse) {
+							imagesetthickness($this->img, 2);
+							//imageellipse($this->img, $o->x+$o->width/2, $o->y+$o->height/2, $o->width, $o->height, $this->colors['purple']);//NOTE: doesn't work with setthickness, known bug (
+							imagearc($this->img, $o->x+$o->width/2, $o->y+$o->height/2, $o->width, $o->height, 0, 180, $this->colors['purple']);
+							imagearc($this->img, $o->x+$o->width/2, $o->y+$o->height/2, $o->width, $o->height, 180, 360, $this->colors['purple']);
+							imagesetthickness($this->img, 1);
+						}
+						elseif(is_int($o->gid)) {
+							$cgid=$o->gid;
+							if($cgid==0) continue;
+							$ti=$this->map->get_tileset_index($cgid);
+							if($ti==-1) {
+								var_dump($cgid);
+								die();
+							}
+							//if(strlen($this->map->tilesets[$ti]->name)>0&&in_array($this->map->tilesets[$ti]->name, $_SESSION['tilesets_nodraw'])) continue;
+							$lid=$cgid-$this->map->tilesets[$ti]->firstgid;
+							//var_dump($lid);print('<br/>'."\n");continue;
+							$tx=$lid%($this->ts_largeur[$ti]);
+							$tx2=0;
+							if($this->map->tilesets[$ti]->spacing>0) $tx2+=$this->map->tilesets[$ti]->spacing*$tx;
+							if($this->map->tilesets[$ti]->margin>0) $tx2+=$this->map->tilesets[$ti]->margin;
+							$ty=(int)($lid/$this->ts_largeur[$ti]);
+							$ty2=0;
+							if($this->map->tilesets[$ti]->spacing>0) $ty2+=$this->map->tilesets[$ti]->spacing*$ty;
+							if($this->map->tilesets[$ti]->margin>0) $ty2+=$this->map->tilesets[$ti]->margin;
+							//var_dump($tx,$tx2,$ty,$ty2);die();
+							if($this->map->orientation=='orthogonal') {
+								$dx=$o->x;
+								$dy2=$o->y-$this->map->tilesets[$ti]->tileheight;;
+									$dy=max($dy2, 0);
+								$sx=$tx2+$tx*$this->map->tilesets[$ti]->tilewidth;
+								$sy=$ty2+$ty*$this->map->tilesets[$ti]->tileheight;
+								$sw=$this->map->tilesets[$ti]->tilewidth;
+								$sh=$this->map->tilesets[$ti]->tileheight;
+								if($sx+$sw>imagesx($this->ts_imgs[$ti])) {
+									trigger_error('width exceeded.');
+								}
+								if($sy+$sh>imagesy($this->ts_imgs[$ti])) {
+									trigger_error('height exceeded.');
+								}
+								if($dy2 < 0) {
+									$sy-=$dy2;
+									$sh+=$dy2;
+								}
+								if($this->zoom==1) {
+									image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx, $dy, $sx, $sy, $sw, $sh);
+								}
+								else {
+									image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx*$this->zoom, $dy*$this->zoom, $sx, $sy, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
+								}
+							}
+							//trigger_error('not yet implemented');
+						}
+						else {
+							imagesetthickness($this->img, 2);
+							imagerectangle($this->img, $o->x*$this->zoom, $o->y*$this->zoom, ($o->x + $o->width)*$this->zoom, ($o->y + $o->height)*$this->zoom, $this->colors['green']);
+							imagesetthickness($this->img, 1);
+							if($o->name!='') {
+								imagettftext($this->img, 10*$this->zoom, 0, $o->x*$this->zoom, ($o->y-4)*$this->zoom, $this->colors['blue'], './courbd.ttf', $o->name);
+								//imagestring($this->img, 3, $o->x*$this->zoom, ($o->y-16)*$this->zoom, $o->name, $this->colors['blue']);
+							}
+						}
+					}
+				}
+			}
+			elseif($ly instanceof ImageLayer) {
+				if($this->draw_imagelayers) {
+					$il=$ly;
+					$img_=create_image_from(dirname($this->map->filename).'/'.$il->source);
+					if(function_exists('imageantialias')) {
+						imageantialias($img_, false);
+					}
+					//imagealphablending($img_, true);
+					imagealphablending($img_, false);
+						$transc=$il->trans;
+					$trans = imagecolorallocatealpha($img_, 255, 255, 255, 127);//transparent
+					//$trans = imagecolorallocatealpha($img_, 255, 255, 255, 0);//opaque
+					if((bool)$transc && $transc!='') {
+						$r=hexdec(substr($transc,0,2));
+						$g=hexdec(substr($transc,2,2));
+						$b=hexdec(substr($transc,4,2));
+						//var_dump($transc, $r, $g, $b);
+						$color = imagecolorallocatealpha($img_, $r, $g, $b, 0);//opaque
+						//var_dump(imagesx($img_), imagesy($this->ts_imgs[$i]));die();
+						my_transparent($img_, $r, $g, $b, $trans);
+						imagecolortransparent($img_, $color);
+					}
+					if($this->map->orientation=='orthogonal') {
+						$sw=min($il->width *$this->map->tilewidth , $this->map->width *$this->map->tilewidth , imagesx($img_));
+						$sh=min($il->height*$this->map->tileheight, $this->map->height*$this->map->tileheight, imagesy($img_));
+						if($this->zoom==1) {
+							image_copy_and_resize($this->img, $img_, $il->x, $il->y, 0, 0, $sw, $sh);
+						}
+						else {
+							image_copy_and_resize($this->img, $img_, $il->x*$this->zoom, $il->y*$this->zoom, 0, 0, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
+						}
+					}
+					elseif($this->map->orientation=='isometric') {
+						throw new Exception('image layer on isometric map not yet implemented.');
+					}
+					imagedestroy($img_);
+					unset($img_);
+					$img_=NULL;
+				}
+			}
+			unset($tl, $ol, $il);
 		}
 	}
 	

@@ -16,9 +16,7 @@ class MapBase {
 	public $tileheight=0;
 	public $backgroundcolor='';
 	public $tilesets=array();
-	public $tilelayers=array();
-	public $objectlayers=array();
-	public $imagelayers=array();
+	public $layers=array();
 	public $filename='';
 	private $xml=NULL;
 	public $ref='';
@@ -82,40 +80,49 @@ class MapBase {
 		return $i;
 	}
 
-	private function load_tilelayers() {
+	private function load_layers() {
 		$i=0;
-		foreach($this->xml->layer as $ly) {
-			$this->tilelayers[$i]=new TileLayer();
-			$this->tilelayers[$i]->setMap($this);
-			$this->tilelayers[$i]->ref=$this->ref;
-			$this->tilelayers[$i]->load_from_element($ly, $this->ref);
+		foreach($this->xml->children() as $ly) {
+			if( $ly->getName() === 'properties' || $ly->getName() === 'tileset' ) {
+				continue;
+			}
+			if($ly->getName() === 'layer') {
+				$this->load_tilelayer($i, $ly);
+			}
+			elseif($ly->getName() === 'objectgroup') {
+				$this->load_objectlayer($i, $ly);
+			}
+			elseif($ly->getName() === 'imagelayer') {
+				$this->load_imagelayer($i, $ly);
+			}
+			else {
+				throw new Exception('unknown element in xml file (from '.__FILE__.':'.__LINE__.')');
+				return false;
+			}
 			++$i;
 		}
 		return $i;
 	}
 	
-	private function load_imagelayers() {
-		$i=0;
-		foreach($this->xml->imagelayer as $il) {
-			$this->imagelayers[$i]=new ImageLayer();
-			$this->imagelayers[$i]->setMap($this);
-			$this->imagelayers[$i]->ref=$this->ref;
-			$this->imagelayers[$i]->load_from_element($il, $this->ref);
-			++$i;
-		}
-		return $i;
+	private function load_tilelayer($i, $tl) {
+		$this->layers[$i]=new TileLayer();
+		$this->layers[$i]->setMap($this);
+		$this->layers[$i]->ref=$this->ref;
+		$this->layers[$i]->load_from_element($tl, $this->ref);
 	}
 	
-	private function load_objectlayers() {
-		$i=0;
-		foreach($this->xml->objectgroup as $ol) {
-			$this->objectlayers[$i]=new ObjectLayer();
-			$this->objectlayers[$i]->setMap($this);
-			$this->objectlayers[$i]->ref=$this->ref;
-			$this->objectlayers[$i]->load_from_element($ol, $this->ref);
-			++$i;
-		}
-		return $i;
+	private function load_imagelayer($i, $il) {
+		$this->layers[$i]=new ImageLayer();
+		$this->layers[$i]->setMap($this);
+		$this->layers[$i]->ref=$this->ref;
+		$this->layers[$i]->load_from_element($il, $this->ref);
+	}
+	
+	private function load_objectlayer($i, $ol) {
+		$this->layers[$i]=new ObjectLayer();
+		$this->layers[$i]->setMap($this);
+		$this->layers[$i]->ref=$this->ref;
+		$this->layers[$i]->load_from_element($ol, $this->ref);
 	}
 
 	public function load($filename, $ref='') {
@@ -135,9 +142,7 @@ class MapBase {
 			$this->loadProperties_from_element($this->xml->properties, $ref);
 		}
 		$this->load_tilesets();
-		$this->load_tilelayers();
-		$this->load_objectlayers();
-		$this->load_imagelayers();
+		$this->load_layers();
 		return $this->xml;
 	}
 
@@ -197,42 +202,16 @@ class MapBase {
 				throw $ex;
 			}
 		}
-		foreach($this->tilelayers as $i=>$ly) {
-			if(!($ly instanceof TileLayer)) {
-				throw new Exception('Incorrect map tilelayer.');
+		foreach($this->layers as $i->$ly) {
+			if(!($ly instanceof Layer)) {
+				throw new Exception('Incorrect map element.');
 				return false;
 			}
 			try {
 				$ly->isValid();
 			}
 			catch(Exception $ex) {
-				print('Layer n°'.$i."\n");
-				throw $ex;
-			}
-		}
-		foreach($this->objectlayers as $i=>$ol) {
-			if(!($ol instanceof ObjectLayer)) {
-				throw new Exception('Incorrect map objectlayer.');
-				return false;
-			}
-			try {
-				$ol->isValid();
-			}
-			catch(Exception $ex) {
-				print('ObjectLayer n°'.$i."\n");
-				throw $ex;
-			}
-		}
-		foreach($this->imagelayers as $i=>$il) {
-			if(!($il instanceof ImageLayer)) {
-				throw new Exception('Incorrect map imagelayer.');
-				return false;
-			}
-			try {
-				$il->isValid();
-			}
-			catch(Exception $ex) {
-				print('ImageLayer n°'.$i."\n");
+				print('*Layer n°'.$i."\n");
 				throw $ex;
 			}
 		}
