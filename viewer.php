@@ -127,7 +127,17 @@ class Viewer {
 
 		$this->load_colors();
 		
-		imagefill($this->img, 0, 0, $this->colors['trans']);
+		if(strlen($this->map->backgroundcolor)>0) {
+			$r=hexdec(substr($this->map->backgroundcolor,0,2));
+			$g=hexdec(substr($this->map->backgroundcolor,2,2));
+			$b=hexdec(substr($this->map->backgroundcolor,4,2));
+			$color = imagecolorallocatealpha($this->img, $r, $g, $b, 0);//opaque
+			imagefill($this->img, 0, 0, $color);
+			unset($r,$g,$b,$color);
+		}
+		else {
+			imagefill($this->img, 0, 0, $this->colors['trans']);
+		}
 	}
 	
 	public function draw() {
