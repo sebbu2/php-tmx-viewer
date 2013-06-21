@@ -10,6 +10,8 @@ class TilesetBase {
 	public $name='';
 	public $tilewidth=0;
 	public $tileheight=0;
+	public $tileoffsetx=0;
+	public $tileoffsety=0;
 	public $margin=0;
 	public $spacing=0;
 	public $source='';
@@ -95,6 +97,8 @@ class TilesetBase {
 		$this->name=(string)$xml['name'];
 		$this->tilewidth =(int)$xml['tilewidth' ];
 		$this->tileheight=(int)$xml['tileheight'];
+		$this->tileoffsetx=(int)$xml->tileoffset['x'];
+		$this->tileoffsety=(int)$xml->tileoffset['y'];
 		$this->margin =(int)$xml['margin'];
 		$this->spacing=(int)$xml['spacing'];
 		$this->source=(string)$xml->image['source'];//
@@ -200,6 +204,14 @@ class TilesetBase {
 		}
 		if(!is_int($this->tileheight) || $this->tileheight<0) {
 			throw new Exception('Incorrect tileset height.');
+			return false;
+		}
+		if(!is_int($this->tileoffsetx )) {
+			throw new Exception('Incorrect tileset tileoffsetx.');
+			return false;
+		}
+		if(!is_int($this->tileoffsety )) {
+			throw new Exception('Incorrect tileset tileoffsety .');
 			return false;
 		}
 		if(!is_int($this->margin) || $this->margin<0) {
