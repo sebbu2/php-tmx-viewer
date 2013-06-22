@@ -140,6 +140,23 @@ class TilesetBase {
 			foreach($xml->tile as $tile) {
 				assert(isset($tile['id']));
 				$this->tiles[(string)$tile['id']]=array();
+				if((bool)$tile->image!=false) {
+					if(isset($tile->image['format'])) {
+						$this->tiles[(string)$tile['id']]['imageformat']=(string)$tile->image['format'];
+					}
+					if((bool)$tile->image->data!=false && isset($tile->image->data['encoding'])) {
+						$this->tiles[(string)$tile['id']]['imageencoding']=(string)$tile->image->data['encoding'];
+					}
+					if((bool)$tile->image->data!=false && isset($tile->image->data['compression'])) {
+						$this->tiles[(string)$tile['id']]['imagecompression']=(string)$tile->image->data['compression'];
+					}
+					if((bool)$tile->image->data!=false && isset($tile->image->data[0])) {
+						$this->tiles[(string)$tile['id']]['imagecontent']=(string)$tile->image->data[0];
+					}
+					if(isset($tile->image['source'])) {
+						$this->tiles[(string)$tile['id']]['imagesource']=(string)$tile->image['source'];
+					}
+				}
 				//var_dump((string)$tile['id']);//die();
 				//var_dump((string)$tile['terrain']);die();
 				if(isset($tile['terrain'])) {
