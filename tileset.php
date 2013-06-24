@@ -153,8 +153,10 @@ class TilesetBase {
 					if((bool)$tile->image->data!=false && isset($tile->image->data[0])) {
 						$this->tiles[(string)$tile['id']]['imagecontent']=trim((string)$tile->image->data[0]);
 					}
-					if($this->tiles[(string)$tile['id']]['imageencoding']==='base64' && strlen($this->tiles[(string)$tile['id']]['imagecontent'])>0) {
-						$this->tiles[(string)$tile['id']]['imagecontent']=base64_decode($this->tiles[(string)$tile['id']]['imagecontent']);
+					if(strlen($this->tiles[(string)$tile['id']]['imagecontent'])>0) {
+						if( strlen($this->tiles[(string)$tile['id']]['imageencoding'])>0 && strlen($this->tiles[(string)$tile['id']]['imagecompression'])>0 ) {
+							$this->tiles[(string)$tile['id']]['imagecontent']=parse_data($this->tiles[(string)$tile['id']]['imagecontent'], $this->tiles[(string)$tile['id']]['imageencoding'], $this->tiles[(string)$tile['id']]['imagecompression']);
+						}
 					}
 					if(isset($tile->image['source'])) {
 						$this->tiles[(string)$tile['id']]['imagesource']=(string)$tile->image['source'];

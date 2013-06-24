@@ -38,61 +38,8 @@ class TileLayerBase extends Layer {
 		if((bool)$xml->properties!==false) {
 			$this->loadProperties_from_element($xml->properties, $ref);
 		}
-		$this->parse_data((string)trim($xml->data[0]));
-	}
-	
-	public function parse_data($data) {
-		if($this->encoding=='base64') {
-			$this->data=base64_decode($data);
-		}
-		else if($this->encoding=='csv') {
-			$data2=explode(chr(10),$data);
-			//var_dump(count($data2),$height);
-			assert(count($data2)==$height);
-			$data3=array();
-			$i=0;
-			foreach($data2 as $line) {
-				$data3[$i]=explode(',',$line);
-				//var_dump(count($data3[$i]),$width);
-				if(count($data3[$i])>$width) {
-					assert($data3[$i][$width]=='') or die('error2');
-					array_pop($data3[$i]);
-				}
-				assert(count($data3[$i])==$width) or die('error');
-				++$i;
-			}
-			unset($line,$data2);
-			foreach($data3 as $row) {
-				foreach($row as $gid) {
-					$this->data.=pack('V', $gid);
-				}
-			}
-			unset($gid,$row,$data3);
-		}
-		else {
-			$this->data=$data;
-		}
-		switch(strtolower($this->compression)) {
-			case 'zlib':
-				//$data=gzuncompress($data, $height*$width*4);
-				$this->data=gzuncompress($this->data);
-				break;
-			case 'gzip':
-				//$data=gzuncompress($data, $height*$width*4);
-				//$this->data=gzuncompress($this->data);
-				//$this->data=gzinflate($this->data);
-				//$this->data=softcoded_gzdecode($this->data);
-				$this->data=gzdecode($this->data);
-				break;
-			case 'bzip2':
-			case 'bz2':
-				$this->data=bzdecompress($this->data);
-				break;
-			case 'none':
-			default:
-				break;
-		}
-		//
+		//$this->parse_data((string)trim($xml->data[0]));
+		$this->data=parse_data((string)trim($xml->data[0]), $this->encoding, $this->compression);
 	}
 
 	public function get_tile($index) {

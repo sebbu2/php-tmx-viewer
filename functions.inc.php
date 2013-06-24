@@ -66,4 +66,51 @@ function my_transparent($img, $r, $g, $b, $trans) {
 	}
 }
 
+function parse_data($data, $encoding='', $compression='') {
+	if($encoding=='base64') {
+		$data=base64_decode($data);
+	}
+	else if($encoding=='csv') {
+		$data2=explode(chr(10),$data);
+		//var_dump(count($data2));
+		$data3=array();
+		$i=0;
+		foreach($data2 as $line) {
+			$line=trim($line, ' \t\n\r\0\x0B,');
+			$data3[$i]=explode(',',$line);
+			//var_dump(count($data3[$i]));
+			++$i;
+		}
+		unset($line,$data2);
+		foreach($data3 as $row) {
+			foreach($row as $gid) {
+				$data.=pack('V', $gid);
+			}
+		}
+		unset($gid,$row,$data3);
+	}
+	else {
+		//$data=$data;
+	}
+	switch(strtolower($compression)) {
+		case 'zlib':
+			$data=gzuncompress($data);
+			break;
+		case 'gzip':
+			//$data=gzuncompress($data);
+			//$data=gzinflate($data);
+			//$data=softcoded_gzdecode($data);
+			$data=gzdecode($data);
+			break;
+		case 'bzip2':
+		case 'bz2':
+			$data=bzdecompress($data);
+			break;
+		case 'none':
+		default:
+			break;
+	}
+	return $data;
+}
+
 ?>
