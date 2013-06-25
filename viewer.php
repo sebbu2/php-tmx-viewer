@@ -144,10 +144,100 @@ class Viewer {
 		return $this->draw_layers();
 	}
 	
-	public function draw_inside_tilelayer($li, $lname, $j, $i) {
+	private function draw_tile(&$ly, $cgid, $i=NULL, $j=NULL, &$o=NULL) {
+		if($cgid==0) return;
+		$ti=$this->map->get_tileset_index($cgid);
+		if($ti==-1) {
+			var_dump($cgid);
+			die();
+		}
+		if(!is_object($o)) {
+			if(strlen($this->map->tilesets[$ti]->name)>0&&in_array($this->map->tilesets[$ti]->name, $_SESSION['tilesets_nodraw'])) return;
+		}
+		$lid=$cgid-$this->map->tilesets[$ti]->firstgid;
+		//var_dump($lid);print('<br/>'."\n");return;
+		$tx=$lid%($this->ts_largeur[$ti]);
+		$tx2=0;
+		if($this->map->tilesets[$ti]->spacing>0) $tx2+=$this->map->tilesets[$ti]->spacing*$tx;
+		if($this->map->tilesets[$ti]->margin>0) $tx2+=$this->map->tilesets[$ti]->margin;
+		$ty=(int)($lid/$this->ts_largeur[$ti]);
+		$ty2=0;
+		if($this->map->tilesets[$ti]->spacing>0) $ty2+=$this->map->tilesets[$ti]->spacing*$ty;
+		if($this->map->tilesets[$ti]->margin>0) $ty2+=$this->map->tilesets[$ti]->margin;
+		//var_dump($tx,$tx2,$ty,$ty2);die();
+		if($this->map->orientation=='orthogonal') {
+			if(is_object($o)) {
+				$dx=$o->x;
+				$dy2=$o->y-$this->map->tilesets[$ti]->tileheight;
+			}
+			else {
+				$dx=$i*$this->map->tilewidth;
+				$dy2=($j+1)*$this->map->tileheight-$this->map->tilesets[$ti]->tileheight;
+			}
+				$dy=max($dy2, 0);
+			$sx=$tx2+$tx*$this->map->tilesets[$ti]->tilewidth;
+			$sy=$ty2+$ty*$this->map->tilesets[$ti]->tileheight;
+			$sw=$this->map->tilesets[$ti]->tilewidth;
+			$sh=$this->map->tilesets[$ti]->tileheight;
+			if($sx+$sw>imagesx($this->ts_imgs[$ti])) {
+				trigger_error('width exceeded.');
+			}
+			if($sy+$sh>imagesy($this->ts_imgs[$ti])) {
+				trigger_error('height exceeded.');
+			}
+			if($dy2 < 0) {
+				$sy-=$dy2;
+				$sh+=$dy2;
+			}
+			if($this->zoom==1) {
+				image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx, $dy, $sx, $sy, $sw, $sh);
+			}
+			else {
+				image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx*$this->zoom, $dy*$this->zoom, $sx, $sy, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
+			}
+			if(!is_object($o)) $this->draw_inside_tilelayer($ly, $j, $i);
+		}
+		elseif($this->map->orientation=='isometric') {
+			if(is_object($o)) {
+				trigger_error('not yet implemented');
+			}
+			else {
+				$dx=(($this->map->width-1+$i-$j)*$this->map->tilewidth/2);
+				$dy2=($i+$j+1)*$this->map->tileheight/2-$this->map->tilesets[$ti]->tileheight/2;
+			}
+				$dy=max($dy2, 0);
+			$sx=$tx2+$tx*$this->map->tilesets[$ti]->tilewidth;
+			$sy=$ty2+$ty*$this->map->tilesets[$ti]->tileheight;
+			$sw=$this->map->tilesets[$ti]->tilewidth;
+			$sh=$this->map->tilesets[$ti]->tileheight;
+			if($sx+$sw>imagesx($this->ts_imgs[$ti])) {
+				trigger_error('width exceeded.');
+			}
+			if($sy+$sh>imagesy($this->ts_imgs[$ti])) {
+				trigger_error('height exceeded.');
+			}
+			if($dy2 < 0) {
+				//var_dump($dx, $dy2, $sx, $sy, $sw, $sh);echo '<br/>'."\r\n";
+				$sy+=abs($dy2);
+				$sh-=abs($dy2);
+				//var_dump($dx, $dy, $sx, $sy, $sw, $sh);echo '<br/>'."\r\n";
+				//die();
+			}
+			if($this->zoom==1) {
+				image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx, $dy, $sx, $sy, $sw, $sh);
+			}
+			else {
+				image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx*$this->zoom, $dy*$this->zoom, $sx, $sy, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
+			}
+			if(!is_object($o)) $this->draw_inside_tilelayer($ly, $j, $i);
+			//if($lid==1) break(3);
+		}
+		//trigger_error('not yet implemented');
+	}
+	
+	public function draw_inside_tilelayer(Layer $ly, $j, $i) {
 	/*
-	li	tile layer index
-	lname	tile layer name
+	ly	layer
 	j	row
 	i	col
 	*/
@@ -174,80 +264,7 @@ class Viewer {
 				for($j=0;$j<$tl->height;++$j) {
 					for($i=0;$i<$tl->width;++$i) {
 						$cgid=$tl->get_tile($j*$tl->width+$i);
-						if($cgid==0) continue;
-						$ti=$this->map->get_tileset_index($cgid);
-						if($ti==-1) {
-							var_dump($cgid);
-							die();
-						}
-						if(strlen($this->map->tilesets[$ti]->name)>0&&in_array($this->map->tilesets[$ti]->name, $_SESSION['tilesets_nodraw'])) continue;
-						$lid=$cgid-$this->map->tilesets[$ti]->firstgid;
-						//var_dump($lid);print('<br/>'."\n");continue;
-						$tx=$lid%($this->ts_largeur[$ti]);
-						$tx2=0;
-						if($this->map->tilesets[$ti]->spacing>0) $tx2+=$this->map->tilesets[$ti]->spacing*$tx;
-						if($this->map->tilesets[$ti]->margin>0) $tx2+=$this->map->tilesets[$ti]->margin;
-						$ty=(int)($lid/$this->ts_largeur[$ti]);
-						$ty2=0;
-						if($this->map->tilesets[$ti]->spacing>0) $ty2+=$this->map->tilesets[$ti]->spacing*$ty;
-						if($this->map->tilesets[$ti]->margin>0) $ty2+=$this->map->tilesets[$ti]->margin;
-						//var_dump($tx,$tx2,$ty,$ty2);die();
-						if($this->map->orientation=='orthogonal') {
-							$dx=$i*$this->map->tilewidth;
-							$dy2=($j+1)*$this->map->tileheight-$this->map->tilesets[$ti]->tileheight;
-								$dy=max($dy2, 0);
-							$sx=$tx2+$tx*$this->map->tilesets[$ti]->tilewidth;
-							$sy=$ty2+$ty*$this->map->tilesets[$ti]->tileheight;
-							$sw=$this->map->tilesets[$ti]->tilewidth;
-							$sh=$this->map->tilesets[$ti]->tileheight;
-							if($sx+$sw>imagesx($this->ts_imgs[$ti])) {
-								trigger_error('width exceeded.');
-							}
-							if($sy+$sh>imagesy($this->ts_imgs[$ti])) {
-								trigger_error('height exceeded.');
-							}
-							if($dy2 < 0) {
-								$sy-=$dy2;
-								$sh+=$dy2;
-							}
-							if($this->zoom==1) {
-								image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx, $dy, $sx, $sy, $sw, $sh);
-							}
-							else {
-								image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx*$this->zoom, $dy*$this->zoom, $sx, $sy, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
-							}
-							$this->draw_inside_tilelayer($index, $tl->name, $j, $i);
-						}
-						elseif($this->map->orientation=='isometric') {
-							$dx=(($this->map->width-1+$i-$j)*$this->map->tilewidth/2);
-							$dy2=($i+$j+1)*$this->map->tileheight/2-$this->map->tilesets[$ti]->tileheight/2;
-								$dy=max($dy2, 0);
-							$sx=$tx2+$tx*$this->map->tilesets[$ti]->tilewidth;
-							$sy=$ty2+$ty*$this->map->tilesets[$ti]->tileheight;
-							$sw=$this->map->tilesets[$ti]->tilewidth;
-							$sh=$this->map->tilesets[$ti]->tileheight;
-							if($sx+$sw>imagesx($this->ts_imgs[$ti])) {
-								trigger_error('width exceeded.');
-							}
-							if($sy+$sh>imagesy($this->ts_imgs[$ti])) {
-								trigger_error('height exceeded.');
-							}
-							if($dy2 < 0) {
-								//var_dump($dx, $dy2, $sx, $sy, $sw, $sh);echo '<br/>'."\r\n";
-								$sy+=abs($dy2);
-								$sh-=abs($dy2);
-								//var_dump($dx, $dy, $sx, $sy, $sw, $sh);echo '<br/>'."\r\n";
-								//die();
-							}
-							if($this->zoom==1) {
-								image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx, $dy, $sx, $sy, $sw, $sh);
-							}
-							else {
-								image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx*$this->zoom, $dy*$this->zoom, $sx, $sy, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
-							}
-							$this->draw_inside_layer($index, $tl->name, $j, $i);
-							//if($lid==1) break(3);
-						}
+						$this->draw_tile($tl, $cgid, $i, $j);
 					}
 				}
 			}
@@ -298,50 +315,8 @@ class Viewer {
 						}
 						elseif(is_int($o->gid)) {
 							$cgid=$o->gid;
-							if($cgid==0) continue;
-							$ti=$this->map->get_tileset_index($cgid);
-							if($ti==-1) {
-								var_dump($cgid);
-								die();
-							}
-							//if(strlen($this->map->tilesets[$ti]->name)>0&&in_array($this->map->tilesets[$ti]->name, $_SESSION['tilesets_nodraw'])) continue;
-							$lid=$cgid-$this->map->tilesets[$ti]->firstgid;
-							//var_dump($lid);print('<br/>'."\n");continue;
-							$tx=$lid%($this->ts_largeur[$ti]);
-							$tx2=0;
-							if($this->map->tilesets[$ti]->spacing>0) $tx2+=$this->map->tilesets[$ti]->spacing*$tx;
-							if($this->map->tilesets[$ti]->margin>0) $tx2+=$this->map->tilesets[$ti]->margin;
-							$ty=(int)($lid/$this->ts_largeur[$ti]);
-							$ty2=0;
-							if($this->map->tilesets[$ti]->spacing>0) $ty2+=$this->map->tilesets[$ti]->spacing*$ty;
-							if($this->map->tilesets[$ti]->margin>0) $ty2+=$this->map->tilesets[$ti]->margin;
-							//var_dump($tx,$tx2,$ty,$ty2);die();
-							if($this->map->orientation=='orthogonal') {
-								$dx=$o->x;
-								$dy2=$o->y-$this->map->tilesets[$ti]->tileheight;;
-									$dy=max($dy2, 0);
-								$sx=$tx2+$tx*$this->map->tilesets[$ti]->tilewidth;
-								$sy=$ty2+$ty*$this->map->tilesets[$ti]->tileheight;
-								$sw=$this->map->tilesets[$ti]->tilewidth;
-								$sh=$this->map->tilesets[$ti]->tileheight;
-								if($sx+$sw>imagesx($this->ts_imgs[$ti])) {
-									trigger_error('width exceeded.');
-								}
-								if($sy+$sh>imagesy($this->ts_imgs[$ti])) {
-									trigger_error('height exceeded.');
-								}
-								if($dy2 < 0) {
-									$sy-=$dy2;
-									$sh+=$dy2;
-								}
-								if($this->zoom==1) {
-									image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx, $dy, $sx, $sy, $sw, $sh);
-								}
-								else {
-									image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx*$this->zoom, $dy*$this->zoom, $sx, $sy, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
-								}
-							}
-							//trigger_error('not yet implemented');
+							//var_dump($o);die();
+							$this->draw_tile($ol, $cgid, NULL, NULL, $o);
 						}
 						else {
 							imagesetthickness($this->img, 2);
