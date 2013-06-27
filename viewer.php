@@ -37,7 +37,15 @@ class Viewer {
 	public function load_ts() {
 		$this->ts_imgs=array();
 		foreach($this->map->tilesets as $i=>$ts) {
-			if( array_key_exists('ref', $_REQUEST) ) {
+			if( strlen($ts->source)==0 ) {
+				$this->ts_imgs[$i]=array();
+				foreach($ts->tiles as $id => $ar) {
+					if(is_int($id)) {
+						$this->ts_imgs[$i][]=imagecreatefromstring($ar['imagecontent']);
+					}
+				}
+			}
+			else if( array_key_exists('ref', $_REQUEST) ) {
 				//if( $_REQUEST['ref']=='tmw' ) {
 				if(array_key_exists($_REQUEST['ref'], Viewer::$urls)) {
 					$url=Viewer::$urls[$_REQUEST['ref']].dirname($this->map->filename).'/';
