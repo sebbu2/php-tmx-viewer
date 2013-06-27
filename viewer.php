@@ -41,7 +41,15 @@ class Viewer {
 				$this->ts_imgs[$i]=array();
 				foreach($ts->tiles as $id => $ar) {
 					if(is_int($id)) {
-						$this->ts_imgs[$i][]=imagecreatefromstring($ar['imagecontent']);
+						if(array_key_exists('imagecontent', $ar)) {
+							$this->ts_imgs[$i][$id]=imagecreatefromstring($ar['imagecontent']);
+						}
+						else if(array_key_exists('imagesource', $ar)) {
+							$this->ts_imgs[$i][$id]=create_image_from(dirname($this->map->filename).'/'.$ar['imagesource']);
+						}
+						else {
+							throw new Exception('Other format of multiple image tileset not implemented yet.');
+						}
 					}
 				}
 			}
