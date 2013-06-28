@@ -181,6 +181,10 @@ class Viewer {
 		if($this->map->tilesets[$ti]->spacing>0) $ty2+=$this->map->tilesets[$ti]->spacing*$ty;
 		if($this->map->tilesets[$ti]->margin>0) $ty2+=$this->map->tilesets[$ti]->margin;
 		//var_dump($tx,$tx2,$ty,$ty2);die();
+		$tsimg=$this->ts_imgs[$ti];
+		if(is_array($tsimg)) {
+			$tsimg=$tsimg[$lid];
+		}
 		if($this->map->orientation=='orthogonal') {
 			if(is_object($o)) {
 				$dx=$o->x;
@@ -206,10 +210,10 @@ class Viewer {
 				$sh+=$dy2;
 			}
 			if($this->zoom==1) {
-				image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx, $dy, $sx, $sy, $sw, $sh);
+				image_copy_and_resize($this->img, $tsimg, $dx, $dy, $sx, $sy, $sw, $sh);
 			}
 			else {
-				image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx*$this->zoom, $dy*$this->zoom, $sx, $sy, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
+				image_copy_and_resize($this->img, $tsimg, $dx*$this->zoom, $dy*$this->zoom, $sx, $sy, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
 			}
 			if(!is_object($o)) $this->draw_inside_tilelayer($ly, $j, $i);
 		}
@@ -240,10 +244,10 @@ class Viewer {
 				//die();
 			}
 			if($this->zoom==1) {
-				image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx, $dy, $sx, $sy, $sw, $sh);
+				image_copy_and_resize($this->img, $tsimg, $dx, $dy, $sx, $sy, $sw, $sh);
 			}
 			else {
-				image_copy_and_resize($this->img, $this->ts_imgs[$ti], $dx*$this->zoom, $dy*$this->zoom, $sx, $sy, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
+				image_copy_and_resize($this->img, $tsimg, $dx*$this->zoom, $dy*$this->zoom, $sx, $sy, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
 			}
 			if(!is_object($o)) $this->draw_inside_tilelayer($ly, $j, $i);
 			//if($lid==1) break(3);
