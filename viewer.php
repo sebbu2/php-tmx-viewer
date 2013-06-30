@@ -186,22 +186,28 @@ class Viewer {
 		if(is_array($tsimg)) {
 			$tsimg=$tsimg[$lid];
 			$multiple=true;
+			$tsw=imagesx($tsimg);
+			$tsh=imagesy($tsimg);
+		}
+		else {
+			$tsw=$this->map->tilesets[$ti]->tilewidth ;
+			$tsh=$this->map->tilesets[$ti]->tileheight;
 		}
 		if($this->map->orientation=='orthogonal') {
 			if(is_object($o)) {
 				$dx=$o->x;
-				$dy2=$o->y-$this->map->tilesets[$ti]->tileheight;
+				$dy2=$o->y-$tsh;
 			}
 			else {
 				$dx=$i*$this->map->tilewidth;
-				$dy2=($j+1)*$this->map->tileheight-$this->map->tilesets[$ti]->tileheight;
+				$dy2=($j+1)*$this->map->tileheight-$tsh;
 			}
 				$dy=max($dy2, 0);
 			if(!$multiple) {
-				$sx=$tx2+$tx*$this->map->tilesets[$ti]->tilewidth;
-				$sy=$ty2+$ty*$this->map->tilesets[$ti]->tileheight;
-				$sw=$this->map->tilesets[$ti]->tilewidth;
-				$sh=$this->map->tilesets[$ti]->tileheight;
+				$sx=$tx2+$tx*$tsw;
+				$sy=$ty2+$ty*$tsh;
+				$sw=$tsw;
+				$sh=$tsh;
 				if($sx+$sw>imagesx($tsimg)) {
 					trigger_error('width exceeded.');
 				}
@@ -233,14 +239,14 @@ class Viewer {
 			}
 			else {
 				$dx=(($this->map->width-1+$i-$j)*$this->map->tilewidth/2);
-				$dy2=($i+$j+1)*$this->map->tileheight/2-$this->map->tilesets[$ti]->tileheight/2;
+				$dy2=($i+$j+1)*$this->map->tileheight/2-$tsh/2;
 			}
 				$dy=max($dy2, 0);
 			if(!$multiple) {
-				$sx=$tx2+$tx*$this->map->tilesets[$ti]->tilewidth;
-				$sy=$ty2+$ty*$this->map->tilesets[$ti]->tileheight;
-				$sw=$this->map->tilesets[$ti]->tilewidth;
-				$sh=$this->map->tilesets[$ti]->tileheight;
+				$sx=$tx2+$tx*$tsw;
+				$sy=$ty2+$ty*$tsh;
+				$sw=$tsw;
+				$sh=$tsh;
 				if($sx+$sw>imagesx($this->ts_imgs[$ti])) {
 					trigger_error('width exceeded.');
 				}
