@@ -52,6 +52,9 @@ class Viewer {
 						}
 					}
 				}
+				//rest is... different or egal
+				throw new Exception('Miss transparency / antialias / alphablending on multiple image tilesets.');
+				return;
 			}
 			else if( array_key_exists('ref', $_REQUEST) ) {
 				//if( $_REQUEST['ref']=='tmw' ) {
@@ -215,8 +218,8 @@ class Viewer {
 					trigger_error('height exceeded.');
 				}
 				if($dy2 < 0) {
-					$sy-=$dy2;
-					$sh+=$dy2;
+					$sy+=abs($dy2);
+					$sh-=abs($dy2);
 				}
 			}
 			else {
