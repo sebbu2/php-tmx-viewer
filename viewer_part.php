@@ -118,14 +118,26 @@ if(!defined('DEBUG')||DEBUG!==true) {
 }
 //echo $data;
 $img=imagecreatefromstring($data);
+
 $sl=32;//left
 $sr=32;//right
+
 $st=32;//top
 $sb=32;//bottom
+
+$sw=320;//width
+$sh=240;//height
+
 $x=imagesx($img);
 $y=imagesy($img);
-$img2=imagecreatetruecolor($x-$sl-$sr, $y-$st-$sb);
-imagecopyresampled($img2, $img, 0, 0, $sl, $st, $x-$sl-$sr, $y-$st-$sb, $x-$sl-$sr, $y-$st-$sb);
+
+$sw=min($sw, $x-$sl);
+$sh=min($sh, $y-$st);
+
+//$img2=imagecreatetruecolor($x-$sl-$sr, $y-$st-$sb);
+$img2=imagecreatetruecolor($sw, $sh);
+//imagecopyresampled($img2, $img, 0, 0, $sl, $st, $x-$sl-$sr, $y-$st-$sb, $x-$sl-$sr, $y-$st-$sb);
+imagecopyresampled($img2, $img, 0, 0, $sl, $st, $sw, $sh, $sw, $sh);
 imagedestroy($img);
 imagepng($img2);
 imagedestroy($img2);
