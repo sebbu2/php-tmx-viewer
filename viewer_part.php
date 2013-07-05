@@ -128,6 +128,11 @@ $sb=32;//bottom
 $sw=320;//width
 $sh=240;//height
 
+if(array_key_exists('x', $_REQUEST)) $sl=(int)$_REQUEST['x'];
+if(array_key_exists('y', $_REQUEST)) $st=(int)$_REQUEST['y'];
+if(array_key_exists('w', $_REQUEST)) $sw=(int)$_REQUEST['w'];
+if(array_key_exists('h', $_REQUEST)) $sh=(int)$_REQUEST['h'];
+
 $x=imagesx($img);
 $y=imagesy($img);
 
