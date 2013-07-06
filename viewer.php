@@ -18,6 +18,8 @@ class Viewer {
 	private $ts_largeur=array();
 	private $colors=array();
 	public $zoom=1;
+	public $ox=0;
+	public $oy=0;
 	private static $urls=array(
 		'tmw'=>'https://raw.github.com/themanaworld/tmwa-client-data/master/',
 		'evol'=>'https://raw.github.com/EvolOnline/clientdata-beta/master/',
@@ -229,10 +231,10 @@ class Viewer {
 				$sh=imagesy($tsimg);
 			}
 			if($this->zoom==1) {
-				image_copy_and_resize($this->img, $tsimg, $dx, $dy, $sx, $sy, $sw, $sh);
+				image_copy_and_resize($this->img, $tsimg, $this->ox+$dx, $this->oy+$dy, $sx, $sy, $sw, $sh);
 			}
 			else {
-				image_copy_and_resize($this->img, $tsimg, $dx*$this->zoom, $dy*$this->zoom, $sx, $sy, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
+				image_copy_and_resize($this->img, $tsimg, $this->ox+$dx*$this->zoom, $this->oy+$dy*$this->zoom, $sx, $sy, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
 			}
 			if(!is_object($o)) $this->draw_inside_tilelayer($ly, $j, $i);
 		}
@@ -271,10 +273,10 @@ class Viewer {
 				//die();
 			}
 			if($this->zoom==1) {
-				image_copy_and_resize($this->img, $tsimg, $dx, $dy, $sx, $sy, $sw, $sh);
+				image_copy_and_resize($this->img, $tsimg, $this->ox+$dx, $this->oy+$dy, $sx, $sy, $sw, $sh);
 			}
 			else {
-				image_copy_and_resize($this->img, $tsimg, $dx*$this->zoom, $dy*$this->zoom, $sx, $sy, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
+				image_copy_and_resize($this->img, $tsimg, $this->ox+$dx*$this->zoom, $this->oy+$dy*$this->zoom, $sx, $sy, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
 			}
 			if(!is_object($o)) $this->draw_inside_tilelayer($ly, $j, $i);
 			//if($lid==1) break(3);
@@ -321,8 +323,8 @@ class Viewer {
 				if($this->draw_objects) {
 					foreach($ol->getAllObjects() as $o) {
 						if($o->polygon || $o->polyline) {
-							imagerectangle($this->img, ($o->x-$o->getWidthL())*$this->zoom, ($o->y-$o->getHeightT())*$this->zoom,
-								($o->x + $o->getWidthR())*$this->zoom, ($o->y + $o->getHeightB())*$this->zoom,
+							imagerectangle($this->img, $this->ox+($o->x-$o->getWidthL())*$this->zoom, $this->oy+($o->y-$o->getHeightT())*$this->zoom,
+								$this->ox+($o->x + $o->getWidthR())*$this->zoom, $this->oy+($o->y + $o->getHeightB())*$this->zoom,
 								$this->colors['ligra']);
 							if($o->polyline) {
 								assert(count($o->points)/2>1);
@@ -330,7 +332,7 @@ class Viewer {
 								$y=($o->y+$o->points[1])*$this->zoom;
 								imagesetthickness($this->img, 2);
 								for($i=2;$i<count($o->points);$i+=2) {
-									imageline($this->img, $x, $y, ($o->x+$o->points[$i])*$this->zoom, ($o->y+$o->points[$i+1])*$this->zoom, $this->colors['green']);
+									imageline($this->img, $this->ox+$x, $this->oy+$y, $this->ox+($o->x+$o->points[$i])*$this->zoom, $this->oy+($o->y+$o->points[$i+1])*$this->zoom, $this->colors['green']);
 									$x=($o->x+$o->points[$i])*$this->zoom;
 									$y=($o->y+$o->points[$i+1])*$this->zoom;
 								}
@@ -343,21 +345,23 @@ class Viewer {
 									$ar[$i]+=$o->x*$this->zoom;
 									$ar[$i+1]*=$this->zoom;
 									$ar[$i+1]+=$o->y*$this->zoom;
+									$ar[$i]+=$this->ox;
+									$ar[$i+1]+=$this->oy;
 								}
 								imagesetthickness($this->img, 2);
 								imagepolygon($this->img, $ar, count($ar)/2, $this->colors['green']);
 								imagesetthickness($this->img, 1);
 							}
 							else if($o->name!='') {
-								imagettftext($this->img, 10*$this->zoom, 0, ($o->x-$o->getWidthL())*$this->zoom, ($o->y-$o->getHeightT()-4)*$this->zoom, $this->colors['blue'], './courbd.ttf', $o->name);
-								//imagestring($this->img, 3, ($o->x-$o->getWidthL())*$this->zoom, ($o->y-$o->getHeightT()-16)*$this->zoom, $o->name, $this->colors['blue']);
+								imagettftext($this->img, 10*$this->zoom, 0, $this->ox+($o->x-$o->getWidthL())*$this->zoom, $this->oy+($o->y-$o->getHeightT()-4)*$this->zoom, $this->colors['blue'], './courbd.ttf', $o->name);
+								//imagestring($this->img, 3, $this->ox+($o->x-$o->getWidthL())*$this->zoom, $this->oy+($o->y-$o->getHeightT()-16)*$this->zoom, $o->name, $this->colors['blue']);
 							}
 						}
 						elseif($o->ellipse) {
 							imagesetthickness($this->img, 2);
-							//imageellipse($this->img, $o->x+$o->width/2, $o->y+$o->height/2, $o->width, $o->height, $this->colors['purple']);//NOTE: doesn't work with setthickness, known bug (
-							imagearc($this->img, $o->x+$o->width/2, $o->y+$o->height/2, $o->width, $o->height, 0, 180, $this->colors['purple']);
-							imagearc($this->img, $o->x+$o->width/2, $o->y+$o->height/2, $o->width, $o->height, 180, 360, $this->colors['purple']);
+							//imageellipse($this->img, $this->ox+$o->x+$o->width/2, $this->oy+$o->y+$o->height/2, $o->width, $o->height, $this->colors['purple']);//NOTE: doesn't work with setthickness, known bug (
+							imagearc($this->img, $this->ox+$o->x+$o->width/2, $this->oy+$o->y+$o->height/2, $o->width, $o->height, 0, 180, $this->colors['purple']);
+							imagearc($this->img, $this->ox+$o->x+$o->width/2, $this->oy+$o->y+$o->height/2, $o->width, $o->height, 180, 360, $this->colors['purple']);
 							imagesetthickness($this->img, 1);
 						}
 						elseif(is_int($o->gid)) {
@@ -367,11 +371,11 @@ class Viewer {
 						}
 						else {
 							imagesetthickness($this->img, 2);
-							imagerectangle($this->img, $o->x*$this->zoom, $o->y*$this->zoom, ($o->x + $o->width)*$this->zoom, ($o->y + $o->height)*$this->zoom, $this->colors['green']);
+							imagerectangle($this->img, $this->ox+$o->x*$this->zoom, $this->oy+$o->y*$this->zoom, $this->ox+($o->x + $o->width)*$this->zoom, $this->oy+($o->y + $o->height)*$this->zoom, $this->colors['green']);
 							imagesetthickness($this->img, 1);
 							if($o->name!='') {
-								imagettftext($this->img, 10*$this->zoom, 0, $o->x*$this->zoom, ($o->y-4)*$this->zoom, $this->colors['blue'], './courbd.ttf', $o->name);
-								//imagestring($this->img, 3, $o->x*$this->zoom, ($o->y-16)*$this->zoom, $o->name, $this->colors['blue']);
+								imagettftext($this->img, 10*$this->zoom, 0, $this->ox+$o->x*$this->zoom, $this->oy+($o->y-4)*$this->zoom, $this->colors['blue'], './courbd.ttf', $o->name);
+								//imagestring($this->img, 3, $this->ox+$o->x*$this->zoom, $this->oy+($o->y-16)*$this->zoom, $o->name, $this->colors['blue']);
 							}
 						}
 					}
@@ -403,10 +407,10 @@ class Viewer {
 						$sw=min($il->width *$this->map->tilewidth , $this->map->width *$this->map->tilewidth , imagesx($img_));
 						$sh=min($il->height*$this->map->tileheight, $this->map->height*$this->map->tileheight, imagesy($img_));
 						if($this->zoom==1) {
-							image_copy_and_resize($this->img, $img_, $il->x, $il->y, 0, 0, $sw, $sh);
+							image_copy_and_resize($this->img, $img_, $this->ox+$il->x, $this->oy+$il->y, 0, 0, $sw, $sh);
 						}
 						else {
-							image_copy_and_resize($this->img, $img_, $il->x*$this->zoom, $il->y*$this->zoom, 0, 0, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
+							image_copy_and_resize($this->img, $img_, $this->ox+$il->x*$this->zoom, $this->oy+$il->y*$this->zoom, 0, 0, $sw*$this->zoom, $sh*$this->zoom, $sw, $sh);
 						}
 					}
 					elseif($this->map->orientation=='isometric') {
