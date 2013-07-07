@@ -299,7 +299,17 @@ class Viewer {
 		return false;
 	}
 	
-	public function draw_layers() {
+	public function draw_tilelayer($tl, $x, $y, $w, $h) {
+		if(strlen($tl->name)>0&&in_array($tl->name, $_SESSION['layers_nodraw'])) continue;
+		for($j=$y;$j<min($tl->height,$y+$h);++$j) {
+			for($i=$x;$i<min($tl->width,$x+$w);++$i) {
+				$cgid=$tl->get_tile($j*$tl->width+$i);
+				$this->draw_tile($tl, $cgid, $i, $j);
+			}
+		}
+	}
+	
+	public function draw_layers($x, $y, $w, $h) {
 		//ob_start();
 
 		assert(count($this->ts_imgs)==count($this->map->tilesets)) or die('tilesets not loaded.');
@@ -307,15 +317,8 @@ class Viewer {
 		foreach($this->map->layers as $index=>$ly) {
 			//var_dump($index, $ly);die();
 			if($ly instanceof TileLayer) {
-				$tl=$ly;
 				//break;
-				if(strlen($tl->name)>0&&in_array($tl->name, $_SESSION['layers_nodraw'])) continue;
-				for($j=0;$j<$tl->height;++$j) {
-					for($i=0;$i<$tl->width;++$i) {
-						$cgid=$tl->get_tile($j*$tl->width+$i);
-						$this->draw_tile($tl, $cgid, $i, $j);
-					}
-				}
+				draw_tilelayer($ly, $x, $y, $w, $h);
 			}
 			elseif($ly instanceof ObjectLayer) {
 				//die();
