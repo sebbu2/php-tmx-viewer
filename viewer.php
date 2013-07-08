@@ -299,8 +299,8 @@ class Viewer {
 		return false;
 	}
 	
-	public function draw_tilelayer($tl, $x, $y, $w, $h) {
-		if(strlen($tl->name)>0&&in_array($tl->name, $_SESSION['layers_nodraw'])) continue;
+	public function draw_tilelayer($tl, $x=0, $y=0, $w=PHP_INT_MAX, $h=PHP_INT_MAX) {
+		if(strlen($tl->name)>0&&in_array($tl->name, $_SESSION['layers_nodraw'])) return;
 		for($j=$y;$j<min($tl->height,$y+$h);++$j) {
 			for($i=$x;$i<min($tl->width,$x+$w);++$i) {
 				$cgid=$tl->get_tile($j*$tl->width+$i);
@@ -309,7 +309,70 @@ class Viewer {
 		}
 	}
 	
-	public function draw_layers($x, $y, $w, $h) {
+	public function draw_objectlayer($ol, $x=0, $y=0, $w=PHP_INT_MAX, $h=PHP_INT_MAX) {
+		if($this->draw_objects) {
+			foreach($ol->getAllObjects() as $o) {
+				if($o->polygon || $o->polyline) {
+					imagerectangle($this->img, $this->ox+($o->x-$o->getWidthL())*$this->zoom, $this->oy+($o->y-$o->getHeightT())*$this->zoom,
+						$this->ox+($o->x + $o->getWidthR())*$this->zoom, $this->oy+($o->y + $o->getHeightB())*$this->zoom,
+						$this->colors['ligra']);
+					if($o->polyline) {
+						assert(count($o->points)/2>1);
+						$x=($o->x+$o->points[0])*$this->zoom;
+						$y=($o->y+$o->points[1])*$this->zoom;
+						imagesetthickness($this->img, 2);
+						for($i=2;$i<count($o->points);$i+=2) {
+							imageline($this->img, $this->ox+$x, $this->oy+$y, $this->ox+($o->x+$o->points[$i])*$this->zoom, $this->oy+($o->y+$o->points[$i+1])*$this->zoom, $this->colors['green']);
+							$x=($o->x+$o->points[$i])*$this->zoom;
+							$y=($o->y+$o->points[$i+1])*$this->zoom;
+						}
+						imagesetthickness($this->img, 1);
+					}
+					else if($o->polygon) {
+						$ar=$o->points;
+						for($i=0;$i<count($ar);$i+=2) {
+							$ar[$i]*=$this->zoom;
+							$ar[$i]+=$o->x*$this->zoom;
+							$ar[$i+1]*=$this->zoom;
+							$ar[$i+1]+=$o->y*$this->zoom;
+							$ar[$i]+=$this->ox;
+							$ar[$i+1]+=$this->oy;
+						}
+						imagesetthickness($this->img, 2);
+						imagepolygon($this->img, $ar, count($ar)/2, $this->colors['green']);
+						imagesetthickness($this->img, 1);
+					}
+					else if($o->name!='') {
+						imagettftext($this->img, 10*$this->zoom, 0, $this->ox+($o->x-$o->getWidthL())*$this->zoom, $this->oy+($o->y-$o->getHeightT()-4)*$this->zoom, $this->colors['blue'], './courbd.ttf', $o->name);
+						//imagestring($this->img, 3, $this->ox+($o->x-$o->getWidthL())*$this->zoom, $this->oy+($o->y-$o->getHeightT()-16)*$this->zoom, $o->name, $this->colors['blue']);
+					}
+				}
+				elseif($o->ellipse) {
+					imagesetthickness($this->img, 2);
+					//imageellipse($this->img, $this->ox+$o->x+$o->width/2, $this->oy+$o->y+$o->height/2, $o->width, $o->height, $this->colors['purple']);//NOTE: doesn't work with setthickness, known bug (
+					imagearc($this->img, $this->ox+$o->x+$o->width/2, $this->oy+$o->y+$o->height/2, $o->width, $o->height, 0, 180, $this->colors['purple']);
+					imagearc($this->img, $this->ox+$o->x+$o->width/2, $this->oy+$o->y+$o->height/2, $o->width, $o->height, 180, 360, $this->colors['purple']);
+					imagesetthickness($this->img, 1);
+				}
+				elseif(is_int($o->gid)) {
+					$cgid=$o->gid;
+					//var_dump($o);die();
+					$this->draw_tile($ol, $cgid, NULL, NULL, $o);
+				}
+				else {
+					imagesetthickness($this->img, 2);
+					imagerectangle($this->img, $this->ox+$o->x*$this->zoom, $this->oy+$o->y*$this->zoom, $this->ox+($o->x + $o->width)*$this->zoom, $this->oy+($o->y + $o->height)*$this->zoom, $this->colors['green']);
+					imagesetthickness($this->img, 1);
+					if($o->name!='') {
+						imagettftext($this->img, 10*$this->zoom, 0, $this->ox+$o->x*$this->zoom, $this->oy+($o->y-4)*$this->zoom, $this->colors['blue'], './courbd.ttf', $o->name);
+						//imagestring($this->img, 3, $this->ox+$o->x*$this->zoom, $this->oy+($o->y-16)*$this->zoom, $o->name, $this->colors['blue']);
+					}
+				}
+			}
+		}
+	}
+	
+	public function draw_layers($x=0, $y=0, $w=PHP_INT_MAX, $h=PHP_INT_MAX) {
 		//ob_start();
 
 		assert(count($this->ts_imgs)==count($this->map->tilesets)) or die('tilesets not loaded.');
@@ -318,71 +381,12 @@ class Viewer {
 			//var_dump($index, $ly);die();
 			if($ly instanceof TileLayer) {
 				//break;
-				draw_tilelayer($ly, $x, $y, $w, $h);
+				$this->draw_tilelayer($ly, $x, $y, $w, $h);
 			}
 			elseif($ly instanceof ObjectLayer) {
 				//die();
 				$ol=$ly;
-				if($this->draw_objects) {
-					foreach($ol->getAllObjects() as $o) {
-						if($o->polygon || $o->polyline) {
-							imagerectangle($this->img, $this->ox+($o->x-$o->getWidthL())*$this->zoom, $this->oy+($o->y-$o->getHeightT())*$this->zoom,
-								$this->ox+($o->x + $o->getWidthR())*$this->zoom, $this->oy+($o->y + $o->getHeightB())*$this->zoom,
-								$this->colors['ligra']);
-							if($o->polyline) {
-								assert(count($o->points)/2>1);
-								$x=($o->x+$o->points[0])*$this->zoom;
-								$y=($o->y+$o->points[1])*$this->zoom;
-								imagesetthickness($this->img, 2);
-								for($i=2;$i<count($o->points);$i+=2) {
-									imageline($this->img, $this->ox+$x, $this->oy+$y, $this->ox+($o->x+$o->points[$i])*$this->zoom, $this->oy+($o->y+$o->points[$i+1])*$this->zoom, $this->colors['green']);
-									$x=($o->x+$o->points[$i])*$this->zoom;
-									$y=($o->y+$o->points[$i+1])*$this->zoom;
-								}
-								imagesetthickness($this->img, 1);
-							}
-							else if($o->polygon) {
-								$ar=$o->points;
-								for($i=0;$i<count($ar);$i+=2) {
-									$ar[$i]*=$this->zoom;
-									$ar[$i]+=$o->x*$this->zoom;
-									$ar[$i+1]*=$this->zoom;
-									$ar[$i+1]+=$o->y*$this->zoom;
-									$ar[$i]+=$this->ox;
-									$ar[$i+1]+=$this->oy;
-								}
-								imagesetthickness($this->img, 2);
-								imagepolygon($this->img, $ar, count($ar)/2, $this->colors['green']);
-								imagesetthickness($this->img, 1);
-							}
-							else if($o->name!='') {
-								imagettftext($this->img, 10*$this->zoom, 0, $this->ox+($o->x-$o->getWidthL())*$this->zoom, $this->oy+($o->y-$o->getHeightT()-4)*$this->zoom, $this->colors['blue'], './courbd.ttf', $o->name);
-								//imagestring($this->img, 3, $this->ox+($o->x-$o->getWidthL())*$this->zoom, $this->oy+($o->y-$o->getHeightT()-16)*$this->zoom, $o->name, $this->colors['blue']);
-							}
-						}
-						elseif($o->ellipse) {
-							imagesetthickness($this->img, 2);
-							//imageellipse($this->img, $this->ox+$o->x+$o->width/2, $this->oy+$o->y+$o->height/2, $o->width, $o->height, $this->colors['purple']);//NOTE: doesn't work with setthickness, known bug (
-							imagearc($this->img, $this->ox+$o->x+$o->width/2, $this->oy+$o->y+$o->height/2, $o->width, $o->height, 0, 180, $this->colors['purple']);
-							imagearc($this->img, $this->ox+$o->x+$o->width/2, $this->oy+$o->y+$o->height/2, $o->width, $o->height, 180, 360, $this->colors['purple']);
-							imagesetthickness($this->img, 1);
-						}
-						elseif(is_int($o->gid)) {
-							$cgid=$o->gid;
-							//var_dump($o);die();
-							$this->draw_tile($ol, $cgid, NULL, NULL, $o);
-						}
-						else {
-							imagesetthickness($this->img, 2);
-							imagerectangle($this->img, $this->ox+$o->x*$this->zoom, $this->oy+$o->y*$this->zoom, $this->ox+($o->x + $o->width)*$this->zoom, $this->oy+($o->y + $o->height)*$this->zoom, $this->colors['green']);
-							imagesetthickness($this->img, 1);
-							if($o->name!='') {
-								imagettftext($this->img, 10*$this->zoom, 0, $this->ox+$o->x*$this->zoom, $this->oy+($o->y-4)*$this->zoom, $this->colors['blue'], './courbd.ttf', $o->name);
-								//imagestring($this->img, 3, $this->ox+$o->x*$this->zoom, $this->oy+($o->y-16)*$this->zoom, $o->name, $this->colors['blue']);
-							}
-						}
-					}
-				}
+				$this->draw_objectlayer($ly, $x, $y, $w, $h);
 			}
 			elseif($ly instanceof ImageLayer) {
 				if($this->draw_imagelayers) {
