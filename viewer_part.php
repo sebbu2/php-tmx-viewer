@@ -119,6 +119,8 @@ if(array_key_exists('h',$_REQUEST)) {
 	$h=intval($_REQUEST['h']);
 }
 
+//var_dump($x, $y, $w, $h);die();
+
 $viewer->init_draw($x, $y, $w, $h);
 $viewer->draw($x, $y, $w, $h);
 
@@ -137,17 +139,17 @@ if(!defined('DEBUG')||DEBUG!==true) {
 	//header('Content-Type: image/jpeg'."\r\n");
 	header('Content-Type: image/png'."\r\n");
 }
-//echo $data;
+echo $data;die();
 $img=imagecreatefromstring($data);
 
-$sl=32;//left
-$sr=32;//right
+$sl=0;//left
+$sr=0;//right
 
-$st=32;//top
-$sb=32;//bottom
+$st=0;//top
+$sb=0;//bottom
 
-$sw=320;//width
-$sh=240;//height
+$sw=PHP_INT_MAX;//width
+$sh=PHP_INT_MAX;//height
 
 if(array_key_exists('x', $_REQUEST)) $sl=(int)$_REQUEST['x'];
 if(array_key_exists('y', $_REQUEST)) $st=(int)$_REQUEST['y'];
