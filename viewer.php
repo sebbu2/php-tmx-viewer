@@ -136,7 +136,7 @@ class Viewer {
 		$this->colors['violet']=imagecolorallocatealpha($this->img, 0, 128, 255, 0);//violet
 	}
 	
-	public function init_draw() {
+	public function init_draw($x=0, $y=0, $w=PHP_INT_MAX, $h=PHP_INT_MAX) {
 		$this->img=imagecreatetruecolor($this->map->width*$this->map->tilewidth*$this->zoom, $this->map->height*$this->map->tileheight*$this->zoom);
 		//$img=imagecreatetruecolor($width*$tilewidth/2, $height*$tileheight/2);
 		
@@ -161,8 +161,8 @@ class Viewer {
 		}
 	}
 	
-	public function draw() {
-		return $this->draw_layers();
+	public function draw($x=0, $y=0, $w=PHP_INT_MAX, $h=PHP_INT_MAX) {
+		return $this->draw_layers($x, $y, $w, $h);
 	}
 	
 	private function draw_tile(&$ly, $cgid, $i=NULL, $j=NULL, &$o=NULL) {

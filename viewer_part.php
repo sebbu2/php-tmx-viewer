@@ -98,8 +98,29 @@ if(array_key_exists('zoom',$_REQUEST)) {
 	assert($viewer->zoom>=0.1 && $viewer->zoom<=10) or die('bad zoom range');
 }
 
-$viewer->init_draw();
-$viewer->draw();
+$x=0;
+if(array_key_exists('x',$_REQUEST)) {
+	assert(is_numeric($_REQUEST['x'])) or die('bad x value');
+	$x=intval($_REQUEST['x']);
+}
+$y=0;
+if(array_key_exists('y',$_REQUEST)) {
+	assert(is_numeric($_REQUEST['y'])) or die('bad y value');
+	$y=intval($_REQUEST['y']);
+}
+$w=PHP_INT_MAX;
+if(array_key_exists('w',$_REQUEST)) {
+	assert(is_numeric($_REQUEST['w'])) or die('bad w value');
+	$w=intval($_REQUEST['w']);
+}
+$h=PHP_INT_MAX;
+if(array_key_exists('h',$_REQUEST)) {
+	assert(is_numeric($_REQUEST['h'])) or die('bad h value');
+	$h=intval($_REQUEST['h']);
+}
+
+$viewer->init_draw($x, $y, $w, $h);
+$viewer->draw($x, $y, $w, $h);
 
 $data=ob_get_contents();
 if(strlen($data)!=0) {
