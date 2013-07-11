@@ -357,6 +357,8 @@ class Viewer {
 				elseif(is_int($o->gid)) {
 					$cgid=$o->gid;
 					//var_dump($o);die();
+					if($o->x > $x*$map->tilewidth +$w) continue;
+					if($o->y > $y*$map->tileheight+$h) continue;
 					$this->draw_tile($ol, $cgid, NULL, NULL, $o);
 				}
 				else {
