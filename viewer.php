@@ -348,6 +348,10 @@ class Viewer {
 					}
 				}
 				elseif($o->ellipse) {
+					if($o->x+$o->width /2< $x*$this->map->tilewidth ) continue;
+					if($o->y+$o->height/2< $y*$this->map->tileheight) continue;
+					if($o->x-$o->width /2> ($x+$w)*$this->map->tilewidth ) continue;
+					if($o->y-$o->height/2> ($y+$h)*$this->map->tileheight) continue;
 					imagesetthickness($this->img, 2);
 					//imageellipse($this->img, $this->ox+$o->x+$o->width/2, $this->oy+$o->y+$o->height/2, $o->width, $o->height, $this->colors['purple']);//NOTE: doesn't work with setthickness, known bug (
 					imagearc($this->img, $this->ox+$o->x+$o->width/2, $this->oy+$o->y+$o->height/2, $o->width, $o->height, 0, 180, $this->colors['purple']);
@@ -356,12 +360,20 @@ class Viewer {
 				}
 				elseif(is_int($o->gid)) {
 					$cgid=$o->gid;
+					$ti=$this->map->get_tileset_index($cgid);
+					$lid=$cgid-$this->map->tilesets[$ti]->firstgid;
 					//var_dump($o);die();
-					if($o->x > $x*$map->tilewidth +$w) continue;
-					if($o->y > $y*$map->tileheight+$h) continue;
+					if($o->x+$this->map->tilesets[$ti]->tilewidth < $x*$this->map->tilewidth ) continue;
+					if($o->y+$this->map->tilesets[$ti]->tileheight< $y*$this->map->tileheight) continue;
+					if($o->x > ($x+$w)*$this->map->tilewidth ) continue;
+					if($o->y > ($y+$h)*$this->map->tileheight) continue;
 					$this->draw_tile($ol, $cgid, NULL, NULL, $o);
 				}
 				else {
+					if($o->x+$o->width < $x*$this->map->tilewidth ) continue;
+					if($o->y+$o->height< $y*$this->map->tileheight) continue;
+					if($o->x> ($x+$w)*$this->map->tilewidth ) continue;
+					if($o->y> ($y+$h)*$this->map->tileheight) continue;
 					imagesetthickness($this->img, 2);
 					imagerectangle($this->img, $this->ox+$o->x*$this->zoom, $this->oy+$o->y*$this->zoom, $this->ox+($o->x + $o->width)*$this->zoom, $this->oy+($o->y + $o->height)*$this->zoom, $this->colors['green']);
 					imagesetthickness($this->img, 1);
