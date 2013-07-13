@@ -313,6 +313,10 @@ class Viewer {
 		if($this->draw_objects) {
 			foreach($ol->getAllObjects() as $o) {
 				if($o->polygon || $o->polyline) {
+					if($o->x+$o->getWidthR() <$x*$this->map->tilewidth ) continue;
+					if($o->y+$o->getHeightB()<$y*$this->map->tileheight) continue;
+					if($o->x-$o->getWidthL() >($x+$w)*$this->map->tilewidth ) continue;
+					if($o->y-$o->getHeightT()>($y+$h)*$this->map->tileheight) continue;
 					imagerectangle($this->img, $this->ox+($o->x-$o->getWidthL())*$this->zoom, $this->oy+($o->y-$o->getHeightT())*$this->zoom,
 						$this->ox+($o->x + $o->getWidthR())*$this->zoom, $this->oy+($o->y + $o->getHeightB())*$this->zoom,
 						$this->colors['ligra']);
