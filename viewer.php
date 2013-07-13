@@ -322,13 +322,13 @@ class Viewer {
 						$this->colors['ligra']);
 					if($o->polyline) {
 						assert(count($o->points)/2>1);
-						$x=($o->x+$o->points[0])*$this->zoom;
-						$y=($o->y+$o->points[1])*$this->zoom;
+						$_x=($o->x+$o->points[0])*$this->zoom;
+						$_y=($o->y+$o->points[1])*$this->zoom;
 						imagesetthickness($this->img, 2);
 						for($i=2;$i<count($o->points);$i+=2) {
-							imageline($this->img, $this->ox+$x, $this->oy+$y, $this->ox+($o->x+$o->points[$i])*$this->zoom, $this->oy+($o->y+$o->points[$i+1])*$this->zoom, $this->colors['green']);
-							$x=($o->x+$o->points[$i])*$this->zoom;
-							$y=($o->y+$o->points[$i+1])*$this->zoom;
+							imageline($this->img, $this->ox+$_x, $this->oy+$_y, $this->ox+($o->x+$o->points[$i])*$this->zoom, $this->oy+($o->y+$o->points[$i+1])*$this->zoom, $this->colors['green']);
+							$_x=($o->x+$o->points[$i])*$this->zoom;
+							$_y=($o->y+$o->points[$i+1])*$this->zoom;
 						}
 						imagesetthickness($this->img, 1);
 					}
@@ -412,7 +412,7 @@ class Viewer {
 					$il=$ly;
 					$img_=create_image_from(dirname($this->map->filename).'/'.$il->source);
 					if($il->x+imagesx($img_)<=$x*$this->map->tilewidth ) continue;
-					if($il->y+imagesy($img_)<=$x*$this->map->tilewidth ) continue;
+					if($il->y+imagesy($img_)<=$y*$this->map->tilewidth ) continue;
 					if($il->x>=($x+$w)*$this->map->tilewidth ) continue;
 					if($il->y>=($y+$h)*$this->map->tileheight) continue;
 					if(function_exists('imageantialias')) {
