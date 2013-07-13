@@ -313,10 +313,10 @@ class Viewer {
 		if($this->draw_objects) {
 			foreach($ol->getAllObjects() as $o) {
 				if($o->polygon || $o->polyline) {
-					if($o->x+$o->getWidthR() <$x*$this->map->tilewidth ) continue;
-					if($o->y+$o->getHeightB()<$y*$this->map->tileheight) continue;
-					if($o->x-$o->getWidthL() >($x+$w)*$this->map->tilewidth ) continue;
-					if($o->y-$o->getHeightT()>($y+$h)*$this->map->tileheight) continue;
+					if($o->x+$o->getWidthR() <=$x*$this->map->tilewidth ) continue;
+					if($o->y+$o->getHeightB()<=$y*$this->map->tileheight) continue;
+					if($o->x-$o->getWidthL() >=($x+$w)*$this->map->tilewidth ) continue;
+					if($o->y-$o->getHeightT()>=($y+$h)*$this->map->tileheight) continue;
 					imagerectangle($this->img, $this->ox+($o->x-$o->getWidthL())*$this->zoom, $this->oy+($o->y-$o->getHeightT())*$this->zoom,
 						$this->ox+($o->x + $o->getWidthR())*$this->zoom, $this->oy+($o->y + $o->getHeightB())*$this->zoom,
 						$this->colors['ligra']);
@@ -352,10 +352,10 @@ class Viewer {
 					}
 				}
 				elseif($o->ellipse) {
-					if($o->x+$o->width /2< $x*$this->map->tilewidth ) continue;
-					if($o->y+$o->height/2< $y*$this->map->tileheight) continue;
-					if($o->x-$o->width /2> ($x+$w)*$this->map->tilewidth ) continue;
-					if($o->y-$o->height/2> ($y+$h)*$this->map->tileheight) continue;
+					if($o->x+$o->width <=$x*$this->map->tilewidth ) continue;
+					if($o->y+$o->height<=$y*$this->map->tileheight) continue;
+					if($o->x>=($x+$w)*$this->map->tilewidth ) continue;
+					if($o->y>=($y+$h)*$this->map->tileheight) continue;
 					imagesetthickness($this->img, 2);
 					//imageellipse($this->img, $this->ox+$o->x+$o->width/2, $this->oy+$o->y+$o->height/2, $o->width, $o->height, $this->colors['purple']);//NOTE: doesn't work with setthickness, known bug (
 					imagearc($this->img, $this->ox+$o->x+$o->width/2, $this->oy+$o->y+$o->height/2, $o->width, $o->height, 0, 180, $this->colors['purple']);
@@ -367,17 +367,18 @@ class Viewer {
 					$ti=$this->map->get_tileset_index($cgid);
 					$lid=$cgid-$this->map->tilesets[$ti]->firstgid;
 					//var_dump($o);die();
-					if($o->x+$this->map->tilesets[$ti]->tilewidth < $x*$this->map->tilewidth ) continue;
-					if($o->y+$this->map->tilesets[$ti]->tileheight< $y*$this->map->tileheight) continue;
-					if($o->x > ($x+$w)*$this->map->tilewidth ) continue;
-					if($o->y > ($y+$h)*$this->map->tileheight) continue;
+					//var_dump($o->x);die();
+					if($o->x+$this->map->tilesets[$ti]->tilewidth <=$x*$this->map->tilewidth ) continue;
+					if($o->y+$this->map->tilesets[$ti]->tileheight<=$y*$this->map->tileheight) continue;
+					if($o->x>=($x+$w)*$this->map->tilewidth ) continue;
+					if($o->y>=($y+$h)*$this->map->tileheight) continue;
 					$this->draw_tile($ol, $cgid, NULL, NULL, $o);
 				}
 				else {
-					if($o->x+$o->width < $x*$this->map->tilewidth ) continue;
-					if($o->y+$o->height< $y*$this->map->tileheight) continue;
-					if($o->x> ($x+$w)*$this->map->tilewidth ) continue;
-					if($o->y> ($y+$h)*$this->map->tileheight) continue;
+					if($o->x+$o->width <=$x*$this->map->tilewidth ) continue;
+					if($o->y+$o->height<=$y*$this->map->tileheight) continue;
+					if($o->x>=($x+$w)*$this->map->tilewidth ) continue;
+					if($o->y>=($y+$h)*$this->map->tileheight) continue;
 					imagesetthickness($this->img, 2);
 					imagerectangle($this->img, $this->ox+$o->x*$this->zoom, $this->oy+$o->y*$this->zoom, $this->ox+($o->x + $o->width)*$this->zoom, $this->oy+($o->y + $o->height)*$this->zoom, $this->colors['green']);
 					imagesetthickness($this->img, 1);
@@ -410,6 +411,10 @@ class Viewer {
 				if($this->draw_imagelayers) {
 					$il=$ly;
 					$img_=create_image_from(dirname($this->map->filename).'/'.$il->source);
+					if($il->x+imagesx($img_)<=$x*$this->map->tilewidth ) continue;
+					if($il->y+imagesy($img_)<=$x*$this->map->tilewidth ) continue;
+					if($il->x>=($x+$w)*$this->map->tilewidth ) continue;
+					if($il->y>=($y+$h)*$this->map->tileheight) continue;
 					if(function_exists('imageantialias')) {
 						imageantialias($img_, false);
 					}
