@@ -92,9 +92,11 @@ if(!array_key_exists('tilesets_nodraw', $_SESSION)) {
 
 $viewer->load_ts();
 
+$zoom=1;
 if(array_key_exists('zoom',$_REQUEST)) {
 	assert(is_numeric($_REQUEST['zoom'])) or die('bad zoom value');
-	$viewer->zoom=floatval($_REQUEST['zoom']);
+	$zoom=floatval($_REQUEST['zoom']);
+	$viewer->zoom=$zoom;
 	assert($viewer->zoom>=0.1 && $viewer->zoom<=10) or die('bad zoom range');
 }
 
@@ -118,6 +120,20 @@ if(array_key_exists('h',$_REQUEST)) {
 	assert(is_numeric($_REQUEST['h'])) or die('bad h value');
 	$h=intval($_REQUEST['h']);
 }
+
+$ox=-$x*$map->tilewidth *$zoom;
+if(array_key_exists('ox',$_REQUEST)) {
+	assert(is_numeric($_REQUEST['ox'])) or die('bad ox value');
+	$ox=intval($_REQUEST['ox']);
+}
+$oy=-$y*$map->tileheight*$zoom;
+if(array_key_exists('oy',$_REQUEST)) {
+	assert(is_numeric($_REQUEST['oy'])) or die('bad oy value');
+	$oy=intval($_REQUEST['oy']);
+}
+
+$viewer->ox=$ox;
+$viewer->oy=$oy;
 
 //var_dump($x, $y, $w, $h);die();
 
