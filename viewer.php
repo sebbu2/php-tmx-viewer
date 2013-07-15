@@ -91,14 +91,16 @@ class Viewer {
 				imagecolortransparent($this->ts_imgs[$i], $color);
 			}
 			//$this->ts_largeur[$i]=$ly->width;
+			$tsw=imagesx($this->ts_imgs[$i]);
+			$tsh=imagesy($this->ts_imgs[$i]);
 			$this->ts_largeur[$i]=0;
-			for( $a=0; $a<$this->map->tilesets[$i]->width-$this->map->tilesets[$i]->margin; $a+=$this->map->tilesets[$i]->tilewidth ) {
+			//for( $a=0; $a<$this->map->tilesets[$i]->width-$this->map->tilesets[$i]->margin; $a+=$this->map->tilesets[$i]->tilewidth ) {
+			for( $a=0; $a<$tsw-$this->map->tilesets[$i]->margin; $a+=$this->map->tilesets[$i]->tilewidth ) {
 				++$this->ts_largeur[$i];
 				if($this->map->tilesets[$i]->spacing>0) $a+=$this->map->tilesets[$i]->spacing;
 			}
 			//var_dump($this->ts_largeur[$i]);
 			assert($this->ts_largeur[$i]>0) or die('ts_largeur == 0');
-			//var_dump($this->ts_largeur);die();
 		}
 		unset($i,$ts,$transc,$trans,$r,$g,$b,$color);
 	}
@@ -218,10 +220,14 @@ class Viewer {
 				$sw=$tsw;
 				$sh=$tsh;
 				if($sx+$sw>imagesx($tsimg)) {
+					var_dump($cgid, $ti, $lid);
 					trigger_error('width exceeded.');
+					//die();
 				}
 				if($sy+$sh>imagesy($tsimg)) {
+					var_dump($cgid, $ti, $lid);
 					trigger_error('height exceeded.');
+					//die();
 				}
 				if($dy2 < 0) {
 					$sy+=abs($dy2);
