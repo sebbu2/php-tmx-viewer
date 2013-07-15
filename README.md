@@ -13,9 +13,8 @@ It could be done with the gMagick or iMagick / MagickWand extension, but they ar
 TODO
 ====
 
-make partial rendering
-
 improve ui
 
 add cache support
 
+add other games in online list
