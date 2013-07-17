@@ -155,34 +155,6 @@ if(!defined('DEBUG')||DEBUG!==true) {
 	//header('Content-Type: image/jpeg'."\r\n");
 	header('Content-Type: image/png'."\r\n");
 }
-echo $data;die();
-$img=imagecreatefromstring($data);
+echo $data;
 
-$sl=0;//left
-$sr=0;//right
-
-$st=0;//top
-$sb=0;//bottom
-
-$sw=PHP_INT_MAX;//width
-$sh=PHP_INT_MAX;//height
-
-if(array_key_exists('x', $_REQUEST)) $sl=(int)$_REQUEST['x'];
-if(array_key_exists('y', $_REQUEST)) $st=(int)$_REQUEST['y'];
-if(array_key_exists('w', $_REQUEST)) $sw=(int)$_REQUEST['w'];
-if(array_key_exists('h', $_REQUEST)) $sh=(int)$_REQUEST['h'];
-
-$x=imagesx($img);
-$y=imagesy($img);
-
-$sw=min($sw, $x-$sl);
-$sh=min($sh, $y-$st);
-
-//$img2=imagecreatetruecolor($x-$sl-$sr, $y-$st-$sb);
-$img2=imagecreatetruecolor($sw, $sh);
-//imagecopyresampled($img2, $img, 0, 0, $sl, $st, $x-$sl-$sr, $y-$st-$sb, $x-$sl-$sr, $y-$st-$sb);
-imagecopyresampled($img2, $img, 0, 0, $sl, $st, $sw, $sh, $sw, $sh);
-imagedestroy($img);
-imagepng($img2);
-imagedestroy($img2);
 ?>
