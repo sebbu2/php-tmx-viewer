@@ -132,6 +132,34 @@ if(array_key_exists('oy',$_REQUEST)) {
 	$oy=intval($_REQUEST['oy']);
 }
 
+$dt=true;
+if(array_key_exists('dt',$_REQUEST)) {
+	$dt=$_REQUEST['dt'];
+	if(is_null($dt)||empty($dt)) $dt=true;
+	else if( strcasecmp($dt,'true' )==0 || strcasecmp($dt,'yes')==0 || $dt===1 ) $dt=true;
+	else if( strcasecmp($dt,'false')==0 || strcasecmp($dt,'no' )==0 || $dt===0 ) $dt=false;
+	else $dt=false;
+	$viewer->draw_tiles=$dt;
+}
+$do=true;
+if(array_key_exists('do',$_REQUEST)) {
+	$do=$_REQUEST['do'];
+	if(is_null($do)||empty($do)) $do=true;
+	else if( strcasecmp($do,'true' )==0 || strcasecmp($do,'yes')==0 || $do===1 ) $do=true;
+	else if( strcasecmp($do,'false')==0 || strcasecmp($do,'no' )==0 || $do===0 ) $do=false;
+	else $do=false;
+	$viewer->draw_objects=$do;
+}
+$di=true;
+if(array_key_exists('di',$_REQUEST)) {
+	$di=$_REQUEST['di'];
+	if(is_null($di)||empty($di)) $do=true;
+	else if( strcasecmp($di,'true' )==0 || strcasecmp($di,'yes')==0 || $di===1 ) $di=true;
+	else if( strcasecmp($di,'false')==0 || strcasecmp($di,'no' )==0 || $di===0 ) $di=false;
+	else $di=false;
+	$viewer->draw_images=$di;
+}
+
 $viewer->ox=$ox;
 $viewer->oy=$oy;
 

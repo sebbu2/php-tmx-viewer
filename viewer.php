@@ -13,7 +13,7 @@ class Viewer {
 	private $data='';
 	public $draw_tiles=true;
 	public $draw_objects=true;
-	public $draw_imagelayers=true;
+	public $draw_images=true;
 	private $img=NULL;
 	private $ts_imgs=array();
 	private $ts_largeur=array();
@@ -420,7 +420,7 @@ class Viewer {
 				$this->draw_objectlayer($ly, $x, $y, $w, $h);
 			}
 			elseif($ly instanceof ImageLayer) {
-				if($this->draw_imagelayers) {
+				if($this->draw_images) {
 					$il=$ly;
 					$img_=create_image_from(dirname($this->map->filename).'/'.$il->source);
 					if($il->x+imagesx($img_)<=$x*$this->map->tilewidth ) continue;
