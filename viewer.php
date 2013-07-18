@@ -11,6 +11,7 @@ class Viewer {
 	public $name='';
 	private $map=NULL;
 	private $data='';
+	public $draw_tiles=true;
 	public $draw_objects=true;
 	public $draw_imagelayers=true;
 	private $img=NULL;
@@ -310,6 +311,7 @@ class Viewer {
 	}
 	
 	public function draw_tilelayer($tl, $x=0, $y=0, $w=PHP_INT_MAX, $h=PHP_INT_MAX) {
+		if(!$this->draw_tiles) return;
 		if(strlen($tl->name)>0&&in_array($tl->name, $_SESSION['layers_nodraw'])) return;
 		for($j=$y;$j<min($tl->height,$y+$h);++$j) {
 			for($i=$x;$i<min($tl->width,$x+$w);++$i) {
