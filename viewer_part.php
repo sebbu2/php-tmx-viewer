@@ -153,7 +153,7 @@ if(array_key_exists('do',$_REQUEST)) {
 $di=true;
 if(array_key_exists('di',$_REQUEST)) {
 	$di=$_REQUEST['di'];
-	if(is_null($di)||empty($di)) $do=true;
+	if(is_null($di)||empty($di)) $di=true;
 	else if( strcasecmp($di,'true' )==0 || strcasecmp($di,'yes')==0 || $di===1 ) $di=true;
 	else if( strcasecmp($di,'false')==0 || strcasecmp($di,'no' )==0 || $di===0 ) $di=false;
 	else $di=false;
