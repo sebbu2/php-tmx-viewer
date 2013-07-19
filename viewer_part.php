@@ -19,7 +19,7 @@ $map=new Map();
 
 $file='../../tmw/room.tmx';
 
-if(array_key_exists('called_from',$_REQUEST) && array_key_exists('choice',$_REQUEST)) {
+if(array_key_exists('choice',$_REQUEST)) {
 	$msg='';
 	$var='';
 	switch(strtolower($_REQUEST['choice'])) {
