@@ -122,15 +122,15 @@ if(array_key_exists('h',$_REQUEST)) {
 }
 
 $ox=-$x*$map->tilewidth *$zoom;
-if(array_key_exists('ox',$_REQUEST)) {
+/*if(array_key_exists('ox',$_REQUEST)) {
 	assert(is_numeric($_REQUEST['ox'])) or die('bad ox value');
 	$ox=intval($_REQUEST['ox']);
-}
+}//*/
 $oy=-$y*$map->tileheight*$zoom;
-if(array_key_exists('oy',$_REQUEST)) {
+/*if(array_key_exists('oy',$_REQUEST)) {
 	assert(is_numeric($_REQUEST['oy'])) or die('bad oy value');
 	$oy=intval($_REQUEST['oy']);
-}
+}//*/
 
 $dt=true;
 if(array_key_exists('dt',$_REQUEST)) {
