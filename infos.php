@@ -14,6 +14,7 @@ ini_set('display_startup_errors', 1);
 $files=array();
 $files[]='map.php';
 $files[]='tileset.php';
+$files[]='tilelayer.php';
 $files[]='layer.php';
 $files[]='objectlayer.php';
 $files[]='object.php';
@@ -64,12 +65,13 @@ foreach($files as $file) {
 	}
 	else {
 		//var_dump(1,$file);echo '<br/>'."\r\n";
-		$res=preg_match_all('/function\s*(\S+)\s*\(/', $data, $matches);
+		$res=preg_match_all('/function\s+(\S+)\s*\(/', $data, $matches);
 		//echo '<pre>';var_dump($matches[1]);echo '</pre>';die();
 		//var_dump($res);die();
 		if($res>0) {
 			foreach($matches[1] as $function) {
 				$functions[]=$function;
+				//var_dump($function);
 			}
 			unset($function);
 		}
