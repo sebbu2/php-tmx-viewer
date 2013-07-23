@@ -45,19 +45,17 @@ class TileLayerBase extends Layer {
 	public function get_tile($index) {
 		$cgid=substr($this->data, $index*4, 4);
 		//var_dump($cgid);//die();
-		//var_dump(ord($cgid[3]),ord($cgid[2]),ord($cgid[1]),ord($cgid[0]));//die();
-		$cgid=(ord($cgid[3])&0x1F)*16777216+ord($cgid[2])*65536+ord($cgid[1])*256+ord($cgid[0]);
-		//var_dump($cgid);//die();
-		return $cgid;
+		$cgid=unpack('V',$cgid);
+		//var_dump($cgid[1]);//die();
+		return $cgid[1];
 	}
 
 	public function set_tile($index, $value) {
-		$cgid=str_repeat(' ', 4);
-		$cgid[3]=($value>>24);
-		$cgid[2]=($value>>16)&0xFF;
-		$cgid[1]=($value>>8)&0xFF;
-		$cgid[0]=($value>>0)&0xFF;
-		$data=substr($data, 0, $index*4).$cgid.substr($data, $index*4+4);
+		//var_dump($value);//die();
+		$cgid=pack('V',$value);
+		//var_dump($cgid);//die();
+		assert(strlen($cgid)==4) or die('bad cgid value.');
+		$this->data=substr($this->data, 0, $index*4).$cgid.substr($this->data, $index*4+4);
 	}
 
 	public function isValid() {
