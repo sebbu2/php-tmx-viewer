@@ -142,6 +142,9 @@ class Viewer {
 	public function init_draw($x=0, $y=0, $w=PHP_INT_MAX, $h=PHP_INT_MAX) {
 		$_w=$this->map->width *$this->map->tilewidth *$this->zoom;
 		$_h=$this->map->height*$this->map->tileheight*$this->zoom;
+		if($this->map->orientation=='isometric') {
+			$_h+=$this->map->tileheight/2;
+		}
 		$_w=min($_w+$this->ox, $w*$this->map->tilewidth *$this->zoom);
 		$_h=min($_h+$this->oy, $h*$this->map->tilewidth *$this->zoom);
 		$this->img=imagecreatetruecolor($_w, $_h);
@@ -264,10 +267,12 @@ class Viewer {
 				$sw=$tsw;
 				$sh=$tsh;
 				if($sx+$sw>imagesx($this->ts_imgs[$ti])) {
+					var_dump($cgid, $ti, $lid);
 					trigger_error('width exceeded.');
 				}
 				if($sy+$sh>imagesy($this->ts_imgs[$ti])) {
-				trigger_error('height exceeded.');
+					var_dump($cgid, $ti, $lid);
+					trigger_error('height exceeded.');
 				}
 			}
 			else {
