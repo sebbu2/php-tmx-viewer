@@ -70,6 +70,31 @@ echo '</pre>'."\r\n";
 die();//*/
 
 $viewer=new Viewer();
+
+if($file=='../maps/isometric.tmx') {
+	require('rot.php');
+	foreach($map->layers as $a=>$layer) {
+		for($i=0;$i<$map->height;++$i) {
+			for($j=0;$j<$map->width;++$j) {
+				$tile=$map->layers[$a]->get_tile($i*$map->width+$j);
+				$lid=$tile-$map->tilesets[$map->get_tileset_index($tile)]->firstgid;
+				if(array_key_exists('rot',$_REQUEST) && $_REQUEST['rot']=='cw') {
+					$lid=rotate90cw_lid($lid);
+				}
+				elseif(array_key_exists('rot',$_REQUEST) && $_REQUEST['rot']=='ccw') {
+					$lid=rotate90ccw_lid($lid);
+				}
+				elseif(array_key_exists('rot',$_REQUEST) && $_REQUEST['rot']=='180') {
+					$lid=rotate180_lid($lid);
+				}
+				if($lid==-1) $tile=0;
+				else $tile=$lid+$map->tilesets[$map->get_tileset_index($tile)]->firstgid;
+				$map->layers[$a]->set_tile($i*$map->width+$j, $tile);
+			}
+		}
+	}
+}
+
 $viewer->setMap($map);
 
 ini_set('output_buffering','off');

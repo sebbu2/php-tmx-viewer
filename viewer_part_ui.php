@@ -63,10 +63,11 @@ $data=ob_get_clean();
 if(!empty($data)) {
 	header('Content-Type: text/plain'."\r\n");
 	echo $data;
+	//var_dump($data);
 	die();
 }
 
-ob_start();
+//ob_start();
 
 if(!array_key_exists('layers_nodraw', $_SESSION)) {
 	$_SESSION['layers_nodraw']=array('collision');
@@ -144,7 +145,10 @@ if(array_key_exists('di',$_REQUEST)) {
 	else $di=false;
 	$viewer->draw_images=$di;
 }
-
+if(array_key_exists('rot',$_REQUEST)) {
+	assert(in_array($_REQUEST['rot'],array('cw','ccw','180'))) or die('bad rot value');
+	$rot=$_REQUEST['rot'];
+}
 $viewer->ox=$ox;
 $viewer->oy=$oy;
 
@@ -170,7 +174,8 @@ if(array_key_exists('x',$_REQUEST)) echo '&x='.$_REQUEST['x'];
 if(array_key_exists('y',$_REQUEST)) echo '&y='.$_REQUEST['y'];
 if(array_key_exists('w',$_REQUEST)) echo '&w='.$_REQUEST['w'];
 if(array_key_exists('h',$_REQUEST)) echo '&h='.$_REQUEST['h'];
+if(array_key_exists('rot',$_REQUEST)) echo '&rot='.$_REQUEST['rot'];
 ?>"/></div>
 
 </body>
-</html>
+</html><?php /*ob_end_flush();*/ ?>

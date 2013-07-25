@@ -66,6 +66,18 @@ function my_transparent($img, $r, $g, $b, $trans) {
 	}
 }
 
+function swap(&$a, &$b) {
+	$tmp=$a;
+	$a=$b;
+	$b=$tmp;
+}
+
+function swap_ar(&$var, $pos1, $pos2) {
+	$tmp=$var[$pos1];
+	$var[$pos1]=$var[$pos2];
+	$var[$pos2]=$tmp;
+}
+
 function parse_data($data, $encoding='', $compression='') {
 	if($encoding=='base64') {
 		$data=base64_decode($data);

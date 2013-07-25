@@ -58,6 +58,51 @@ class TileLayerBase extends Layer {
 		$this->data=substr($this->data, 0, $index*4).$cgid.substr($this->data, $index*4+4);
 	}
 
+	public function transpose() {
+		$data2='';
+		for($i=0;$i<$this->width;++$i) {
+			for($j=0;$j<$this->height;++$j) {
+				$data2.=substr($this->data, ($j*$this->width+$i)*4, 4);
+			}
+		}
+		assert(strlen($data2)===strlen($this->data));
+		$this->data=$data2;
+		$tmp=$this->width;
+		$this->width=$this->height;
+		$this->height=$tmp;
+	}
+
+	public function reverse_row() {
+		for($i=0;$i<$this->height;++$i) {
+			for($j=0;$j<floor($this->width/2);++$j) {
+				for($a=0;$a<4;++$a) swap_ar($this->data, ($i*$this->width+$j)*4+$a, (($i+1)*$this->width-1-$j)*4+$a);
+			}
+		}
+	}
+
+	public function reverse_col() {
+		for($j=0;$j<$this->width;++$j) {
+			for($i=0;$i<floor($this->height/2);++$i) {
+				for($a=0;$a<4;++$a) swap_ar($this->data, ($i*$this->width+$j)*4+$a, (($this->height-1-$i)*$this->width+$j)*4+$a);
+			}
+		}
+	}
+
+	public function rot90cw() {
+		$this->transpose();
+		$this->reverse_row();
+	}
+
+	public function rot90ccw() {
+		$this->transpose();
+		$this->reverse_col();
+	}
+
+	public function rot180() {
+		$this->reverse_row();
+		$this->reverse_col();
+	}
+
 	public function isValid() {
 		if(!is_string($this->name)) {
 			throw new Exception('Incorrect tilelayer name.');

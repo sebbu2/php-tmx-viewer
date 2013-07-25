@@ -2,6 +2,11 @@
 
 ini_set('error_reporting', E_ALL | E_NOTICE | E_STRICT | E_RECOVERABLE_ERROR | E_DEPRECATED | E_USER_DEPRECATED | E_USER_ERROR | E_USER_WARNING | E_USER_NOTICE);
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+ini_set('ignore_repeated_errors', 0);
+ini_set('track_errors', 1);
+
 ob_start();
 
 libxml_use_internal_errors(true);
@@ -70,6 +75,49 @@ echo '</pre>'."\r\n";
 die();//*/
 
 $viewer=new Viewer();
+
+if($file=='../maps/isometric.tmx' && array_key_exists('rot', $_REQUEST)) {
+	if(!in_array($_REQUEST['rot'],array('cw','ccw'))) {
+		trigger_error('unknown rotation');
+	}
+	require('rot.php');
+	foreach($map->layers as $a=>$layer) {
+		for($i=0;$i<$map->height;++$i) {
+			for($j=0;$j<$map->width;++$j) {
+				$tile=$map->layers[$a]->get_tile($i*$map->width+$j);
+				$lid=$tile-$map->tilesets[$map->get_tileset_index($tile)]->firstgid;
+				//var_dump($lid);
+				if($_REQUEST['rot']=='cw') {
+					$lid=rotate90cw_lid($lid);
+				}
+				elseif($_REQUEST['rot']=='ccw') {
+					$lid=rotate90ccw_lid($lid);
+				}
+				elseif($_REQUEST['rot']=='180') {
+					$lid=rotate180_lid($lid);
+				}
+				//var_dump($lid);
+				//echo '<br/>';
+				if($lid==-1) $tile=0;
+				else $tile=$lid+$map->tilesets[$map->get_tileset_index($tile)]->firstgid;
+				//var_dump($tile);
+				$map->layers[$a]->set_tile($i*$map->width+$j, $tile);
+			}
+		}
+		//var_dump($map->layers[$a]);die();
+		if($_REQUEST['rot']=='cw') {
+			$map->layers[$a]->rot90cw();
+		}
+		elseif($_REQUEST['rot']=='ccw') {
+			$map->layers[$a]->rot90ccw();
+		}
+	}
+	$tmp=$map->width;
+	$map->width=$map->height;
+	$map->height=$tmp;
+	//var_dump($map);
+}
+
 $viewer->setMap($map);
 
 ini_set('output_buffering','off');
