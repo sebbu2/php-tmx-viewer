@@ -77,7 +77,7 @@ die();//*/
 $viewer=new Viewer();
 
 if($file=='../maps/isometric.tmx' && array_key_exists('rot', $_REQUEST)) {
-	if(!in_array($_REQUEST['rot'],array('cw','ccw'))) {
+	if(!in_array($_REQUEST['rot'],array('cw','ccw','180'))) {
 		trigger_error('unknown rotation');
 	}
 	require('rot.php');
@@ -110,6 +110,9 @@ if($file=='../maps/isometric.tmx' && array_key_exists('rot', $_REQUEST)) {
 		}
 		elseif($_REQUEST['rot']=='ccw') {
 			$map->layers[$a]->rot90ccw();
+		}
+		elseif($_REQUEST['rot']=='180') {
+			$map->layers[$a]->rot180();
 		}
 	}
 	$tmp=$map->width;

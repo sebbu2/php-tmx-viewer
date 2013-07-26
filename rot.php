@@ -46,8 +46,8 @@ function rotate90ccw_lid($lid) {
 	//bords
 	else if($y==1 && ($x%3)==1) { $x-=1;$y+=1; }
 	else if($y==2 && ($x%3)==2) { $x-=1;$y-=1; }
-	else if($y==3 && ($x%3)==1) { $x+=1;$y+=1; }
-	else if($y==2 && ($x%3)==0) { $x+=1;$y-=1; }
+	else if($y==3 && ($x%3)==1) { $x+=1;$y-=1; }
+	else if($y==2 && ($x%3)==0) { $x+=1;$y+=1; }
 	//middles
 	else if($y==2 && ($x%3)==1) { /*do nothing*/ }
 	//hole angles
