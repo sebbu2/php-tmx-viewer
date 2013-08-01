@@ -87,8 +87,9 @@ function parse_data($data, $encoding='', $compression='') {
 		//var_dump(count($data2));
 		$data3=array();
 		$i=0;
+		$data='';
 		foreach($data2 as $line) {
-			$line=trim($line, ' \t\n\r\0\x0B,');
+			$line=trim($line, " \t\n\r\0\x0B,");
 			$data3[$i]=explode(',',$line);
 			//var_dump(count($data3[$i]));
 			++$i;
