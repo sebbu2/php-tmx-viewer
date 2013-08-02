@@ -35,8 +35,17 @@ elseif(!array_key_exists('map',$_REQUEST)) {
 <input type="hidden" name="ref" value="<?php echo $_REQUEST['ref']; ?>"/>
 <select name="url">
 <?php
-
-$data=file_get_contents($map_url[$_REQUEST['ref']]);
+//$data=file_get_contents($map_url[$_REQUEST['ref']]);
+$opts=array(
+	'http'=>array(
+		'user_agent'=>'Mozilla/5.0 (Windows NT 5.1; rv:26.0) Gecko/20100101 Firefox/26.0',
+	),
+	'ssl'=>array(
+		'allow_self_signed'=>true,
+	),
+);
+$ctx = stream_context_create($opts);
+$data=file_get_contents($map_url[$_REQUEST['ref']],false,$ctx);
 if(in_array($_REQUEST['ref'], $github)) {
 	$ar=json_decode($data, true);
 	$dirs=array();
@@ -50,7 +59,7 @@ if(in_array($_REQUEST['ref'], $github)) {
 		}
 	}
 	foreach($dirs as $dir) {
-		$data=file_get_contents($dir);
+		$data=file_get_contents($dir,false,$ctx);
 		$ar=json_decode($data, true);
 		foreach($ar as $entry) {
 			//var_dump($entry);die();
