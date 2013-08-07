@@ -83,7 +83,7 @@ elseif(in_array($_REQUEST['ref'], $viewvc)) {
 		$res=preg_match_all('#<a name="([^"]+)" href="([^"]+)" title="View directory contents">#', $data, $subdirs, PREG_SET_ORDER);
 		foreach($subdirs as $dir) {
 			if(filter_dir_1($dir[1])) {
-				$data2=file_get_contents($map_url[$_REQUEST['ref']].$dir[1].'/');
+				$data2=file_get_contents($map_url[$_REQUEST['ref']].$dir[1].'/',false,$ctx);
 				$res2=preg_match_all('#<a name="([^"]+)" href="([^"]+)" title="View file revision log">#', $data2, $files2, PREG_SET_ORDER);
 				foreach($files2 as $file) {
 					if(substr($file[1], -4)==='.tmx') {
@@ -92,10 +92,10 @@ elseif(in_array($_REQUEST['ref'], $viewvc)) {
 				}
 			}
 			elseif(filter_dir_2($dir[1])) {
-				$data2=file_get_contents($map_url[$_REQUEST['ref']].$dir[1].'/');
+				$data2=file_get_contents($map_url[$_REQUEST['ref']].$dir[1].'/',false,$ctx);
 				$res=preg_match_all('#<a name="([^"]+)" href="([^"]+)" title="View directory contents">#', $data2, $subdirs2, PREG_SET_ORDER);
 				foreach($subdirs2 as $dir2) {
-					$data3=file_get_contents($map_url[$_REQUEST['ref']].$dir[1].'/'.$dir2[1].'/');
+					$data3=file_get_contents($map_url[$_REQUEST['ref']].$dir[1].'/'.$dir2[1].'/',false,$ctx);
 					$res=preg_match_all('#<a name="([^"]+)" href="([^"]+)" title="View file revision log">#', $data3, $subdirs3, PREG_SET_ORDER);
 					foreach($subdirs3 as $file) {
 						if(substr($file[1], -4)==='.tmx') {
@@ -115,8 +115,8 @@ elseif(in_array($_REQUEST['ref'], $viewvc)) {
 			echo '<option value="'.$file.'">'.$file.'</option>'."\r\n";
 		}
 		$data=ob_get_contents();
-		ob_end_clean();
-		file_put_content($_REQUEST['ref'].'.htm', $data);
+		ob_end_flush();
+		file_put_contents($_REQUEST['ref'].'.htm', $data);
 	}
 	else {
 		require($_REQUEST['ref'].'.htm');
