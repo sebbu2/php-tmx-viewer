@@ -41,7 +41,7 @@ class ObjectBase {
 		if((bool)$xml->polyline!==false) {
 			$this->polyline=true;
 		}
-		if($this->ellipse + $this->polygon + $this->polyline > 1) die('ERROR : ellipse & polygon & polyline.');
+		if($this->ellipse + $this->polygon + $this->polyline > 1) trigger_error('ERROR : ellipse & polygon & polyline.', E_USER_ERROR);
 		if($this->polygon||$this->polyline) {
 			$p='';
 			if((bool)$xml->polygon['points']!==false) {

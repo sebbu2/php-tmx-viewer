@@ -101,11 +101,11 @@ class Viewer {
 				if($this->map->tilesets[$i]->spacing>0) $a+=$this->map->tilesets[$i]->spacing;
 			}
 			//var_dump($this->ts_largeur[$i]);
-			assert($this->ts_largeur[$i]>0) or die('ts_largeur == 0');
+			assert($this->ts_largeur[$i]>0) or trigger_error('ts_largeur == 0', E_USER_ERROR);
 		}
 		unset($i,$ts,$transc,$trans,$r,$g,$b,$color);
 	}
-	
+
 	private function load_colors() {
 		/*
 		imagecolorallocatealpha
@@ -138,7 +138,7 @@ class Viewer {
 		$this->colors['licya']=imagecolorallocatealpha($this->img, 0, 255, 128, 0);//light cyan
 		$this->colors['violet']=imagecolorallocatealpha($this->img, 0, 128, 255, 0);//violet
 	}
-	
+
 	public function init_draw($x=0, $y=0, $w=PHP_INT_MAX, $h=PHP_INT_MAX) {
 		$_w=$this->map->width *$this->map->tilewidth *$this->zoom;
 		$_h=$this->map->height*$this->map->tileheight*$this->zoom;
@@ -149,7 +149,7 @@ class Viewer {
 		$_h=min($_h+$this->oy, $h*$this->map->tilewidth *$this->zoom);
 		$this->img=imagecreatetruecolor($_w, $_h);
 		//$img=imagecreatetruecolor($width*$tilewidth/2, $height*$tileheight/2);
-		
+
 		if(function_exists('imageantialias')) {
 			imageantialias($this->img, false);
 		}
@@ -157,7 +157,7 @@ class Viewer {
 		//imagealphablending($this->img, false);
 
 		$this->load_colors();
-		
+
 		if(strlen($this->map->backgroundcolor)>0) {
 			$r=hexdec(substr($this->map->backgroundcolor,0,2));
 			$g=hexdec(substr($this->map->backgroundcolor,2,2));
@@ -170,17 +170,18 @@ class Viewer {
 			imagefill($this->img, 0, 0, $this->colors['trans']);
 		}
 	}
-	
+
 	public function draw($x=0, $y=0, $w=PHP_INT_MAX, $h=PHP_INT_MAX) {
 		return $this->draw_layers($x, $y, $w, $h);
 	}
-	
+
 	private function draw_tile(&$ly, $cgid, $i=NULL, $j=NULL, &$o=NULL) {
 		if($cgid==0) return;
 		$ti=$this->map->get_tileset_index($cgid);
 		if($ti==-1) {
-			var_dump($cgid);
-			die();
+			var_dump($j,$i,$cgid);
+			trigger_error('incorrect gid.', E_USER_ERROR);
+			//die();
 		}
 		if(!is_object($o)) {
 			if(strlen($this->map->tilesets[$ti]->name)>0&&in_array($this->map->tilesets[$ti]->name, $_SESSION['tilesets_nodraw'])) return;
@@ -207,7 +208,12 @@ class Viewer {
 		else {
 			$tsw=$this->map->tilesets[$ti]->tilewidth ;
 			$tsh=$this->map->tilesets[$ti]->tileheight;
+			if($ty>$this->map->tilesets[$ti]->height) {
+				var_dump($j,$i,$cgid,$lid,$tx,$ty,$this->map->tilesets[$ti]->height);
+				trigger_error('incorrect tile position.', E_USER_ERROR);
+			}
 		}
+
 		if($this->map->orientation=='orthogonal') {
 			if(is_object($o)) {
 				$dx=$o->x;
@@ -224,13 +230,13 @@ class Viewer {
 				$sw=$tsw;
 				$sh=$tsh;
 				if($sx+$sw>imagesx($tsimg)) {
-					var_dump($cgid, $ti, $lid);
-					trigger_error('width exceeded.');
+					var_dump($j, $i, $cgid, $ti, $lid);
+					trigger_error('width exceeded.', E_USER_ERROR);
 					//die();
 				}
 				if($sy+$sh>imagesy($tsimg)) {
-					var_dump($cgid, $ti, $lid);
-					trigger_error('height exceeded.');
+					var_dump($j, $i, $cgid, $ti, $lid);
+					trigger_error('height exceeded.', E_USER_ERROR);
 					//die();
 				}
 				if($dy2 < 0) {
@@ -254,7 +260,7 @@ class Viewer {
 		}
 		elseif($this->map->orientation=='isometric') {
 			if(is_object($o)) {
-				trigger_error('not yet implemented');
+				trigger_error('not yet implemented', E_USER_ERROR);
 			}
 			else {
 				$dx=(($this->map->width-1+$i-$j)*$this->map->tilewidth/2);
@@ -268,11 +274,11 @@ class Viewer {
 				$sh=$tsh;
 				if($sx+$sw>imagesx($this->ts_imgs[$ti])) {
 					var_dump($cgid, $ti, $lid);
-					trigger_error('width exceeded.');
+					trigger_error('width exceeded.', E_USER_ERROR);
 				}
 				if($sy+$sh>imagesy($this->ts_imgs[$ti])) {
 					var_dump($cgid, $ti, $lid);
-					trigger_error('height exceeded.');
+					trigger_error('height exceeded.', E_USER_ERROR);
 				}
 			}
 			else {
@@ -297,9 +303,9 @@ class Viewer {
 			if(!is_object($o)) $this->draw_inside_tilelayer($ly, $j, $i);
 			//if($lid==1) break(3);
 		}
-		//trigger_error('not yet implemented');
+		//trigger_error('not yet implemented', E_USER_ERROR);
 	}
-	
+
 	public function draw_inside_tilelayer(Layer $ly, $j, $i) {
 	/*
 	ly	layer
@@ -314,18 +320,26 @@ class Viewer {
 		}
 		return false;
 	}
-	
+
 	public function draw_tilelayer($tl, $x=0, $y=0, $w=PHP_INT_MAX, $h=PHP_INT_MAX) {
 		if(!$this->draw_tiles) return;
 		if(strlen($tl->name)>0&&in_array($tl->name, $_SESSION['layers_nodraw'])) return;
-		for($j=$y;$j<min($tl->height,$y+$h);++$j) {
-			for($i=$x;$i<min($tl->width,$x+$w);++$i) {
-				$cgid=$tl->get_tile($j*$tl->width+$i);
+		$jmax=min($tl->height,max($y+$h,PHP_INT_MAX));
+		$imax=min($tl->width ,max($x+$w,PHP_INT_MAX));
+		for($j=$y;$j<$jmax;++$j) {
+			for($i=$x;$i<$imax;++$i) {
+				$index=$j*$tl->width+$i;
+				if($index>=$tl->get_tile_number()) {
+					var_dump($j,$jmax,$i,$imax,$index);
+					trigger_error('incorrect index or layer data.', E_USER_ERROR);
+				}
+				$cgid=$tl->get_tile($index);
+				//var_dump($cgid);die();
 				$this->draw_tile($tl, $cgid, $i, $j);
 			}
 		}
 	}
-	
+
 	public function draw_objectlayer($ol, $x=0, $y=0, $w=PHP_INT_MAX, $h=PHP_INT_MAX) {
 		if($this->draw_objects) {
 			foreach($ol->getAllObjects() as $o) {
@@ -407,7 +421,7 @@ class Viewer {
 			}
 		}
 	}
-	
+
 	public function draw_layers($x=0, $y=0, $w=PHP_INT_MAX, $h=PHP_INT_MAX) {
 		//ob_start();
 
@@ -471,7 +485,7 @@ class Viewer {
 			unset($tl, $ol, $il);
 		}
 	}
-	
+
 	public function render($file=NULL) {
 		imagesavealpha($this->img, true);
 

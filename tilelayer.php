@@ -39,22 +39,41 @@ class TileLayerBase extends Layer {
 			$this->loadProperties_from_element($xml->properties, $ref);
 		}
 		//$this->parse_data((string)trim($xml->data[0]));
+		//var_dump((string)trim($xml->data[0]));die();
 		$this->data=parse_data((string)trim($xml->data[0]), $this->encoding, $this->compression);
+		if(strlen($this->data)<$this->map->width*$this->map->height*4) {
+			var_dump($this->name,strlen($this->data),$this->map->width*$this->map->height*4,$xml->data,(string)trim($xml->data[0]));
+			trigger_error('incorrect layer data', E_USER_ERROR);
+		}
 	}
 
 	public function get_tile($index) {
+		if($index*4+4>strlen($this->data)) {
+			var_dump(strlen($this->data),$index);
+			debug_print_backtrace();
+			trigger_error('incorrect index or layer data (1).', E_USER_ERROR);
+		}
 		$cgid=substr($this->data, $index*4, 4);
+		if(strlen($cgid)<4) {
+			var_dump($index);
+			debug_print_backtrace();
+			trigger_error('incorrect index or layer data (2).', E_USER_ERROR);
+		}//*/
 		//var_dump($cgid);//die();
 		$cgid=unpack('V',$cgid);
 		//var_dump($cgid[1]);//die();
 		return $cgid[1];
 	}
 
+	public function get_tile_number() {
+		return floor(strlen($this->data)/4);
+	}
+
 	public function set_tile($index, $value) {
 		//var_dump($value);//die();
 		$cgid=pack('V',$value);
 		//var_dump($cgid);//die();
-		assert(strlen($cgid)==4) or die('bad cgid value.');
+		assert(strlen($cgid)==4) or trigger_error('bad cgid value.', E_USER_ERROR);
 		$this->data=substr($this->data, 0, $index*4).$cgid.substr($this->data, $index*4+4);
 	}
 

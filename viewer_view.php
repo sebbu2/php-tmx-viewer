@@ -60,7 +60,7 @@ var_dump($file);//*/
 //echo '<pre>'."\r\n";
 $res=$map->load($file, $ref);
 
-
+//print_r($map->layers[0]);die();
 
 /*var_dump($map->getProperties());echo '<br/>'."\r\n";
 var_dump($map->tilesets[0]->getProperties());echo '<br/>'."\r\n";
@@ -78,7 +78,7 @@ $viewer=new Viewer();
 
 if($file=='../maps/isometric.tmx' && array_key_exists('rot', $_REQUEST)) {
 	if(!in_array($_REQUEST['rot'],array('cw','ccw','180'))) {
-		trigger_error('unknown rotation');
+		trigger_error('unknown rotation', E_USER_ERROR);
 	}
 	require('rot.php');
 	foreach($map->layers as $a=>$layer) {

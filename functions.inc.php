@@ -21,7 +21,7 @@ function image_copy_and_resize( $dst_image , $src_image , $dst_x , $dst_y , $src
 		return imagecopyresampled($dst_image, $src_image, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h);
 	}
 	else {
-		trigger_error('no/bad quality setting.', E_USER_NOTICE);
+		trigger_error('no/bad quality setting.', E_USER_ERROR);
 		return false;
 	}
 }
@@ -95,11 +95,19 @@ function parse_data($data, $encoding='', $compression='') {
 			++$i;
 		}
 		unset($line,$data2);
+		$irow=0;
+		$icol=0;
+		$icol2=0;
 		foreach($data3 as $row) {
+			$icol=0;
 			foreach($row as $gid) {
 				$data.=pack('V', $gid);
+				++$icol;
 			}
+			if($icol>$icol2) $icol2=$icol;
+			++$irow;
 		}
+		//var_dump($irow,$icol2);
 		unset($gid,$row,$data3);
 	}
 	else {
