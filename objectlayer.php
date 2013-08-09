@@ -27,7 +27,7 @@ class ObjectLayerBase extends Layer {
 	public function getMap() {
 		return $this->map;
 	}
-	
+
 	private function load_objects(array $xml, $ref='') {
 		foreach($xml as $obj) {
 			$ob=new Object();
@@ -35,7 +35,7 @@ class ObjectLayerBase extends Layer {
 			$this->addObject($ob);
 		}
 	}
-	
+
 	public function load_from_element(SimpleXMLElement $xml, $ref='') {
 		$this->name=(string)$xml['name'];
 		$this->color=(string)$xml['color'];
@@ -52,15 +52,15 @@ class ObjectLayerBase extends Layer {
 			$this->load_objects($xml->xpath('object'), $ref);
 		}
 	}
-	
+
 	public function addObject(Object $obj) {
 		$this->objects[]=$obj;
 	}
-	
+
 	public function getObjectCount() {
 		return count($this->objects);
 	}
-	
+
 	public function getObject($id) {
 		if(array_key_exists($id, $this->objects)) {
 			return $this->objects[$id];
@@ -69,7 +69,7 @@ class ObjectLayerBase extends Layer {
 			return NULL;
 		}
 	}
-	
+
 	public function getObjects($name='') {
 		$arr=array();
 		foreach($this->objects as $obj) {
@@ -80,11 +80,11 @@ class ObjectLayerBase extends Layer {
 		if(count($arr)==0) return NULL;
 		return $arr;
 	}
-	
+
 	public function getAllObjects() {
 		return $this->objects;
 	}
-	
+
 	public function isValid() {
 		if(!is_string($this->name)) {
 			throw new Exception('Incorrect objectlayer name value.');

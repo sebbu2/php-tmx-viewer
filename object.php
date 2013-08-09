@@ -17,9 +17,9 @@ class ObjectBase {
 	public $polyline=false;
 	public $rotation=0;//deg clockwise
 	public $points=array();
-	
+
 	//methods
-	
+
 	public function load_from_element(SimpleXMLElement $xml, $ref='') {
 		$this->name=(string)$xml['name'];
 		$this->type=(string)$xml['type'];
@@ -62,7 +62,7 @@ class ObjectBase {
 			$this->loadProperties_from_element($xml->properties, $ref);
 		}
 	}
-	
+
 	public function getWidthL() {
 		$w=0;
 		for($i=0;$i<count($this->points);$i+=2) {
@@ -72,7 +72,7 @@ class ObjectBase {
 		}
 		return abs($w);
 	}
-	
+
 	public function getWidthR() {
 		$w=0;
 		for($i=0;$i<count($this->points);$i+=2) {
@@ -82,7 +82,7 @@ class ObjectBase {
 		}
 		return $w;
 	}
-	
+
 	public function getHeightT() {
 		$h=0;
 		for($i=1;$i<count($this->points);$i+=2) {
@@ -92,7 +92,7 @@ class ObjectBase {
 		}
 		return abs($h);
 	}
-	
+
 	public function getHeightB() {
 		$h=0;
 		for($i=1;$i<count($this->points);$i+=2) {
@@ -102,7 +102,7 @@ class ObjectBase {
 		}
 		return $h;
 	}
-	
+
 	public function isValid() {
 		if(!is_string($this->name)) {
 			throw new Exception('Incorrect object name value.');

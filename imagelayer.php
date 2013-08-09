@@ -25,7 +25,7 @@ class ImageLayerBase extends Layer {
 	public function getMap() {
 		return $this->map;
 	}
-	
+
 	public function load_from_element(SimpleXMLElement $xml, $ref='') {
 		$this->name=(string)$xml['name'];
 		$this->x=(string)$xml['x'];
@@ -40,7 +40,7 @@ class ImageLayerBase extends Layer {
 			$this->loadProperties_from_element($xml->properties, $ref);
 		}
 	}
-	
+
 	public function isValid() {
 		if(!is_string($this->name)) {
 			throw new Exception('Incorrect imagelayer name value.');

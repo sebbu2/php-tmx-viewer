@@ -96,7 +96,7 @@ if(array_key_exists('class',$_GET)) $class=$_GET['class'];
 if($action==''||$action=='list') {
 	echo '<h1>Classes</h1>'."\r\n";
 	echo "\r\n";
-	
+
 	natcasesort($classes);
 	//var_dump($exts);
 	foreach($classes as $class) {
@@ -137,10 +137,10 @@ elseif($action=='desc_class'&&$class!='') {
 	echo '<h1>'.$class.'</h1>';
 	echo "\r\n";
 	echo "\r\n";
-	
+
 	$cl=new ReflectionClass($class);
 	echo '<h2>'.$cl->getName().'</h2>'."\r\n";
-	
+
 	echo '<h3>Methods</h3>'."\r\n";
 	//$ct=$cl->getConstructor();//NOTE : useless
 	$mths=$cl->getMethods();
@@ -188,7 +188,7 @@ elseif($action=='desc_class'&&$class!='') {
 		echo ')<br/>'."\r\n";
 		//var_dump($mth);
 	}
-	
+
 	echo '<h3>Properties</h3>'."\r\n";
 	$props=$cl->getProperties();
 	$props_c=count($props);
@@ -213,18 +213,18 @@ elseif($action=='desc_ext') {
 	if($e->getVersion()!=NULL) echo 'Version = '.var_export($e->getVersion(), true);
 	echo "\r\n";
 	echo "\r\n";
-	
+
 	$cls=$e->getClassNames();
 	echo '<h2>Classes</h2>'."\r\n";
 	foreach($cls as $cl) {
 		echo '<a href="?action=desc_ext&ext='.$e->getName().'&class='.$cl.'">'.$cl.'</a><br/>'."\r\n";
 	}
 	echo "\r\n";
-	
+
 	$dps=$e->getDependencies();
 	echo '<h2>Dependancies</h2>'."\r\n";
 	echo '<pre>'.var_export($dps,true).'</pre>'."\r\n";
-	
+
 	$fcts=$e->getFunctions();
 	echo '<h2>Functions</h2>'."\r\n";
 	foreach($fcts as $fct) {
@@ -251,14 +251,14 @@ elseif($action=='desc_ext') {
 		echo ')<br/>'."\r\n";
 	}
 	echo "\r\n";
-	
+
 	$cts=$e->getConstants();//NOTE : Don't sort (constants are grouped)
 	echo '<h2>Constants</h2>'."\r\n";
 	foreach($cts as $ct=>$vl) {
 		echo $ct.' = '.var_export($vl,true).'<br/>'."\r\n";
 	}
 	echo "\r\n";
-	
+
 	$inis=$e->getINIEntries();
 	echo '<h2>INI entries</h2>'."\r\n";
 	foreach($inis as $ini=>$vl) {

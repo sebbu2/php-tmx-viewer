@@ -67,7 +67,7 @@ class TilesetBase {
 	public function getMap() {
 		return $this->map;
 	}
-	
+
 	public function load_from_tsx($filename, $ref='') {
 		$this->ref=$ref;
 		$this->filename=$filename;
