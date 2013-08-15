@@ -134,4 +134,25 @@ function parse_data($data, $encoding='', $compression='') {
 	return $data;
 }
 
+$opts=array(
+	'http'=>array(
+		'user_agent'=>'Mozilla/5.0 (Windows NT 5.1; rv:26.0) Gecko/20100101 Firefox/26.0',
+	),
+	'ssl'=>array(
+		'allow_self_signed'=>true,
+	),
+	'https'=>array(
+		'user_agent'=>'Mozilla/5.0 (Windows NT 5.1; rv:26.0) Gecko/20100101 Firefox/26.0',
+		'allow_self_signed'=>true,
+	),
+);
+$ctx = stream_context_create($opts);
+
+function get_url($url) {
+	global $ctx;
+	$url=preg_replace('#/([^/]+)/\.\.(?=/)#','',$url);
+	$data=file_get_contents($url,false,$ctx);
+	return $data;
+}
+
 ?>

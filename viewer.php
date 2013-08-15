@@ -65,7 +65,8 @@ class Viewer {
 					$url=Viewer::$urls[$_REQUEST['ref']].dirname($this->map->filename).'/';
 					if(strlen($ts->sourceTSX)>0) $url.=dirname($ts->sourceTSX).'/';
 					$url.=$ts->source;
-					$this->ts_imgs[$i]=create_image_from($url);
+					//$this->ts_imgs[$i]=create_image_from($url);
+					$this->ts_imgs[$i]=imagecreatefromstring(get_url($url));
 				}
 				else {
 					$this->ts_imgs[$i]=create_image_from(dirname($this->map->filename).'/'.dirname($ts->sourceTSX).'/'.$ts->source);

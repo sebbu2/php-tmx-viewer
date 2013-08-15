@@ -41,7 +41,8 @@ class TilesetBase {
 	}
 
 	public static function load_xml_from_url($url) {
-		return simplexml_load_file($url);
+		//return simplexml_load_file($url);
+		return simplexml_load_string(get_url($url));
 	}
 
 	public static function load_xml($filename, $ref='') {

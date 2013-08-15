@@ -4,7 +4,7 @@ function exception_handler($exception) {
 	$header='text/plain';
 
 	//echo "Uncaught exception: " , $exception->getMessage(), "\n";
-	printf('Uncaught exception: %s on %s:%d\n',
+	printf('Uncaught exception: %s on %s:%d'."\n",
 		$exception->getMessage(),
 		$exception->getFile(),
 		$exception->getLine()
