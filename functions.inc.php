@@ -148,9 +148,25 @@ $opts=array(
 );
 $ctx = stream_context_create($opts);
 
+function canonicalize($address)
+{
+	$address = explode('/', $address);
+	$keys = array_keys($address, '..');
+
+	foreach($keys AS $keypos => $key)
+	{
+		array_splice($address, $key - ($keypos * 2 + 1), 2);
+	}
+
+	$address = implode('/', $address);
+	$address = str_replace('./', '', $address);
+	return $address;
+}
+
 function get_url($url) {
 	global $ctx;
-	$url=preg_replace('#/([^/]+)/\.\.(?=/)#','',$url);
+	//$url=preg_replace('#/([^/]+)/\.\.(?=/)#','',$url);//NOTE: need to be applied multiple times
+	$url=canonicalize($url);
 	$data=file_get_contents($url,false,$ctx);
 	return $data;
 }
