@@ -336,6 +336,11 @@ class Viewer {
 				}
 				$cgid=$tl->get_tile($index);
 				//var_dump($cgid);die();
+				if( ($cgid&0xE0000000) != 0 ) {//NOTE: for now, ignore horizontal/vertical/diagonal flipping
+					//var_dump($cgid);
+					$cgid&=0x1FFFFFFF;
+					//var_dump($cgid);die();
+				}
 				$this->draw_tile($tl, $cgid, $i, $j);
 			}
 		}
