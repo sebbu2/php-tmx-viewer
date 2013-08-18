@@ -45,8 +45,12 @@ $opts=array(
 	),
 );
 $ctx = stream_context_create($opts);
-$data=file_get_contents($map_url[$_REQUEST['ref']],false,$ctx);
-if(in_array($_REQUEST['ref'], $github)) {
+if(file_exists($_REQUEST['ref'].'.htm') && (!array_key_exists('force',$_REQUEST) || $_REQUEST['force']!=='1') ) {
+	require($_REQUEST['ref'].'.htm');
+}
+else if(in_array($_REQUEST['ref'], $github)) {
+	$data=file_get_contents($map_url[$_REQUEST['ref']],false,$ctx);
+	ob_start();
 	$ar=json_decode($data, true);
 	$dirs=array();
 	foreach($ar as $entry) {
@@ -68,59 +72,58 @@ if(in_array($_REQUEST['ref'], $github)) {
 			}
 		}
 	}
+	$data=ob_get_contents();
+	ob_end_flush();
+	file_put_contents($_REQUEST['ref'].'.htm', $data);
 }
 elseif(in_array($_REQUEST['ref'], $viewvc)) {
-	if(!file_exists($_REQUEST['ref'].'.htm') || (array_key_exists('force',$_REQUEST)&&$_REQUEST['force']==='1')) {
-		ob_start();
-		function filter_dir_1($dir) {
-			return ($dir==='world');
+	$data=file_get_contents($map_url[$_REQUEST['ref']],false,$ctx);
+	ob_start();
+	function filter_dir_1($dir) {
+		return ($dir==='world');
+	}
+	function filter_dir_2($dir) {
+		return ($dir==='interiors' || substr($dir,0,6)=='Level ');
+	}
+	$dirs=array();
+	$files=array();
+	$res=preg_match_all('#<a name="([^"]+)" href="([^"]+)" title="View directory contents">#', $data, $subdirs, PREG_SET_ORDER);
+	foreach($subdirs as $dir) {
+		if(filter_dir_1($dir[1])) {
+			$data2=file_get_contents($map_url[$_REQUEST['ref']].$dir[1].'/',false,$ctx);
+			$res2=preg_match_all('#<a name="([^"]+)" href="([^"]+)" title="View file revision log">#', $data2, $files2, PREG_SET_ORDER);
+			foreach($files2 as $file) {
+				if(substr($file[1], -4)==='.tmx') {
+					$files[]=$dir[1].'/'.$file[1];
+				}
+			}
 		}
-		function filter_dir_2($dir) {
-			return ($dir==='interiors' || substr($dir,0,6)=='Level ');
-		}
-		$dirs=array();
-		$files=array();
-		$res=preg_match_all('#<a name="([^"]+)" href="([^"]+)" title="View directory contents">#', $data, $subdirs, PREG_SET_ORDER);
-		foreach($subdirs as $dir) {
-			if(filter_dir_1($dir[1])) {
-				$data2=file_get_contents($map_url[$_REQUEST['ref']].$dir[1].'/',false,$ctx);
-				$res2=preg_match_all('#<a name="([^"]+)" href="([^"]+)" title="View file revision log">#', $data2, $files2, PREG_SET_ORDER);
-				foreach($files2 as $file) {
+		elseif(filter_dir_2($dir[1])) {
+			$data2=file_get_contents($map_url[$_REQUEST['ref']].$dir[1].'/',false,$ctx);
+			$res=preg_match_all('#<a name="([^"]+)" href="([^"]+)" title="View directory contents">#', $data2, $subdirs2, PREG_SET_ORDER);
+			foreach($subdirs2 as $dir2) {
+				$data3=file_get_contents($map_url[$_REQUEST['ref']].$dir[1].'/'.$dir2[1].'/',false,$ctx);
+				$res=preg_match_all('#<a name="([^"]+)" href="([^"]+)" title="View file revision log">#', $data3, $subdirs3, PREG_SET_ORDER);
+				foreach($subdirs3 as $file) {
 					if(substr($file[1], -4)==='.tmx') {
-						$files[]=$dir[1].'/'.$file[1];
-					}
-				}
-			}
-			elseif(filter_dir_2($dir[1])) {
-				$data2=file_get_contents($map_url[$_REQUEST['ref']].$dir[1].'/',false,$ctx);
-				$res=preg_match_all('#<a name="([^"]+)" href="([^"]+)" title="View directory contents">#', $data2, $subdirs2, PREG_SET_ORDER);
-				foreach($subdirs2 as $dir2) {
-					$data3=file_get_contents($map_url[$_REQUEST['ref']].$dir[1].'/'.$dir2[1].'/',false,$ctx);
-					$res=preg_match_all('#<a name="([^"]+)" href="([^"]+)" title="View file revision log">#', $data3, $subdirs3, PREG_SET_ORDER);
-					foreach($subdirs3 as $file) {
-						if(substr($file[1], -4)==='.tmx') {
-							$files[]=$dir[1].'/'.$dir2[1].'/'.$file[1];
-						}
+						$files[]=$dir[1].'/'.$dir2[1].'/'.$file[1];
 					}
 				}
 			}
 		}
-		$res=preg_match_all('#<a name="([^"]+)" href="([^"]+)" title="View file revision log">#', $data, $dfiles, PREG_SET_ORDER);
-		foreach($dfiles as $file) {
-			if(substr($file[1], -4)==='.tmx') {
-				$files[]=$file[1];
-			}
-		}
-		foreach($files as $file) {
-			echo '<option value="'.$file.'">'.$file.'</option>'."\r\n";
-		}
-		$data=ob_get_contents();
-		ob_end_flush();
-		file_put_contents($_REQUEST['ref'].'.htm', $data);
 	}
-	else {
-		require($_REQUEST['ref'].'.htm');
+	$res=preg_match_all('#<a name="([^"]+)" href="([^"]+)" title="View file revision log">#', $data, $dfiles, PREG_SET_ORDER);
+	foreach($dfiles as $file) {
+		if(substr($file[1], -4)==='.tmx') {
+			$files[]=$file[1];
+		}
 	}
+	foreach($files as $file) {
+		echo '<option value="'.$file.'">'.$file.'</option>'."\r\n";
+	}
+	$data=ob_get_contents();
+	ob_end_flush();
+	file_put_contents($_REQUEST['ref'].'.htm', $data);
 }
 else {
 	echo '<option value="">Work in Progress</option>'."\r\n";
