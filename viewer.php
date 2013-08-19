@@ -59,10 +59,9 @@ class Viewer {
 				throw new Exception('Miss transparency / antialias / alphablending on multiple image tilesets.');
 				return;
 			}
-			else if( array_key_exists('ref', $_REQUEST) ) {
-				//if( $_REQUEST['ref']=='tmw' ) {
-				if(array_key_exists($_REQUEST['ref'], Viewer::$urls)) {
-					$url=Viewer::$urls[$_REQUEST['ref']].dirname($this->map->filename).'/';
+			else if( $this->map->ref != '' ) {
+				if(array_key_exists($this->map->ref, Viewer::$urls)) {
+					$url=Viewer::$urls[$this->map->ref].dirname($this->map->filename).'/';
 					if(strlen($ts->sourceTSX)>0) $url.=dirname($ts->sourceTSX).'/';
 					$url.=$ts->source;
 					//$this->ts_imgs[$i]=create_image_from($url);
@@ -436,13 +435,17 @@ class Viewer {
 		foreach($this->map->layers as $index=>$ly) {
 			//var_dump($index, $ly);die();
 			if($ly instanceof TileLayer) {
-				//break;
-				$this->draw_tilelayer($ly, $x, $y, $w, $h);
+				if($this->draw_tiles) {
+					//break;
+					$this->draw_tilelayer($ly, $x, $y, $w, $h);
+				}
 			}
 			elseif($ly instanceof ObjectLayer) {
-				//die();
-				$ol=$ly;
-				$this->draw_objectlayer($ly, $x, $y, $w, $h);
+				if($this->draw_objects) {
+					//die();
+					$ol=$ly;
+					$this->draw_objectlayer($ly, $x, $y, $w, $h);
+				}
 			}
 			elseif($ly instanceof ImageLayer) {
 				if($this->draw_images) {
