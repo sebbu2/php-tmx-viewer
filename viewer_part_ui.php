@@ -179,7 +179,7 @@ img {
 
 <div class="choice">
 <form action="" method="get">
-<select name="ref">
+<select name="ref" onchange="document.getElementById('map').selectedIndex=0;">
 <?php
 $ar=array(
 	''=>'LOCAL',
@@ -211,7 +211,7 @@ if(!array_key_exists('ref',$_REQUEST) || $_REQUEST['ref']=='') {
 	$files=array_merge($files, glob('*.tmx'));
 	$files=array_values(array_unique($files));
 	echo '<input type="hidden" name="choice" value="list"/>'."\r\n";
-	echo '<select name="list">'."\r\n";
+	echo '<select name="list" id="map">'."\r\n";
 	echo '<option value=""></option>'."\r\n";
 	foreach($files as $file) {
 		echo '<option value="'.$file.'"';
@@ -223,7 +223,7 @@ if(!array_key_exists('ref',$_REQUEST) || $_REQUEST['ref']=='') {
 else {
 	if(file_exists($_REQUEST['ref'].'.htm') && (!array_key_exists('force',$_REQUEST) || $_REQUEST['force']!=='1') ) {
 		echo '<input type="hidden" name="choice" value="url"/>'."\r\n";
-		echo '<select name="url">'."\r\n";
+		echo '<select name="url" id="map">'."\r\n";
 		echo '<option value=""></option>'."\r\n";
 		//require($_REQUEST['ref'].'.htm');
 		$data=file($_REQUEST['ref'].'.htm');
@@ -303,7 +303,12 @@ if(array_key_exists('y',$_REQUEST)) echo '&y='.$_REQUEST['y'];
 if(array_key_exists('w',$_REQUEST)) echo '&w='.$_REQUEST['w'];
 if(array_key_exists('h',$_REQUEST)) echo '&h='.$_REQUEST['h'];
 if(array_key_exists('rot',$_REQUEST)) echo '&rot='.$_REQUEST['rot'];
-?>"/><?php
+?>"<?php
+if($file!='') {
+	echo ' width="' .($_REQUEST['w']*$map->tilewidth) .'"';
+	echo ' height="'.($_REQUEST['h']*$map->tileheight).'"';
+}
+?>/><?php
 }
 ?></div>
 
