@@ -53,8 +53,8 @@ else {
 
 $res=$map->load($file, $ref);
 
-$viewer=new Viewer();
-$viewer->setMap($map);
+//$viewer=new Viewer();
+//$viewer->setMap($map);
 
 ini_set('output_buffering','off');
 
@@ -75,13 +75,13 @@ if(!array_key_exists('tilesets_nodraw', $_SESSION)) {
 	$_SESSION['tilesets_nodraw']=array('collision');
 }
 
-$viewer->load_ts();
+//$viewer->load_ts();
 
 $zoom=1;
 if(array_key_exists('zoom',$_REQUEST)) {
 	assert(is_numeric($_REQUEST['zoom'])) or trigger_error('bad zoom value', E_USER_ERROR);
 	$zoom=floatval($_REQUEST['zoom']);
-	$viewer->zoom=$zoom;
+	//$viewer->zoom=$zoom;
 	assert($viewer->zoom>=0.1 && $viewer->zoom<=10) or trigger_error('bad zoom range', E_USER_ERROR);
 }
 
@@ -106,16 +106,8 @@ if(array_key_exists('h',$_REQUEST)) {
 	$h=intval($_REQUEST['h']);
 }
 
-$ox=-$x*$map->tilewidth *$zoom;
-/*if(array_key_exists('ox',$_REQUEST)) {
-	assert(is_numeric($_REQUEST['ox'])) or trigger_error('bad ox value', E_USER_ERROR);
-	$ox=intval($_REQUEST['ox']);
-}//*/
-$oy=-$y*$map->tileheight*$zoom;
-/*if(array_key_exists('oy',$_REQUEST)) {
-	assert(is_numeric($_REQUEST['oy'])) or trigger_error('bad oy value', E_USER_ERROR);
-	$oy=intval($_REQUEST['oy']);
-}//*/
+//$ox=-$x*$map->tilewidth *$zoom;
+//$oy=-$y*$map->tileheight*$zoom;
 
 $dt=true;
 if(array_key_exists('dt',$_REQUEST)) {
@@ -124,7 +116,7 @@ if(array_key_exists('dt',$_REQUEST)) {
 	else if( strcasecmp($dt,'true' )==0 || strcasecmp($dt,'yes')==0 || $dt===1 ) $dt=true;
 	else if( strcasecmp($dt,'false')==0 || strcasecmp($dt,'no' )==0 || $dt===0 ) $dt=false;
 	else $dt=false;
-	$viewer->draw_tiles=$dt;
+	//$viewer->draw_tiles=$dt;
 }
 $do=true;
 if(array_key_exists('do',$_REQUEST)) {
@@ -133,7 +125,7 @@ if(array_key_exists('do',$_REQUEST)) {
 	else if( strcasecmp($do,'true' )==0 || strcasecmp($do,'yes')==0 || $do===1 ) $do=true;
 	else if( strcasecmp($do,'false')==0 || strcasecmp($do,'no' )==0 || $do===0 ) $do=false;
 	else $do=false;
-	$viewer->draw_objects=$do;
+	//$viewer->draw_objects=$do;
 }
 $di=true;
 if(array_key_exists('di',$_REQUEST)) {
@@ -142,20 +134,20 @@ if(array_key_exists('di',$_REQUEST)) {
 	else if( strcasecmp($di,'true' )==0 || strcasecmp($di,'yes')==0 || $di===1 ) $di=true;
 	else if( strcasecmp($di,'false')==0 || strcasecmp($di,'no' )==0 || $di===0 ) $di=false;
 	else $di=false;
-	$viewer->draw_images=$di;
+	//$viewer->draw_images=$di;
 }
 if(array_key_exists('rot',$_REQUEST)) {
 	assert(in_array($_REQUEST['rot'],array('cw','ccw','180'))) or trigger_error('bad rot value', E_USER_ERROR);
 	$rot=$_REQUEST['rot'];
 }
-$viewer->ox=$ox;
-$viewer->oy=$oy;
+//$viewer->ox=$ox;
+//$viewer->oy=$oy;
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<title>PHP TMX Map Viewer<?php if(array_key_exists('ref',$_REQUEST)) print(' - '.$_REQUEST['ref']); ?></title>
+<title>PHP TMX Map Viewer<?php if(array_key_exists('ref',$_REQUEST)&&$_REQUEST['ref']!='') print(' - '.$_REQUEST['ref']); ?><?php if(array_key_exists('url',$_REQUEST)&&$_REQUEST['url']!='') print(' - '.$_REQUEST['url']); else if(array_key_exists('list',$_REQUEST)&&$_REQUEST['list']!='') print(' - '.$_REQUEST['list']);?></title>
 <style>
 .tr {
 	position:fixed;
@@ -281,10 +273,10 @@ $di_=' checked="checked"';
 </form>
 </div>
 <div class="content"><?php
-if($_REQUEST['choice']=='url'&&$_REQUEST['url']=='') {
+if(array_key_exists('choice',$_REQUEST) && $_REQUEST['choice']=='url' && $_REQUEST['url']=='') {
 	echo 'Please choose a map.';
 }
-else if($_REQUEST['choice']=='list'&&$_REQUEST['list']=='') {
+else if(array_key_exists('choice',$_REQUEST) && $_REQUEST['choice']=='list' && $_REQUEST['list']=='') {
 	echo 'Please choose a map.';
 }
 else {

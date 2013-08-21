@@ -162,15 +162,7 @@ if(array_key_exists('h',$_REQUEST)) {
 }
 
 $ox=-$x*$map->tilewidth *$zoom;
-/*if(array_key_exists('ox',$_REQUEST)) {
-	assert(is_numeric($_REQUEST['ox'])) or trigger_error('bad ox value', E_USER_ERROR);
-	$ox=intval($_REQUEST['ox']);
-}//*/
 $oy=-$y*$map->tileheight*$zoom;
-/*if(array_key_exists('oy',$_REQUEST)) {
-	assert(is_numeric($_REQUEST['oy'])) or trigger_error('bad oy value', E_USER_ERROR);
-	$oy=intval($_REQUEST['oy']);
-}//*/
 
 $dt=false;
 $viewer->draw_tiles=$dt;
