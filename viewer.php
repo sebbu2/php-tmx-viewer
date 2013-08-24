@@ -140,13 +140,15 @@ class Viewer {
 	}
 
 	public function init_draw($x=0, $y=0, $w=PHP_INT_MAX, $h=PHP_INT_MAX) {
-		$_w=$this->map->width *$this->map->tilewidth *$this->zoom;
-		$_h=$this->map->height*$this->map->tileheight*$this->zoom;
+		$_w=$this->map->width *$this->map->tilewidth ;
+		$_h=$this->map->height*$this->map->tileheight;
 		if($this->map->orientation=='isometric') {
 			$_h+=$this->map->tileheight/2;
 		}
-		$_w=min($_w+$this->ox, $w*$this->map->tilewidth *$this->zoom);
-		$_h=min($_h+$this->oy, $h*$this->map->tilewidth *$this->zoom);
+		$_w=min($_w+$this->ox, $w*$this->map->tilewidth );
+		$_h=min($_h+$this->oy, $h*$this->map->tileheight);
+		$_w*=$this->zoom;
+		$_h*=$this->zoom;
 		$this->img=imagecreatetruecolor($_w, $_h);
 		//$img=imagecreatetruecolor($width*$tilewidth/2, $height*$tileheight/2);
 
