@@ -115,9 +115,11 @@ if($file=='../maps/isometric.tmx' && array_key_exists('rot', $_REQUEST)) {
 			$map->layers[$a]->rot180();
 		}
 	}
-	$tmp=$map->width;
-	$map->width=$map->height;
-	$map->height=$tmp;
+	if(!in_array($_REQUEST['rot'],array('cw','ccw'))) {
+		$tmp=$map->width;
+		$map->width=$map->height;
+		$map->height=$tmp;
+	}
 	//var_dump($map);
 }
 
