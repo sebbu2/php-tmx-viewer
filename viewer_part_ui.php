@@ -50,6 +50,7 @@ if(array_key_exists('ref', $_REQUEST) && $_REQUEST[$var]!='') {
 else {
 	$ref='';
 }
+if($ref=='LOCAL') $ref='';
 
 $res=$map->load($file, $ref);
 
@@ -80,9 +81,9 @@ if(!array_key_exists('tilesets_nodraw', $_SESSION)) {
 $zoom=1;
 if(array_key_exists('zoom',$_REQUEST)) {
 	assert(is_numeric($_REQUEST['zoom'])) or trigger_error('bad zoom value', E_USER_ERROR);
+	assert($zoom>=0.1 && $zoom<=10) or trigger_error('bad zoom range', E_USER_ERROR);
 	$zoom=floatval($_REQUEST['zoom']);
 	//$viewer->zoom=$zoom;
-	assert($viewer->zoom>=0.1 && $viewer->zoom<=10) or trigger_error('bad zoom range', E_USER_ERROR);
 }
 
 $x=0;
@@ -166,15 +167,43 @@ img {
 	border: 1px dashed gray;
 }
 </style>
+<script>
+var xhr_object = null;
+if(window.XMLHttpRequest) // Firefox
+	xhr_object = new XMLHttpRequest();
+else if(window.ActiveXObject) // Internet Explorer
+	xhr_object = new ActiveXObject("Microsoft.XMLHTTP");
+else { // XMLHttpRequest not supported on browser
+	alert("Votre navigateur ne supporte pas les objets XMLHTTPRequest...");
+	//return;
+}
+function get_select(obj) {
+	var type = (obj.value || obj.options[obj.selectedIndex].value);
+	if(type=='') type='LOCAL';
+	/* asynchrone */
+	/*xhr_object.open("GET", type+'.htm', true);
+
+	xhr_object.onreadystatechange = function() {
+		if(xhr_object.readyState == 4) {
+			document.getElementById('map').innerHTML="<option value=\"\"></option>\r\n"+xhr_object.responseText;
+		}
+	}
+	xhr_object.send(null);//*/
+	/* synchrone */
+	xhr_object.open("GET", type+'.htm', false);
+	xhr_object.send(null);
+	if(xhr_object.readyState == 4) document.getElementById('map').innerHTML="<option value=\"\"></option>\r\n"+xhr_object.responseText;//*/
+}
+</script>
 </head>
 <body>
 
 <div class="choice">
 <form action="" method="get">
-<select name="ref" onchange="document.getElementById('map').selectedIndex=0;">
+<select name="ref" id="ref" onchange="get_select(this);">
 <?php
 $ar=array(
-	''=>'LOCAL',
+	'LOCAL'=>'LOCAL',
 	'tmw'=>'The Mana World',
 	'evol'=>'Evol Online',
 	'tales'=>'Source of Tales',
@@ -187,25 +216,16 @@ foreach($ar as $k=>$v) {
 }
 ?></select>
 <?php
-if(!array_key_exists('ref',$_REQUEST) || $_REQUEST['ref']=='') {
-	$files=array();
-	$files=array_merge($files, glob('../../tmw/*.tmx'));
-	$files=array_merge($files, glob('../../tmx/*.tmx'));
-	$files=array_merge($files, glob('../../maps/*.tmx'));
-	$files=array_merge($files, glob('../tmw/*.tmx'));
-	$files=array_merge($files, glob('../tmx/*.tmx'));
-	$files=array_merge($files, glob('../maps/*.tmx'));
-	$files=array_merge($files, glob('../*.tmx'));
-	$files=array_merge($files, glob('tmw/*.tmx'));
-	$files=array_merge($files, glob('tmx/*.tmx'));
-	$files=array_merge($files, glob('maps/*.tmx'));
-	//$files=array_merge($files, glob('*/*.tmx'));
-	$files=array_merge($files, glob('*.tmx'));
-	$files=array_values(array_unique($files));
+if(!array_key_exists('ref',$_REQUEST) || $_REQUEST['ref']=='' || $_REQUEST['ref']=='LOCAL') {
 	echo '<input type="hidden" name="choice" value="list"/>'."\r\n";
 	echo '<select name="list" id="map">'."\r\n";
 	echo '<option value=""></option>'."\r\n";
-	foreach($files as $file) {
+	//require('local.php');
+	$data=file('local.htm');
+	foreach($data as $line) {
+		$file=substr($line, strpos($line,'"')+1, strpos($line,'"',strpos($line,'"')+1)-strpos($line,'"')-1);
+		//var_dump($file);die();
+		assert(strpos($file,'"')===false) or die('quote found in file.');
 		echo '<option value="'.$file.'"';
 		if(array_key_exists('list',$_REQUEST)&&$_REQUEST['list']==$file) echo ' selected="selected"';
 		echo '>'.$file.'</option>'."\r\n";
@@ -241,14 +261,6 @@ else {
 ?></select>
 <div class="tr">
 <?php
-if(!array_key_exists('x',$_REQUEST))
-$_REQUEST['x']=0;
-if(!array_key_exists('y',$_REQUEST))
-$_REQUEST['y']=0;
-if(!array_key_exists('w',$_REQUEST))
-$_REQUEST['w']=12;
-if(!array_key_exists('h',$_REQUEST))
-$_REQUEST['h']=12;
 if(!array_key_exists('dt',$_REQUEST))
 $dt_='';
 else
@@ -261,10 +273,11 @@ if(!array_key_exists('di',$_REQUEST))
 $di_='';
 else
 $di_=' checked="checked"';
-?><label for="x">X: </label><input type="text" id="x" name="x" value="<?php echo $_REQUEST['x']; ?>"/><br/>
-<label for="y">Y: </label><input type="text" id="y" name="y" value="<?php echo $_REQUEST['y']; ?>"/><br/>
-<label for="w">W: </label><input type="text" id="w" name="w" value="<?php echo $_REQUEST['w']; ?>"/><br/>
-<label for="h">H: </label><input type="text" id="h" name="h" value="<?php echo $_REQUEST['h']; ?>"/><br/>
+?><label for="x">X: </label><input type="text" id="x" name="x" value="<?php echo $x; ?>"/><br/>
+<label for="y">Y: </label><input type="text" id="y" name="y" value="<?php echo $y; ?>"/><br/>
+<label for="w">W: </label><input type="text" id="w" name="w" value="<?php echo $w; ?>"/><br/>
+<label for="h">H: </label><input type="text" id="h" name="h" value="<?php echo $h; ?>"/><br/>
+<label for="zoom">Zoom: </label><input type="text" id="zoom" name="zoom" value="<?php echo $zoom; ?>"/><br/>
 <label for="dt">Draw tiles: </label><input type="checkbox" id="dt" name="dt"<?php echo $dt_; ?>/><br/>
 <label for="dt">Draw images: </label><input type="checkbox" id="di" name="di"<?php echo $di_; ?>/><br/>
 <label for="dt">Draw objects: </label><input type="checkbox" id="do" name="do"<?php echo $do_; ?>/><br/>
@@ -285,20 +298,23 @@ if(array_key_exists('choice',$_REQUEST)) echo '&choice='.$_REQUEST['choice'];
 if(array_key_exists('url',$_REQUEST)) echo '&url='.$_REQUEST['url'];
 if(array_key_exists('file',$_REQUEST)) echo '&file='.$_REQUEST['file'];
 if(array_key_exists('list',$_REQUEST)) echo '&list='.$_REQUEST['list'];
-if(array_key_exists('ref',$_REQUEST)) echo '&ref='.$_REQUEST['ref'];
-if(array_key_exists('zoom',$_REQUEST)) echo '&zoom='.$_REQUEST['zoom'];
+if(array_key_exists('ref',$_REQUEST) && $_REQUEST['ref']!='LOCAL') echo '&ref='.$_REQUEST['ref'];
+if(array_key_exists('zoom',$_REQUEST)) echo '&zoom='.$zoom;
 if(array_key_exists('dt',$_REQUEST)) echo '&dt='.$_REQUEST['dt'];
 if(array_key_exists('do',$_REQUEST)) echo '&do='.$_REQUEST['do'];
 if(array_key_exists('di',$_REQUEST)) echo '&di='.$_REQUEST['di'];
-if(array_key_exists('x',$_REQUEST)) echo '&x='.$_REQUEST['x'];
-if(array_key_exists('y',$_REQUEST)) echo '&y='.$_REQUEST['y'];
-if(array_key_exists('w',$_REQUEST)) echo '&w='.$_REQUEST['w'];
-if(array_key_exists('h',$_REQUEST)) echo '&h='.$_REQUEST['h'];
-if(array_key_exists('rot',$_REQUEST)) echo '&rot='.$_REQUEST['rot'];
+if(array_key_exists('x',$_REQUEST)) echo '&x='.$x;
+if(array_key_exists('y',$_REQUEST)) echo '&y='.$y;
+if(array_key_exists('w',$_REQUEST)) echo '&w='.$w;
+if(array_key_exists('h',$_REQUEST)) echo '&h='.$h;
+if(array_key_exists('rot',$_REQUEST)) echo '&rot='.$rot;
 ?>"<?php
 if($file!='') {
-	echo ' width="' .($_REQUEST['w']*$map->tilewidth) .'"';
-	echo ' height="'.($_REQUEST['h']*$map->tileheight).'"';
+	//var_dump($_REQUEST['w'],$_REQUEST['h'],$map->tilewidth,$map->tileheight,$zoom);
+	$w=$_REQUEST['w']*$map->tilewidth *$zoom;
+	$h=$_REQUEST['h']*$map->tileheight*$zoom;
+	echo ' width="' .$w.'"';
+	echo ' height="'.$h.'"';
 }
 ?>/><?php
 }
