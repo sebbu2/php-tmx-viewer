@@ -275,8 +275,8 @@ else
 $di_=' checked="checked"';
 ?><label for="x">X: </label><input type="text" id="x" name="x" value="<?php echo $x; ?>"/><br/>
 <label for="y">Y: </label><input type="text" id="y" name="y" value="<?php echo $y; ?>"/><br/>
-<label for="w">W: </label><input type="text" id="w" name="w" value="<?php echo $w; ?>"/><br/>
-<label for="h">H: </label><input type="text" id="h" name="h" value="<?php echo $h; ?>"/><br/>
+<label for="w">W: </label><input type="text" id="w" name="w" value="<?php echo (($w!=PHP_INT_MAX)?$w:12); ?>"/><br/>
+<label for="h">H: </label><input type="text" id="h" name="h" value="<?php echo (($h!=PHP_INT_MAX)?$h:12); ?>"/><br/>
 <label for="zoom">Zoom: </label><input type="text" id="zoom" name="zoom" value="<?php echo $zoom; ?>"/><br/>
 <label for="dt">Draw tiles: </label><input type="checkbox" id="dt" name="dt"<?php echo $dt_; ?>/><br/>
 <label for="dt">Draw images: </label><input type="checkbox" id="di" name="di"<?php echo $di_; ?>/><br/>
@@ -311,10 +311,12 @@ if(array_key_exists('rot',$_REQUEST)) echo '&rot='.$rot;
 ?>"<?php
 if($file!='') {
 	//var_dump($_REQUEST['w'],$_REQUEST['h'],$map->tilewidth,$map->tileheight,$zoom);
-	$w=$_REQUEST['w']*$map->tilewidth *$zoom;
-	$h=$_REQUEST['h']*$map->tileheight*$zoom;
-	echo ' width="' .$w.'"';
-	echo ' height="'.$h.'"';
+	if($w!=PHP_INT_MAX && $h!=PHP_INT_MAX) {
+		$_w=$w*$map->tilewidth *$zoom;
+		$_h=$h*$map->tileheight*$zoom;
+		echo ' width="' .$_w.'"';
+		echo ' height="'.$_h.'"';
+	}
 }
 ?>/><?php
 }
