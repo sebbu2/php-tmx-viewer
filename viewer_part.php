@@ -164,33 +164,27 @@ if(array_key_exists('h',$_REQUEST)) {
 $ox=-$x*$map->tilewidth *$zoom;
 $oy=-$y*$map->tileheight*$zoom;
 
-$dt=false;
-$viewer->draw_tiles=$dt;
 if(array_key_exists('dt',$_REQUEST)) {
 	$dt=$_REQUEST['dt'];
-	if(is_null($dt)||empty($dt)) $dt=false;
-	else if( strcasecmp($dt,'true' )==0 || strcasecmp($dt,'yes')==0 || strcasecmp($dt,'on' )==0 || $dt===1 ) $dt=true;
-	else if( strcasecmp($dt,'false')==0 || strcasecmp($dt,'no' )==0 || strcasecmp($dt,'off')==0 || $dt===0 ) $dt=false;
+	if(is_null($dt)) $dt=false;
+	else if( strcasecmp($dt,'true' )==0 || strcasecmp($dt,'yes')==0 || strcasecmp($dt,'on' )==0 || $dt==='1' || $dt===1 ) $dt=true;
+	else if( strcasecmp($dt,'false')==0 || strcasecmp($dt,'no' )==0 || strcasecmp($dt,'off')==0 || $dt==='0' || $dt===0 ) $dt=false;
 	else $dt=false;
 	$viewer->draw_tiles=$dt;
 }
-$do=false;
-$viewer->draw_objects=$do;
 if(array_key_exists('do',$_REQUEST)) {
 	$do=$_REQUEST['do'];
-	if(is_null($do)||empty($do)) $do=false;
-	else if( strcasecmp($do,'true' )==0 || strcasecmp($do,'yes')==0 || strcasecmp($do,'on' )==0 || $do===1 ) $do=true;
-	else if( strcasecmp($do,'false')==0 || strcasecmp($do,'no' )==0 || strcasecmp($do,'off')==0 || $do===0 ) $do=false;
+	if(is_null($do)) $do=false;
+	else if( strcasecmp($do,'true' )==0 || strcasecmp($do,'yes')==0 || strcasecmp($do,'on' )==0 || $do==='1' || $do===1 ) $do=true;
+	else if( strcasecmp($do,'false')==0 || strcasecmp($do,'no' )==0 || strcasecmp($do,'off')==0 || $do==='0' || $do===0 ) $do=false;
 	else $do=false;
 	$viewer->draw_objects=$do;
 }
-$di=false;
-$viewer->draw_images=$di;
 if(array_key_exists('di',$_REQUEST)) {
 	$di=$_REQUEST['di'];
-	if(is_null($di)||empty($di)) $di=false;
-	else if( strcasecmp($di,'true' )==0 || strcasecmp($di,'yes')==0 || strcasecmp($di,'on' )==0 || $di===1 ) $di=true;
-	else if( strcasecmp($di,'false')==0 || strcasecmp($di,'no' )==0 || strcasecmp($di,'off')==0 || $di===0 ) $di=false;
+	if(is_null($di)) $di=false;
+	else if( strcasecmp($di,'true' )==0 || strcasecmp($di,'yes')==0 || strcasecmp($di,'on' )==0 || $di==='1' || $di===1 ) $di=true;
+	else if( strcasecmp($di,'false')==0 || strcasecmp($di,'no' )==0 || strcasecmp($di,'off')==0 || $di==='0' || $di===0 ) $di=false;
 	else $di=false;
 	$viewer->draw_images=$di;
 }
