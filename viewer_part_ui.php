@@ -42,7 +42,7 @@ if(array_key_exists('choice',$_REQUEST)) {
 	}
 }
 else {
-	//
+	$_REQUEST['list']=$file;
 }
 if(array_key_exists('ref', $_REQUEST) && $_REQUEST[$var]!='') {
 	$ref=$_REQUEST['ref'];
@@ -107,33 +107,31 @@ if(array_key_exists('h',$_REQUEST)) {
 	$h=intval($_REQUEST['h']);
 }
 
-//$ox=-$x*$map->tilewidth *$zoom;
-//$oy=-$y*$map->tileheight*$zoom;
 
 $dt=true;
 if(array_key_exists('dt',$_REQUEST)) {
 	$dt=$_REQUEST['dt'];
-	if(is_null($dt)||empty($dt)) $dt=true;
-	else if( strcasecmp($dt,'true' )==0 || strcasecmp($dt,'yes')==0 || $dt===1 ) $dt=true;
-	else if( strcasecmp($dt,'false')==0 || strcasecmp($dt,'no' )==0 || $dt===0 ) $dt=false;
+	if(is_null($dt)) $dt=true;
+	else if( strcasecmp($dt,'true' )==0 || strcasecmp($dt,'yes')==0 || $dt==='1' || $dt===1 ) $dt=true;
+	else if( strcasecmp($dt,'false')==0 || strcasecmp($dt,'no' )==0 || $dt==='0' || $dt===0 ) $dt=false;
 	else $dt=false;
 	//$viewer->draw_tiles=$dt;
 }
 $do=true;
 if(array_key_exists('do',$_REQUEST)) {
 	$do=$_REQUEST['do'];
-	if(is_null($do)||empty($do)) $do=true;
-	else if( strcasecmp($do,'true' )==0 || strcasecmp($do,'yes')==0 || $do===1 ) $do=true;
-	else if( strcasecmp($do,'false')==0 || strcasecmp($do,'no' )==0 || $do===0 ) $do=false;
+	if(is_null($do)) $do=true;
+	else if( strcasecmp($do,'true' )==0 || strcasecmp($do,'yes')==0 || $do==='1' || $do===1 ) $do=true;
+	else if( strcasecmp($do,'false')==0 || strcasecmp($do,'no' )==0 || $do==='0' || $do===0 ) $do=false;
 	else $do=false;
 	//$viewer->draw_objects=$do;
 }
 $di=true;
 if(array_key_exists('di',$_REQUEST)) {
 	$di=$_REQUEST['di'];
-	if(is_null($di)||empty($di)) $di=true;
-	else if( strcasecmp($di,'true' )==0 || strcasecmp($di,'yes')==0 || $di===1 ) $di=true;
-	else if( strcasecmp($di,'false')==0 || strcasecmp($di,'no' )==0 || $di===0 ) $di=false;
+	if(is_null($di)) $di=true;
+	else if( strcasecmp($di,'true' )==0 || strcasecmp($di,'yes')==0 || $di==='1' || $di===1 ) $di=true;
+	else if( strcasecmp($di,'false')==0 || strcasecmp($di,'no' )==0 || $di==='0' || $di===0 ) $di=false;
 	else $di=false;
 	//$viewer->draw_images=$di;
 }
@@ -141,8 +139,17 @@ if(array_key_exists('rot',$_REQUEST)) {
 	assert(in_array($_REQUEST['rot'],array('cw','ccw','180'))) or trigger_error('bad rot value', E_USER_ERROR);
 	$rot=$_REQUEST['rot'];
 }
-//$viewer->ox=$ox;
-//$viewer->oy=$oy;
+
+function show_select($value) {
+	$vals=array(0=>'Non',1=>'Oui');
+	foreach($vals as $k=>$v) {
+		echo '<option value="'.$k.'"';
+		if($value==$k) {
+			echo ' selected="selected"';
+		}
+		echo '>'.$v.'</option>'."\r\n";
+	}
+}
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -278,9 +285,9 @@ $di_=' checked="checked"';
 <label for="w">W: </label><input type="text" id="w" name="w" value="<?php echo (($w!=PHP_INT_MAX)?$w:12); ?>"/><br/>
 <label for="h">H: </label><input type="text" id="h" name="h" value="<?php echo (($h!=PHP_INT_MAX)?$h:12); ?>"/><br/>
 <label for="zoom">Zoom: </label><input type="text" id="zoom" name="zoom" value="<?php echo $zoom; ?>"/><br/>
-<label for="dt">Draw tiles: </label><input type="checkbox" id="dt" name="dt"<?php echo $dt_; ?>/><br/>
-<label for="dt">Draw images: </label><input type="checkbox" id="di" name="di"<?php echo $di_; ?>/><br/>
-<label for="dt">Draw objects: </label><input type="checkbox" id="do" name="do"<?php echo $do_; ?>/><br/>
+<label for="dt">Draw tiles: </label><select id="dt" name="dt"><?php show_select($dt); ?></select><br/>
+<label for="dt">Draw images: </label><select id="di" name="di"><?php show_select($di); ?></select><br/>
+<label for="dt">Draw objects: </label><select id="do" name="do"><?php show_select($do); ?></select><br/>
 </div>
 <input type="submit" value="Valider"/>
 </form>
@@ -297,7 +304,7 @@ else {
 if(array_key_exists('choice',$_REQUEST)) echo '&choice='.$_REQUEST['choice'];
 if(array_key_exists('url',$_REQUEST)) echo '&url='.$_REQUEST['url'];
 if(array_key_exists('file',$_REQUEST)) echo '&file='.$_REQUEST['file'];
-if(array_key_exists('list',$_REQUEST)) echo '&list='.$_REQUEST['list'];
+if(array_key_exists('choice',$_REQUEST) && array_key_exists('list',$_REQUEST)) echo '&list='.$_REQUEST['list'];
 if(array_key_exists('ref',$_REQUEST) && $_REQUEST['ref']!='LOCAL') echo '&ref='.$_REQUEST['ref'];
 if(array_key_exists('zoom',$_REQUEST)) echo '&zoom='.$zoom;
 if(array_key_exists('dt',$_REQUEST)) echo '&dt='.$_REQUEST['dt'];
