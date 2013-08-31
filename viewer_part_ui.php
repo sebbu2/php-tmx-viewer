@@ -173,6 +173,24 @@ function show_select($value) {
 img {
 	border: 1px dashed gray;
 }
+.content_tab {
+	border-collapse: collapse;
+}
+.content_tab td {
+	border: 1px solid green;
+}
+.b {
+	width: 30px;
+	height: 30px;
+}
+.content_t, .content_b {
+	height: 30px;
+	text-align: center;
+}
+.content_l, .content_r {
+	width: 60px;
+	vertical-align: center;
+}
 </style>
 <script>
 var xhr_object = null;
@@ -292,7 +310,13 @@ $di_=' checked="checked"';
 <input type="submit" value="Valider"/>
 </form>
 </div>
-<div class="content"><?php
+<div class="content"><table class="content_tab">
+	<tr class="content_t">
+		<td colspan="3"><input class="b" type="button" value="-"/><input class="b" type="button" value="+"/>&nbsp; &nbsp;<input class="b" type="button" value="&#8593;"/><input class="b" type="button" value="&#8595;"/></td>
+	</tr>
+	<tr class="content_mv">
+		<td class="content_l"><input class="b" type="button" value="-"/><input class="b" type="button" value="+"/><br/><br/><input class="b" type="button" value="&#8592;"/><input class="b" type="button" value="&#8594;"/></td>
+		<td class="content_c"><?php
 if(array_key_exists('choice',$_REQUEST) && $_REQUEST['choice']=='url' && $_REQUEST['url']=='') {
 	echo 'Please choose a map.';
 }
@@ -327,7 +351,13 @@ if($file!='') {
 }
 ?>/><?php
 }
-?></div>
+?></td>
+		<td class="content_r"><input class="b" type="button" value="-"/><input class="b" type="button" value="+"/><br/><br/><input class="b" type="button" value="&#8592;"/><input class="b" type="button" value="&#8594;"/></td>
+	</tr>
+	<tr class="content_b">
+		<td colspan="3"><input class="b" type="button" value="-"/><input class="b" type="button" value="+"/>&nbsp; &nbsp;<input class="b" type="button" value="&#8593;"/><input class="b" type="button" value="&#8595;"/></td>
+	</tr>
+</table></div>
 
 </body>
 </html><?php /*ob_end_flush();*/ ?>
