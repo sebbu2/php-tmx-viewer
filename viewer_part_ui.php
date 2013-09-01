@@ -246,7 +246,7 @@ if(!array_key_exists('ref',$_REQUEST) || $_REQUEST['ref']=='' || $_REQUEST['ref'
 	echo '<select name="list" id="map">'."\r\n";
 	echo '<option value=""></option>'."\r\n";
 	//require('local.php');
-	$data=file('local.htm');
+	$data=file('LOCAL.htm');
 	foreach($data as $line) {
 		$file=substr($line, strpos($line,'"')+1, strpos($line,'"',strpos($line,'"')+1)-strpos($line,'"')-1);
 		//var_dump($file);die();
@@ -347,6 +347,10 @@ if($file!='') {
 		$_h=$h*$map->tileheight*$zoom;
 		echo ' width="' .$_w.'"';
 		echo ' height="'.$_h.'"';
+	}
+	else {
+		echo ' width="' .($map->width *$map->tilewidth *$zoom).'"';
+		echo ' height="'.($map->height*$map->tileheight*$zoom).'"';
 	}
 }
 ?>/><?php
