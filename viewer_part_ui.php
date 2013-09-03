@@ -312,10 +312,10 @@ $di_=' checked="checked"';
 </div>
 <div class="content"><table class="content_tab">
 	<tr class="content_t">
-		<td colspan="3"><input class="b" type="button" value="-"/><input class="b" type="button" value="+"/>&nbsp; &nbsp;<input class="b" type="button" value="&#8593;"/><input class="b" type="button" value="&#8595;"/></td>
+		<td colspan="3"><input class="b" type="button" value="-"/><input class="b" type="button" value="+"/>&nbsp; &nbsp;<input class="b" type="button" value="&#8593;"/><input class="b" type="button" value="&#8595;"/>&nbsp; &nbsp;<input class="b" type="button" value="&#8657;"/><input class="b" type="button" value="&#8659;"/></td>
 	</tr>
 	<tr class="content_mv">
-		<td class="content_l"><input class="b" type="button" value="-"/><input class="b" type="button" value="+"/><br/><br/><input class="b" type="button" value="&#8592;"/><input class="b" type="button" value="&#8594;"/></td>
+		<td class="content_l"><input class="b" type="button" value="-"/><input class="b" type="button" value="+"/><br/><br/><input class="b" type="button" value="&#8592;"/><input class="b" type="button" value="&#8594;"/><br/><br/><input class="b" type="button" value="&#8656;"/><input class="b" type="button" value="&#8658;"/></td>
 		<td class="content_c"><?php
 if(array_key_exists('choice',$_REQUEST) && $_REQUEST['choice']=='url' && $_REQUEST['url']=='') {
 	echo 'Please choose a map.';
@@ -356,10 +356,10 @@ if($file!='') {
 ?>/><?php
 }
 ?></td>
-		<td class="content_r"><input class="b" type="button" value="-"/><input class="b" type="button" value="+"/><br/><br/><input class="b" type="button" value="&#8592;"/><input class="b" type="button" value="&#8594;"/></td>
+		<td class="content_r"><input class="b" type="button" value="-"/><input class="b" type="button" value="+"/><br/><br/><input class="b" type="button" value="&#8592;"/><input class="b" type="button" value="&#8594;"/><br/><br/><input class="b" type="button" value="&#8656;"/><input class="b" type="button" value="&#8658;"/></td>
 	</tr>
 	<tr class="content_b">
-		<td colspan="3"><input class="b" type="button" value="-"/><input class="b" type="button" value="+"/>&nbsp; &nbsp;<input class="b" type="button" value="&#8593;"/><input class="b" type="button" value="&#8595;"/></td>
+		<td colspan="3"><input class="b" type="button" value="-"/><input class="b" type="button" value="+"/>&nbsp; &nbsp;<input class="b" type="button" value="&#8593;"/><input class="b" type="button" value="&#8595;"/>&nbsp; &nbsp;<input class="b" type="button" value="&#8657;"/><input class="b" type="button" value="&#8659;"/></td>
 	</tr>
 </table></div>
 
