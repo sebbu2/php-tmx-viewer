@@ -26,7 +26,7 @@ class ImageLayerBase extends Layer {
 		return $this->map;
 	}
 
-	public function load_from_element(SimpleXMLElement $xml, $ref='') {
+	public function load_from_element(SimpleXMLElement $xml, $ref='', $recur=true) {
 		$this->name=(string)$xml['name'];
 		$this->x=(string)$xml['x'];
 		$this->y=(string)$xml['y'];

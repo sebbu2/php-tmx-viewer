@@ -27,7 +27,7 @@ class TileLayerBase extends Layer {
 		return $this->map;
 	}
 
-	public function load_from_element(SimpleXMLElement $xml, $ref='') {
+	public function load_from_element(SimpleXMLElement $xml, $ref='', $recur=true) {
 		$this->name=(string)$xml['name'];
 		$this->x=(int)$xml['x'];
 		$this->y=(int)$xml['y'];
@@ -40,10 +40,19 @@ class TileLayerBase extends Layer {
 		}
 		//$this->parse_data((string)trim($xml->data[0]));
 		//var_dump((string)trim($xml->data[0]));die();
-		$this->data=parse_data((string)trim($xml->data[0]), $this->encoding, $this->compression);
-		if(strlen($this->data)<$this->map->width*$this->map->height*4) {
+		$this->data=(string)trim($xml->data[0]);
+		if($recur) {
+			$this->load_data();
+		}
+		if($recur && strlen($this->data)<$this->map->width*$this->map->height*4) {
 			var_dump($this->name,strlen($this->data),$this->map->width*$this->map->height*4,$xml->data,(string)trim($xml->data[0]));
 			trigger_error('incorrect layer data', E_USER_ERROR);
+		}
+	}
+
+	function load_data() {
+		if( strlen($this->data) < $this->map->width*$this->map->height*4 ) {
+			$this->data=parse_data($this->data, $this->encoding, $this->compression);
 		}
 	}
 

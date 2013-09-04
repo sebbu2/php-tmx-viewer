@@ -85,12 +85,14 @@ class TilesetBase {
 		return $this->load_from_element($xml);
 	}
 
-	public function load_from_element(SimpleXMLElement $xml, $ref='') {
+	public function load_from_element(SimpleXMLElement $xml, $ref='', $recur=true) {
 		$this->ref=$ref;
 		if((bool)$xml['source']!=FALSE) {
 			$this->sourceTSX=(string)$xml['source'];
 			$this->firstgid=(int)$xml['firstgid'];
-			$this->load_from_tsx(dirname($this->map->filename).'/'.$this->sourceTSX, $ref);
+			if($recur) {
+				$this->load_from_tsx(dirname($this->map->filename).'/'.$this->sourceTSX, $ref);
+			}
 			return;
 		}
 		if(isset($xml['firstgid'])) $this->firstgid=(int)$xml['firstgid'];
@@ -106,7 +108,7 @@ class TilesetBase {
 		$this->trans=(string)$xml->image['trans'];
 		$this->width =(int)$xml->image['width' ];
 		$this->height=(int)$xml->image['height'];
-		if( $this->width ==0 || $this->height==0 ) {
+		if( ($this->width ==0 || $this->height==0) && $recur ) {
 			if($this->ref=='') {
 				if(file_exists(dirname($this->filename).'/'.$this->source)) {
 					$ar=getimagesize(dirname($this->filename).'/'.$this->source);

@@ -69,32 +69,32 @@ class MapBase {
 		$this->backgroundcolor=(string)$this->xml['backgroundcolor'];
 	}
 
-	private function load_tilesets() {
+	private function load_tilesets($recur=true) {
 		$i=0;
 		foreach($this->xml->tileset as $ts) {
 			$this->tilesets[$i]=new Tileset();
 			$this->tilesets[$i]->ref=$this->ref;
 			$this->tilesets[$i]->setMap($this);
-			$this->tilesets[$i]->load_from_element($ts, $this->ref);
+			$this->tilesets[$i]->load_from_element($ts, $this->ref, $recur);
 			++$i;
 		}
 		return $i;
 	}
 
-	private function load_layers() {
+	private function load_layers($recur=true) {
 		$i=0;
 		foreach($this->xml->children() as $ly) {
 			if( $ly->getName() === 'properties' || $ly->getName() === 'tileset' ) {
 				continue;
 			}
 			if($ly->getName() === 'layer') {
-				$this->load_tilelayer($i, $ly);
+				$this->load_tilelayer($i, $ly, $recur);
 			}
 			elseif($ly->getName() === 'objectgroup') {
-				$this->load_objectlayer($i, $ly);
+				$this->load_objectlayer($i, $ly, $recur);
 			}
 			elseif($ly->getName() === 'imagelayer') {
-				$this->load_imagelayer($i, $ly);
+				$this->load_imagelayer($i, $ly, $recur);
 			}
 			else {
 				throw new Exception('unknown element in xml file (from '.__FILE__.':'.__LINE__.')');
@@ -105,28 +105,28 @@ class MapBase {
 		return $i;
 	}
 
-	private function load_tilelayer($i, $tl) {
+	private function load_tilelayer($i, $tl, $recur=true) {
 		$this->layers[$i]=new TileLayer();
 		$this->layers[$i]->setMap($this);
 		$this->layers[$i]->ref=$this->ref;
 		$this->layers[$i]->load_from_element($tl, $this->ref);
 	}
 
-	private function load_imagelayer($i, $il) {
+	private function load_imagelayer($i, $il, $recur=true) {
 		$this->layers[$i]=new ImageLayer();
 		$this->layers[$i]->setMap($this);
 		$this->layers[$i]->ref=$this->ref;
 		$this->layers[$i]->load_from_element($il, $this->ref);
 	}
 
-	private function load_objectlayer($i, $ol) {
+	private function load_objectlayer($i, $ol, $recur=true) {
 		$this->layers[$i]=new ObjectLayer();
 		$this->layers[$i]->setMap($this);
 		$this->layers[$i]->ref=$this->ref;
 		$this->layers[$i]->load_from_element($ol, $this->ref);
 	}
 
-	public function load($filename, $ref='') {
+	public function load($filename, $ref='', $recur=true) {
 		$this->ref=$ref;
 		$this->filename=$filename;
 		$this->xml=self::load_xml($filename, $ref);
@@ -142,8 +142,10 @@ class MapBase {
 		if((bool)$this->xml->properties!==false) {
 			$this->loadProperties_from_element($this->xml->properties, $ref);
 		}
-		$this->load_tilesets();
-		$this->load_layers();
+		if($recur) {
+			$this->load_tilesets($recur);
+			$this->load_layers($recur);
+		}
 		return $this->xml;
 	}
 

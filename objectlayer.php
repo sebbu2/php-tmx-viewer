@@ -36,7 +36,7 @@ class ObjectLayerBase extends Layer {
 		}
 	}
 
-	public function load_from_element(SimpleXMLElement $xml, $ref='') {
+	public function load_from_element(SimpleXMLElement $xml, $ref='', $recur=true) {
 		$this->name=(string)$xml['name'];
 		$this->color=(string)$xml['color'];
 		$this->x=(string)$xml['x'];
