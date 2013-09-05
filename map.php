@@ -109,21 +109,21 @@ class MapBase {
 		$this->layers[$i]=new TileLayer();
 		$this->layers[$i]->setMap($this);
 		$this->layers[$i]->ref=$this->ref;
-		$this->layers[$i]->load_from_element($tl, $this->ref);
+		$this->layers[$i]->load_from_element($tl, $this->ref, $recur);
 	}
 
 	private function load_imagelayer($i, $il, $recur=true) {
 		$this->layers[$i]=new ImageLayer();
 		$this->layers[$i]->setMap($this);
 		$this->layers[$i]->ref=$this->ref;
-		$this->layers[$i]->load_from_element($il, $this->ref);
+		$this->layers[$i]->load_from_element($il, $this->ref, $recur);
 	}
 
 	private function load_objectlayer($i, $ol, $recur=true) {
 		$this->layers[$i]=new ObjectLayer();
 		$this->layers[$i]->setMap($this);
 		$this->layers[$i]->ref=$this->ref;
-		$this->layers[$i]->load_from_element($ol, $this->ref);
+		$this->layers[$i]->load_from_element($ol, $this->ref, $recur);
 	}
 
 	public function load($filename, $ref='', $recur=true) {
