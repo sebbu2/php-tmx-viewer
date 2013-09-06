@@ -52,7 +52,9 @@ else {
 }
 if($ref=='LOCAL') $ref='';
 
-$res=$map->load($file, $ref);
+$recur=false;
+
+$res=$map->load($file, $ref, $recur);
 
 //$viewer=new Viewer();
 //$viewer->setMap($map);
@@ -223,8 +225,8 @@ function get_select(obj) {
 </head>
 <body>
 
-<div class="choice">
 <form action="" method="get">
+<div class="choice">
 <select name="ref" id="ref" onchange="get_select(this);">
 <?php
 $ar=array(
@@ -308,14 +310,13 @@ $di_=' checked="checked"';
 <label for="dt">Draw objects: </label><select id="do" name="do"><?php show_select($do); ?></select><br/>
 </div>
 <input type="submit" value="Valider"/>
-</form>
 </div>
 <div class="content"><table class="content_tab">
 	<tr class="content_t">
-		<td colspan="3"><input class="b" type="button" value="-"/><input class="b" type="button" value="+"/>&nbsp; &nbsp;<input class="b" type="button" value="&#8593;"/><input class="b" type="button" value="&#8595;"/>&nbsp; &nbsp;<input class="b" type="button" value="&#8657;"/><input class="b" type="button" value="&#8659;"/></td>
+		<td colspan="3"><input class="b" type="submit" name="act_t" value="-"/><input class="b" type="submit" name="act_t" value="+"/>&nbsp; &nbsp;<input class="b" type="submit" name="act_t" value="&#8593;"/><input class="b" type="submit" name="act_t" value="&#8595;"/>&nbsp; &nbsp;<input class="b" type="submit" name="act_t" value="&#8657;"/><input class="b" type="submit" name="act_t" value="&#8659;"/></td>
 	</tr>
 	<tr class="content_mv">
-		<td class="content_l"><input class="b" type="button" value="-"/><input class="b" type="button" value="+"/><br/><br/><input class="b" type="button" value="&#8592;"/><input class="b" type="button" value="&#8594;"/><br/><br/><input class="b" type="button" value="&#8656;"/><input class="b" type="button" value="&#8658;"/></td>
+		<td class="content_l"><input class="b" type="submit" name="act_l" value="-"/><input class="b" type="submit" name="act_l" value="+"/><br/><br/><input class="b" type="submit" name="act_l" value="&#8592;"/><input class="b" type="submit" name="act_l" value="&#8594;"/><br/><br/><input class="b" type="submit" name="act_l" value="&#8656;"/><input class="b" type="submit" name="act_l" value="&#8658;"/></td>
 		<td class="content_c"><?php
 if(array_key_exists('choice',$_REQUEST) && $_REQUEST['choice']=='url' && $_REQUEST['url']=='') {
 	echo 'Please choose a map.';
@@ -356,12 +357,12 @@ if($file!='') {
 ?>/><?php
 }
 ?></td>
-		<td class="content_r"><input class="b" type="button" value="-"/><input class="b" type="button" value="+"/><br/><br/><input class="b" type="button" value="&#8592;"/><input class="b" type="button" value="&#8594;"/><br/><br/><input class="b" type="button" value="&#8656;"/><input class="b" type="button" value="&#8658;"/></td>
+		<td class="content_r"><input class="b" type="submit" name="act_r" value="-"/><input class="b" type="submit" name="act_r" value="+"/><br/><br/><input class="b" type="submit" name="act_r" value="&#8592;"/><input class="b" type="submit" name="act_r" value="&#8594;"/><br/><br/><input class="b" type="submit" name="act_r" value="&#8656;"/><input class="b" type="submit" name="act_r" value="&#8658;"/></td>
 	</tr>
 	<tr class="content_b">
-		<td colspan="3"><input class="b" type="button" value="-"/><input class="b" type="button" value="+"/>&nbsp; &nbsp;<input class="b" type="button" value="&#8593;"/><input class="b" type="button" value="&#8595;"/>&nbsp; &nbsp;<input class="b" type="button" value="&#8657;"/><input class="b" type="button" value="&#8659;"/></td>
+		<td colspan="3"><input class="b" type="submit" name="act_b" value="-"/><input class="b" type="submit" name="act_b" value="+"/>&nbsp; &nbsp;<input class="b" type="submit" name="act_b" value="&#8593;"/><input class="b" type="submit" name="act_b" value="&#8595;"/>&nbsp; &nbsp;<input class="b" type="submit" name="act_b" value="&#8657;"/><input class="b" type="submit" name="act_b" value="&#8659;"/></td>
 	</tr>
-</table></div>
+</table></form></div>
 
 </body>
 </html><?php /*ob_end_flush();*/ ?>
