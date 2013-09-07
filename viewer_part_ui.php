@@ -142,6 +142,122 @@ if(array_key_exists('rot',$_REQUEST)) {
 	$rot=$_REQUEST['rot'];
 }
 
+$act_count=0;
+if(array_key_exists('act_u',$_REQUEST)) {
+	$vals=array(
+		'-',//minus
+		'+',//plus
+		'&#8593;',//haut 1
+		'&#8595;',//bas 1
+		'&#8657;',//haut 2
+		'&#8659;',//bas 2
+		'&uarr;',//haut 1
+		'&darr;',//bas 1
+		'&uArr;',//haut 2
+		'&dArr;',//bas 2
+	);
+	$act_u=htmlentities($_REQUEST['act_u'], ENT_COMPAT | ENT_HTML401, 'UTF-8');
+	if(!in_array($act_u, $vals)) die('incorrect up action');
+	switch($act_u) {
+		case '-'://minus
+			$h--;
+			$y++;
+			break;
+		case '+'://plus
+			$h++;
+			$y--;
+			break;
+		case '&#8593;'://haut 1
+		case '&uarr;'://haut 1
+			$y--;
+			break;
+		case '&#8595;'://bas 1
+		case '&darr;'://bas 1
+			$y++;
+			break;
+		case '&#8657;'://haut 2
+		case '&uArr;'://haut 2
+			$y-=$h;
+			break;
+		case '&#8659;'://bas 2
+		case '&dArr;'://bas 2
+			$y+=$h;
+			break;
+		default:
+			die('incorrect top action');
+			break;
+	}
+	$act_count++;
+}
+if(array_key_exists('act_l',$_REQUEST)) {
+	$vals=array(
+		'-',//minus
+		'+',//plus
+		'&#8592;',//left 1
+		'&#8596;',//right 1
+		'&#8656;',//left 2
+		'&#8658;',//right 2
+		'&larr;',//left 1
+		'&rarr;',//right 1
+		'&lArr;',//left 2
+		'&rArr;',//right 2
+	);
+	$act_l=htmlentities($_REQUEST['act_l'], ENT_COMPAT | ENT_HTML401, 'UTF-8');
+	if(!in_array($act_l, $vals)) die('incorrect left action');
+	$act_count++;
+}
+if(array_key_exists('act_r',$_REQUEST)) {
+	$vals=array(
+		'-',//minus
+		'+',//plus
+		'&#8592;',//left 1
+		'&#8596;',//right 1
+		'&#8656;',//left 2
+		'&#8658;',//right 2
+		'&larr;',//left 1
+		'&rarr;',//right 1
+		'&lArr;',//left 2
+		'&rArr;',//right 2
+	);
+	$act_r=htmlentities($_REQUEST['act_r'], ENT_COMPAT | ENT_HTML401, 'UTF-8');
+	if(!in_array($act_r, $vals)) die('incorrect right action');
+	$act_count++;
+}
+if(array_key_exists('act_d',$_REQUEST)) {
+	$vals=array(
+		'-',//minus
+		'+',//plus
+		'&#8593;',//haut 1
+		'&#8595;',//bas 1
+		'&#8657;',//haut 2
+		'&#8659;',//bas 2
+		'&uarr;',//haut 1
+		'&darr;',//bas 1
+		'&uArr;',//haut 2
+		'&dArr;',//bas 2
+	);
+	$act_d=htmlentities($_REQUEST['act_d'], ENT_COMPAT | ENT_HTML401, 'UTF-8');
+	if(!in_array($act_d, $vals)) die('incorrect down action');
+	$act_count++;
+}
+
+if($act_count>1) die('incorrect action');
+
+if($x<0) $x=0;
+if($y<0) $y=0;
+if($h<1) $h=1;
+if($w<1) $w=1;
+if($x>=$map->width) {
+	$x=max(0,$map->width-$w);
+	$w=min($w, $map->width-$x);
+}
+if($y>=$map->height) {
+	$y=max(0,$map->height-$h);
+	$h=min($h, $map->height-$y);
+}
+if($w>$map->width ) $w=$map->width ;
+if($h>$map->height) $h=$map->height;
+
 function show_select($value) {
 	$vals=array(0=>'Non',1=>'Oui');
 	foreach($vals as $k=>$v) {
@@ -313,7 +429,7 @@ $di_=' checked="checked"';
 </div>
 <div class="content"><table class="content_tab">
 	<tr class="content_t">
-		<td colspan="3"><input class="b" type="submit" name="act_t" value="-"/><input class="b" type="submit" name="act_t" value="+"/>&nbsp; &nbsp;<input class="b" type="submit" name="act_t" value="&#8593;"/><input class="b" type="submit" name="act_t" value="&#8595;"/>&nbsp; &nbsp;<input class="b" type="submit" name="act_t" value="&#8657;"/><input class="b" type="submit" name="act_t" value="&#8659;"/></td>
+		<td colspan="3"><input class="b" type="submit" name="act_u" value="-"/><input class="b" type="submit" name="act_u" value="+"/>&nbsp; &nbsp;<input class="b" type="submit" name="act_u" value="&#8593;"/><input class="b" type="submit" name="act_u" value="&#8595;"/>&nbsp; &nbsp;<input class="b" type="submit" name="act_u" value="&#8657;"/><input class="b" type="submit" name="act_u" value="&#8659;"/></td>
 	</tr>
 	<tr class="content_mv">
 		<td class="content_l"><input class="b" type="submit" name="act_l" value="-"/><input class="b" type="submit" name="act_l" value="+"/><br/><br/><input class="b" type="submit" name="act_l" value="&#8592;"/><input class="b" type="submit" name="act_l" value="&#8594;"/><br/><br/><input class="b" type="submit" name="act_l" value="&#8656;"/><input class="b" type="submit" name="act_l" value="&#8658;"/></td>
@@ -360,7 +476,7 @@ if($file!='') {
 		<td class="content_r"><input class="b" type="submit" name="act_r" value="-"/><input class="b" type="submit" name="act_r" value="+"/><br/><br/><input class="b" type="submit" name="act_r" value="&#8592;"/><input class="b" type="submit" name="act_r" value="&#8594;"/><br/><br/><input class="b" type="submit" name="act_r" value="&#8656;"/><input class="b" type="submit" name="act_r" value="&#8658;"/></td>
 	</tr>
 	<tr class="content_b">
-		<td colspan="3"><input class="b" type="submit" name="act_b" value="-"/><input class="b" type="submit" name="act_b" value="+"/>&nbsp; &nbsp;<input class="b" type="submit" name="act_b" value="&#8593;"/><input class="b" type="submit" name="act_b" value="&#8595;"/>&nbsp; &nbsp;<input class="b" type="submit" name="act_b" value="&#8657;"/><input class="b" type="submit" name="act_b" value="&#8659;"/></td>
+		<td colspan="3"><input class="b" type="submit" name="act_d" value="-"/><input class="b" type="submit" name="act_d" value="+"/>&nbsp; &nbsp;<input class="b" type="submit" name="act_d" value="&#8593;"/><input class="b" type="submit" name="act_d" value="&#8595;"/>&nbsp; &nbsp;<input class="b" type="submit" name="act_d" value="&#8657;"/><input class="b" type="submit" name="act_d" value="&#8659;"/></td>
 	</tr>
 </table></form></div>
 
