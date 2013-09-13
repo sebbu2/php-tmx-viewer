@@ -247,16 +247,22 @@ if($x<0) $x=0;
 if($y<0) $y=0;
 if($h<1) $h=1;
 if($w<1) $w=1;
-if($x>=$map->width) {
-	$x=max(0,$map->width-$w);
-	$w=min($w, $map->width-$x);
-}
-if($y>=$map->height) {
-	$y=max(0,$map->height-$h);
-	$h=min($h, $map->height-$y);
-}
+
 if($w>$map->width ) $w=$map->width ;
 if($h>$map->height) $h=$map->height;
+
+if($x>=$map->width) {
+	$x=$map->width-$w;
+}
+if($y>=$map->height) {
+	$y=$map->height-$h;
+}
+
+if($x>$map->width -$w) $x=$map->width -$w;
+if($y>$map->height-$h) $y=$map->height-$h;
+
+if($w==$map->width &&$x>0) $x=0;
+if($h==$map->height&&$y>0) $y=0;
 
 function show_select($value) {
 	$vals=array(0=>'Non',1=>'Oui');
