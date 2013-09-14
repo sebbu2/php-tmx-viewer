@@ -184,7 +184,7 @@ if(array_key_exists('act_u',$_REQUEST)) {
 			$y+=$h;
 			break;
 		default:
-			die('incorrect top action');
+			die('incorrect up action');
 			break;
 	}
 	$act_count++;
@@ -238,6 +238,33 @@ if(array_key_exists('act_d',$_REQUEST)) {
 	);
 	$act_d=htmlentities($_REQUEST['act_d'], ENT_COMPAT | ENT_HTML401, 'UTF-8');
 	if(!in_array($act_d, $vals)) die('incorrect down action');
+	switch($act_d) {
+		case '-'://minus
+			$h--;
+			break;
+		case '+'://plus
+			$h++;
+			break;
+		case '&#8593;'://haut 1
+		case '&uarr;'://haut 1
+			$y--;
+			break;
+		case '&#8595;'://bas 1
+		case '&darr;'://bas 1
+			$y++;
+			break;
+		case '&#8657;'://haut 2
+		case '&uArr;'://haut 2
+			$y-=$h;
+			break;
+		case '&#8659;'://bas 2
+		case '&dArr;'://bas 2
+			$y+=$h;
+			break;
+		default:
+			die('incorrect down action');
+			break;
+	}
 	$act_count++;
 }
 
