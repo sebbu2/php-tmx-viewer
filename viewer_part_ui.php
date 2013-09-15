@@ -204,6 +204,35 @@ if(array_key_exists('act_l',$_REQUEST)) {
 	);
 	$act_l=htmlentities($_REQUEST['act_l'], ENT_COMPAT | ENT_HTML401, 'UTF-8');
 	if(!in_array($act_l, $vals)) die('incorrect left action');
+	switch($act_l) {
+		case '-'://minus
+			$w--;
+			$x++;
+			break;
+		case '+'://plus
+			$w++;
+			$x--;
+			break;
+		case '&#8592;'://left 1
+		case '&larr;'://left 1
+			$x--;
+			break;
+		case '&#8596;'://right 1
+		case '&rarr;'://right 1
+			$x++;
+			break;
+		case '&#8656;'://left 2
+		case '&lArr;'://left 2
+			$x-=$w;
+			break;
+		case '&#8658;'://right 2
+		case '&rArr;'://right 2
+			$x+=$w;
+			break;
+		default:
+			die('incorrect left action');
+			break;
+	}
 	$act_count++;
 }
 if(array_key_exists('act_r',$_REQUEST)) {
