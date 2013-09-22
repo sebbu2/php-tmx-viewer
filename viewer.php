@@ -25,6 +25,9 @@ class Viewer {
 		'tmw'=>'https://raw.github.com/themanaworld/tmwa-client-data/master/',
 		'evol'=>'https://raw.github.com/EvolOnline/clientdata-beta/master/',
 		'tales'=>'https://raw.github.com/tales/sourceoftales/master/',
+		'elmlor'=>'https://github.com/KaneHart/Elmlor-Client-Data/raw/master/',
+		'lof'=>'https://github.com/landoffire/lof-tmwa-client-data/raw/master/',
+		'lof-newworld'=>'https://github.com/landoffire/lof-newworld/raw/master/',
 		'stendhal'=>'http://arianne.cvs.sourceforge.net/viewvc/arianne/stendhal/tiled/',
 		);
 	//constructors

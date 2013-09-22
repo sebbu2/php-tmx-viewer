@@ -439,6 +439,9 @@ $ar=array(
 	'tmw'=>'The Mana World',
 	'evol'=>'Evol Online',
 	'tales'=>'Source of Tales',
+	'elmlor'=>'Elmlor',
+	'lof'=>'Land of Fire',
+	'lof-newworld'=>'Land of Fire - New World',
 	'stendhal'=>'Stendhal',
 );
 foreach($ar as $k=>$v) {

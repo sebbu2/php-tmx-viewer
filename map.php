@@ -24,6 +24,9 @@ class MapBase {
 		'tmw'=>'https://github.com/themanaworld/tmwa-client-data/raw/master/',
 		'evol'=>'https://github.com/EvolOnline/clientdata-beta/raw/master/',
 		'tales'=>'https://github.com/tales/sourceoftales/raw/master/',
+		'elmlor'=>'https://github.com/KaneHart/Elmlor-Client-Data/raw/master/',
+		'lof'=>'https://github.com/landoffire/lof-tmwa-client-data/raw/master/',
+		'lof-newworld'=>'https://github.com/landoffire/lof-newworld/raw/master/',
 		'stendhal'=>'http://arianne.cvs.sourceforge.net/viewvc/arianne/stendhal/tiled/',
 		);
 

@@ -13,9 +13,12 @@ $map_url=array(
 	'tmw'=>'https://api.github.com/repos/themanaworld/tmwa-client-data/contents/maps',
 	'evol'=>'https://api.github.com/repos/EvolOnline/clientdata-beta/contents/maps',
 	'tales'=>'https://api.github.com/repos/tales/sourceoftales/contents/maps',
+	'elmlor'=>'https://api.github.com/repos/KaneHart/Elmlor-Client-Data/contents/maps',
+	'lof'=>'https://api.github.com/repos/landoffire/lof-tmwa-client-data/contents/maps',
+	'lof-newworld'=>'https://api.github.com/repos/landoffire/lof-newworld/contents/client-data/maps',
 	'stendhal'=>'http://arianne.cvs.sourceforge.net/viewvc/arianne/stendhal/tiled/',
 );
-$github=array('tmw','evol','tales');
+$github=array('tmw','evol','tales','elmlor','lof','lof-newworld');
 $viewvc=array('stendhal');
 if(!array_key_exists('ref',$_REQUEST)) {
 ?><form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="GET">
@@ -23,6 +26,9 @@ if(!array_key_exists('ref',$_REQUEST)) {
 <option value="tmw">The Mana World</option>
 <option value="evol">Evol Online</option>
 <option value="tales">Source of Tales</option>
+<option value="lof">Land of Fire</option>
+<option value="lof-newworld">Land of Fire - New World</option>
+<option value="elmlor">Elmlor</option>
 <option value="stendhal">Stendhal</option>
 </select>
 <input type="submit" value="Valider"/>
