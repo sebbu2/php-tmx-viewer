@@ -328,11 +328,11 @@ if($act_count>1) die('incorrect action');
 
 if($x<0) $x=0;
 if($y<0) $y=0;
-if($h<1) $h=1;
-if($w<1) $w=1;
+if($h!=PHP_INT_MAX && $h<1) $h=1;
+if($w!=PHP_INT_MAX && $w<1) $w=1;
 
-if($w>$map->width ) $w=$map->width ;
-if($h>$map->height) $h=$map->height;
+if($w!=PHP_INT_MAX && $w>$map->width ) $w=$map->width ;
+if($h!=PHP_INT_MAX && $h>$map->height) $h=$map->height;
 
 if($x>=$map->width) {
 	$x=$map->width-$w;
@@ -508,6 +508,9 @@ if(!array_key_exists('di',$_REQUEST))
 $di_='';
 else
 $di_=' checked="checked"';
+//TODO:width/height correction (fit to screen by default)
+if($w==PHP_INT_MAX) $w=12;
+if($h==PHP_INT_MAX) $h=12;
 ?><label for="x">X: </label><input type="text" id="x" name="x" value="<?php echo $x; ?>"/><br/>
 <label for="y">Y: </label><input type="text" id="y" name="y" value="<?php echo $y; ?>"/><br/>
 <label for="w">W: </label><input type="text" id="w" name="w" value="<?php echo (($w!=PHP_INT_MAX)?$w:12); ?>"/><br/>

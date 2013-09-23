@@ -35,7 +35,7 @@ if(!array_key_exists('ref',$_REQUEST)) {
 </form><?php
 }
 elseif(!array_key_exists('map',$_REQUEST)) {
-?><form action="viewer_view.php" method="GET">
+?><form action="viewer_part_ui.php" method="GET">
 <input type="hidden" name="called_from" value="script"/>
 <input type="hidden" name="choice" value="url"/>
 <input type="hidden" name="ref" value="<?php echo $_REQUEST['ref']; ?>"/>
