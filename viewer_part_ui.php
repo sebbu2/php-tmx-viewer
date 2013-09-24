@@ -326,13 +326,17 @@ if(array_key_exists('act_d',$_REQUEST)) {
 
 if($act_count>1) die('incorrect action');
 
+//TODO:width/height correction (fit to screen by default)
+if($w==PHP_INT_MAX) $w=12;
+if($h==PHP_INT_MAX) $h=12;
+
 if($x<0) $x=0;
 if($y<0) $y=0;
-if($h!=PHP_INT_MAX && $h<1) $h=1;
-if($w!=PHP_INT_MAX && $w<1) $w=1;
+if($h<1) $h=1;
+if($w<1) $w=1;
 
-if($w!=PHP_INT_MAX && $w>$map->width ) $w=$map->width ;
-if($h!=PHP_INT_MAX && $h>$map->height) $h=$map->height;
+if($w>$map->width ) $w=$map->width ;
+if($h>$map->height) $h=$map->height;
 
 if($x>=$map->width) {
 	$x=$map->width-$w;
@@ -508,9 +512,6 @@ if(!array_key_exists('di',$_REQUEST))
 $di_='';
 else
 $di_=' checked="checked"';
-//TODO:width/height correction (fit to screen by default)
-if($w==PHP_INT_MAX) $w=12;
-if($h==PHP_INT_MAX) $h=12;
 ?><label for="x">X: </label><input type="text" id="x" name="x" value="<?php echo $x; ?>"/><br/>
 <label for="y">Y: </label><input type="text" id="y" name="y" value="<?php echo $y; ?>"/><br/>
 <label for="w">W: </label><input type="text" id="w" name="w" value="<?php echo (($w!=PHP_INT_MAX)?$w:12); ?>"/><br/>
@@ -548,8 +549,8 @@ if(array_key_exists('do',$_REQUEST)) echo '&do='.$_REQUEST['do'];
 if(array_key_exists('di',$_REQUEST)) echo '&di='.$_REQUEST['di'];
 if(array_key_exists('x',$_REQUEST)) echo '&x='.$x;
 if(array_key_exists('y',$_REQUEST)) echo '&y='.$y;
-if(array_key_exists('w',$_REQUEST)) echo '&w='.$w;
-if(array_key_exists('h',$_REQUEST)) echo '&h='.$h;
+echo '&w='.$w;
+echo '&h='.$h;
 if(array_key_exists('rot',$_REQUEST)) echo '&rot='.$rot;
 ?>"<?php
 if($file!='') {
