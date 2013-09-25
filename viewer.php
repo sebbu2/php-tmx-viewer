@@ -234,12 +234,12 @@ class Viewer {
 				$sy=$ty2+$ty*$tsh;
 				$sw=$tsw;
 				$sh=$tsh;
-				if($sx+$sw>imagesx($tsimg)) {
+				if($sx>imagesx($tsimg)) {
 					var_dump($j, $i, $cgid, $ti, $lid);
 					trigger_error('width exceeded.', E_USER_ERROR);
 					//die();
 				}
-				if($sy+$sh>imagesy($tsimg)) {
+				if($sy>imagesy($tsimg)) {
 					var_dump($j, $i, $cgid, $ti, $lid);
 					trigger_error('height exceeded.', E_USER_ERROR);
 					//die();
