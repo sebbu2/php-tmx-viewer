@@ -38,7 +38,7 @@ class TilesetBase {
 	//static methods
 	public static function load_xml_from_file($filename) {
 		if(!file_exists($filename)) {
-			throw new Exception('File \''.$filename.'\' not found.');
+			throw new Exception('File \''.htmlentities($filename).'\' not found.');
 		}
 		return simplexml_load_file($filename);
 	}

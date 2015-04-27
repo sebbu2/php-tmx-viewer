@@ -35,7 +35,7 @@ class MapBase {
 	//static methods
 	public static function load_xml_from_file($filename, $ref='') {
 		if(!file_exists($filename)) {
-			throw new Exception('File \''.$filename.'\' not found with ref \''.$ref.'\'.');
+			throw new Exception('File \''.htmlentities($filename).'\' not found with ref \''.$ref.'\'.');
 		}
 		return simplexml_load_file($filename);
 	}
