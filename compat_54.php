@@ -22,7 +22,7 @@ class ImageLayer extends ImageLayerBase {
 	use properties;
 };
 
-class Object extends ObjectBase {
+class MapObject extends ObjectBase {
 	use properties;
 };
 ?>

@@ -8,6 +8,7 @@ $files=array_merge($files, glob('../tmw/*.tmx'));
 $files=array_merge($files, glob('../tmx/*.tmx'));
 $files=array_merge($files, glob('../maps/*.tmx'));
 $files=array_merge($files, glob('../*.tmx'));
+$files=array_merge($files, glob('../maps/Simple-Tiled-Implementation/tests/*.tmx'));
 $files=array_merge($files, glob('tmw/*.tmx'));
 $files=array_merge($files, glob('tmx/*.tmx'));
 $files=array_merge($files, glob('maps/*.tmx'));

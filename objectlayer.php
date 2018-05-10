@@ -30,7 +30,7 @@ class ObjectLayerBase extends Layer {
 
 	private function load_objects(array $xml, $ref='') {
 		foreach($xml as $obj) {
-			$ob=new Object();
+			$ob=new MapObject();
 			$ob->load_from_element($obj, $ref);
 			$this->addObject($ob);
 		}

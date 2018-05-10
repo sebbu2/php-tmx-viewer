@@ -424,7 +424,7 @@ class Viewer {
 					imagerectangle($this->img, $this->ox+$o->x*$this->zoom, $this->oy+$o->y*$this->zoom, $this->ox+($o->x + $o->width)*$this->zoom, $this->oy+($o->y + $o->height)*$this->zoom, $this->colors['green']);
 					imagesetthickness($this->img, 1);
 					if($o->name!='') {
-						imagettftext($this->img, 10*$this->zoom, 0, $this->ox+$o->x*$this->zoom, $this->oy+($o->y-4)*$this->zoom, $this->colors['blue'], './courbd.ttf', $o->name);
+						imagettftext($this->img, 10*$this->zoom, 0, $this->ox+$o->x*$this->zoom, $this->oy+($o->y-4)*$this->zoom, $this->colors['blue'], dirname(__FILE__).'/courbd.ttf', $o->name);
 						//imagestring($this->img, 3, $this->ox+$o->x*$this->zoom, $this->oy+($o->y-16)*$this->zoom, $o->name, $this->colors['blue']);
 					}
 				}

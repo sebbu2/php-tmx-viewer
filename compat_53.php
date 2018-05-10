@@ -93,7 +93,7 @@ class ImageLayer extends ImageLayerBase {
 	}
 };
 
-class Object extends ObjectBase {
+class MapObject extends ObjectBase {
 	private $_properties=array();
 	function __construct() {
 		if(method_exists(get_parent_class($this), '__construct')) {
