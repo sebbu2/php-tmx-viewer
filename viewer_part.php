@@ -76,7 +76,7 @@ die();//*/
 $viewer=new Viewer();
 
 if($file=='../maps/isometric.tmx' && array_key_exists('rot', $_REQUEST)) {
-	assert(in_array($_REQUEST['rot'],array('cw','ccw','180'))) or trigger_error('bad rot value', E_USER_ERROR);
+	assert(in_array($_REQUEST['rot'],array('','0','ccw','90','180','cw','270','360'))) or trigger_error('bad rot value', E_USER_ERROR);
 	$rot=$_REQUEST['rot'];
 	require('rot.php');
 	foreach($map->layers as $a=>$layer) {
@@ -84,10 +84,10 @@ if($file=='../maps/isometric.tmx' && array_key_exists('rot', $_REQUEST)) {
 			for($j=0;$j<$map->width;++$j) {
 				$tile=$map->layers[$a]->get_tile($i*$map->width+$j);
 				$lid=$tile-$map->tilesets[$map->get_tileset_index($tile)]->firstgid;
-				if($rot=='cw') {
+				if($rot=='cw' || $rot=='270') {
 					$lid=rotate90cw_lid($lid);
 				}
-				elseif($rot=='ccw') {
+				elseif($rot=='ccw' || $rot=='90') {
 					$lid=rotate90ccw_lid($lid);
 				}
 				elseif($rot=='180') {
@@ -98,10 +98,10 @@ if($file=='../maps/isometric.tmx' && array_key_exists('rot', $_REQUEST)) {
 				$map->layers[$a]->set_tile($i*$map->width+$j, $tile);
 			}
 		}
-		if($rot=='cw') {
+		if($rot=='cw' || $rot=='270') {
 			$map->layers[$a]->rot90cw();
 		}
-		elseif($rot=='ccw') {
+		elseif($rot=='ccw' || $rot=='90') {
 			$map->layers[$a]->rot90ccw();
 		}
 		elseif($rot=='180') {

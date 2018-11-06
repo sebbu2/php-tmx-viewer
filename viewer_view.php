@@ -77,7 +77,7 @@ die();//*/
 $viewer=new Viewer();
 
 if($file=='../maps/isometric.tmx' && array_key_exists('rot', $_REQUEST)) {
-	if(!in_array($_REQUEST['rot'],array('cw','ccw','180'))) {
+	if(!in_array($_REQUEST['rot'],array('','0','ccw','90','180','cw','270','360'))) {
 		trigger_error('unknown rotation', E_USER_ERROR);
 	}
 	require('rot.php');
@@ -87,10 +87,10 @@ if($file=='../maps/isometric.tmx' && array_key_exists('rot', $_REQUEST)) {
 				$tile=$map->layers[$a]->get_tile($i*$map->width+$j);
 				$lid=$tile-$map->tilesets[$map->get_tileset_index($tile)]->firstgid;
 				//var_dump($lid);
-				if($_REQUEST['rot']=='cw') {
+				if($_REQUEST['rot']=='cw' || $_REQUEST['rot']=='270') {
 					$lid=rotate90cw_lid($lid);
 				}
-				elseif($_REQUEST['rot']=='ccw') {
+				elseif($_REQUEST['rot']=='ccw' || $_REQUEST['rot']=='90') {
 					$lid=rotate90ccw_lid($lid);
 				}
 				elseif($_REQUEST['rot']=='180') {
@@ -105,10 +105,10 @@ if($file=='../maps/isometric.tmx' && array_key_exists('rot', $_REQUEST)) {
 			}
 		}
 		//var_dump($map->layers[$a]);die();
-		if($_REQUEST['rot']=='cw') {
+		if($_REQUEST['rot']=='cw' || $_REQUEST['rot']=='270') {
 			$map->layers[$a]->rot90cw();
 		}
-		elseif($_REQUEST['rot']=='ccw') {
+		elseif($_REQUEST['rot']=='ccw' || $_REQUEST['rot']=='90') {
 			$map->layers[$a]->rot90ccw();
 		}
 		elseif($_REQUEST['rot']=='180') {

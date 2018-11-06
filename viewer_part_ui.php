@@ -138,9 +138,10 @@ if(array_key_exists('di',$_REQUEST)) {
 	//$viewer->draw_images=$di;
 }
 if(array_key_exists('rot',$_REQUEST)) {
-	assert(in_array($_REQUEST['rot'],array('cw','ccw','180'))) or trigger_error('bad rot value', E_USER_ERROR);
+	assert(in_array($_REQUEST['rot'],array('', '0','ccw','90','180','cw','270','360'))) or trigger_error('bad rot value', E_USER_ERROR);
 	$rot=$_REQUEST['rot'];
 }
+else $rot='0';
 
 $act_count=0;
 if(array_key_exists('act_u',$_REQUEST)) {
@@ -319,6 +320,37 @@ if(array_key_exists('act_d',$_REQUEST)) {
 			break;
 		default:
 			die('incorrect down action');
+			break;
+	}
+	$act_count++;
+}
+if(array_key_exists('act_rot', $_REQUEST)) {
+	$vals=array(
+		'&olarr;',//left rot
+		'&orarr;',//right rot
+		'&#8634;',//left rot
+		'&#8635;',//right rot
+		"\xe2\x86\xba",//left rot
+		"\xe2\x86\xbb",//right rot
+	);
+	$act_rot=htmlentities($_REQUEST['act_rot'], ENT_COMPAT | ENT_HTML401, 'UTF-8');
+	if(!in_array($act_rot, $vals)) die('incorrect rot action');
+	if($rot=='ccw') $rot='90';
+	if($rot=='cw') $rot='270';
+	settype($rot, 'integer');
+	switch($act_rot) {
+		case '&olarr;':
+		case '&#8634;':
+		case "\xe2\x86\xba":
+			$rot=($rot+90)%360;
+			break;
+		case '&orarr;':
+		case '&#8635':
+		case "\xe2\x86\xbb":
+			$rot=($rot+270)%360;
+			break;
+		default:
+			die('incorrect rot action');
 			break;
 	}
 	$act_count++;
@@ -517,6 +549,7 @@ $di_=' checked="checked"';
 <label for="w">W: </label><input type="text" id="w" name="w" value="<?php echo (($w!=PHP_INT_MAX)?$w:12); ?>"/><br/>
 <label for="h">H: </label><input type="text" id="h" name="h" value="<?php echo (($h!=PHP_INT_MAX)?$h:12); ?>"/><br/>
 <label for="zoom">Zoom: </label><input type="text" id="zoom" name="zoom" value="<?php echo $zoom; ?>"/><br/>
+<label for="rot">Rotation: </label><input type="text" id="rot" name="rot" value="<?php echo $rot; ?>"/><br/>
 <label for="dt">Draw tiles: </label><select id="dt" name="dt"><?php show_select($dt); ?></select><br/>
 <label for="dt">Draw images: </label><select id="di" name="di"><?php show_select($di); ?></select><br/>
 <label for="dt">Draw objects: </label><select id="do" name="do"><?php show_select($do); ?></select><br/>
@@ -525,8 +558,19 @@ $di_=' checked="checked"';
 </div>
 <div class="content"><table class="content_tab">
 	<tr class="content_t">
-		<td colspan="3"><input class="b" type="submit" name="act_u" value="-"/><input class="b" type="submit" name="act_u" value="+"/>&nbsp; &nbsp;<input class="b" type="submit" name="act_u" value="&#8593;"/><input class="b" type="submit" name="act_u" value="&#8595;"/>&nbsp; &nbsp;<input class="b" type="submit" name="act_u" value="&#8657;"/><input class="b" type="submit" name="act_u" value="&#8659;"/></td>
-	</tr>
+<?php
+if($map->orientation=='isometric') {
+	echo '		<td><input class="b" type="submit" name="act_rot" value="&olarr;"/><input class="b" type="submit" name="act_rot" value="&orarr;"/></td>'."\r\n";
+	echo '		<td>';
+}
+else {
+	echo '		<td colspan="3">';
+}
+echo '<input class="b" type="submit" name="act_u" value="-"/><input class="b" type="submit" name="act_u" value="+"/>&nbsp; &nbsp;<input class="b" type="submit" name="act_u" value="&#8593;"/><input class="b" type="submit" name="act_u" value="&#8595;"/>&nbsp; &nbsp;<input class="b" type="submit" name="act_u" value="&#8657;"/><input class="b" type="submit" name="act_u" value="&#8659;"/></td>'."\r\n";
+if($map->orientation=='isometric') {
+	echo '		<td><input class="b" type="submit" name="act_rot" value="&olarr;"/><input class="b" type="submit" name="act_rot" value="&orarr;"/></td>'."\r\n";
+}
+?>	</tr>
 	<tr class="content_mv">
 		<td class="content_l"><input class="b" type="submit" name="act_l" value="-"/><input class="b" type="submit" name="act_l" value="+"/><br/><br/><input class="b" type="submit" name="act_l" value="&#8592;"/><input class="b" type="submit" name="act_l" value="&#8594;"/><br/><br/><input class="b" type="submit" name="act_l" value="&#8656;"/><input class="b" type="submit" name="act_l" value="&#8658;"/></td>
 		<td class="content_c"><?php
@@ -551,7 +595,7 @@ if(array_key_exists('x',$_REQUEST)) echo '&x='.$x;
 if(array_key_exists('y',$_REQUEST)) echo '&y='.$y;
 echo '&w='.$w;
 echo '&h='.$h;
-if(array_key_exists('rot',$_REQUEST)) echo '&rot='.$rot;
+if( array_key_exists('rot',$_REQUEST) || (isset($rot)&&$rot!=''&&$rot!=0) ) echo '&rot='.$rot;
 ?>"<?php
 if($file!='') {
 	//var_dump($_REQUEST['w'],$_REQUEST['h'],$map->tilewidth,$map->tileheight,$zoom);
@@ -572,8 +616,19 @@ if($file!='') {
 		<td class="content_r"><input class="b" type="submit" name="act_r" value="-"/><input class="b" type="submit" name="act_r" value="+"/><br/><br/><input class="b" type="submit" name="act_r" value="&#8592;"/><input class="b" type="submit" name="act_r" value="&#8594;"/><br/><br/><input class="b" type="submit" name="act_r" value="&#8656;"/><input class="b" type="submit" name="act_r" value="&#8658;"/></td>
 	</tr>
 	<tr class="content_b">
-		<td colspan="3"><input class="b" type="submit" name="act_d" value="-"/><input class="b" type="submit" name="act_d" value="+"/>&nbsp; &nbsp;<input class="b" type="submit" name="act_d" value="&#8593;"/><input class="b" type="submit" name="act_d" value="&#8595;"/>&nbsp; &nbsp;<input class="b" type="submit" name="act_d" value="&#8657;"/><input class="b" type="submit" name="act_d" value="&#8659;"/></td>
-	</tr>
+<?php
+if($map->orientation=='isometric') {
+	echo '		<td><input class="b" type="submit" name="act_rot" value="&olarr;"/><input class="b" type="submit" name="act_rot" value="&orarr;"/></td>'."\r\n";
+	echo '		<td>';
+}
+else {
+	echo '		<td colspan="3">';
+}
+echo '<input class="b" type="submit" name="act_d" value="-"/><input class="b" type="submit" name="act_d" value="+"/>&nbsp; &nbsp;<input class="b" type="submit" name="act_d" value="&#8593;"/><input class="b" type="submit" name="act_d" value="&#8595;"/>&nbsp; &nbsp;<input class="b" type="submit" name="act_d" value="&#8657;"/><input class="b" type="submit" name="act_d" value="&#8659;"/></td>'."\r\n";
+if($map->orientation=='isometric') {
+	echo '		<td><input class="b" type="submit" name="act_rot" value="&olarr;"/><input class="b" type="submit" name="act_rot" value="&orarr;"/></td>'."\r\n";
+}
+?>	</tr>
 </table></form></div>
 
 </body>
