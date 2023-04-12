@@ -467,6 +467,7 @@ function get_select(obj) {
 <body>
 
 <form action="" method="get">
+<input type="hidden" name="choice" value="list"/>
 <div class="choice">
 <select name="ref" id="ref" onchange="get_select(this);">
 <?php
@@ -483,12 +484,12 @@ $ar=array(
 foreach($ar as $k=>$v) {
 	echo '<option value="'.$k.'"';
 	if(array_key_exists('ref',$_REQUEST) && $_REQUEST['ref']==$k) echo ' selected="selected"';
+	if(!array_key_exists('ref',$_REQUEST) && 'LOCAL'==$k) echo ' selected="selected"';
 	echo '>'.$v.'</option>'."\r\n";
 }
 ?></select>
 <?php
 if(!array_key_exists('ref',$_REQUEST) || $_REQUEST['ref']=='' || $_REQUEST['ref']=='LOCAL') {
-	echo '<input type="hidden" name="choice" value="list"/>'."\r\n";
 	echo '<select name="list" id="map">'."\r\n";
 	echo '<option value=""></option>'."\r\n";
 	//require('local.php');

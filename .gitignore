@@ -1,0 +1,7 @@
+*.ttf
+*.LNK
+cvs*
+test*
+*.src.php
+*.bak
+

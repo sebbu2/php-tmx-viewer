@@ -5,6 +5,7 @@ require_once('map.php');
 require_once('layer.php');
 require_once('tileset.php');
 require_once('object.php');
+require_once('compat.php');
 
 class ObjectLayerBase extends Layer {
 	//attributes
@@ -53,7 +54,7 @@ class ObjectLayerBase extends Layer {
 		}
 	}
 
-	public function addObject(Object $obj) {
+	public function addObject(ObjectBase $obj) {
 		$this->objects[]=$obj;
 	}
 
