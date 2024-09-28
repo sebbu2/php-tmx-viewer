@@ -15,6 +15,8 @@ class ImageLayerBase extends Layer {
 	public $visible=1;
 	public $source='';
 	public $trans='';
+	//internal
+	public $ref=NULL;
 	private $map=NULL;
 	//constructors
 

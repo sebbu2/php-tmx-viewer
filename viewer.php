@@ -384,7 +384,8 @@ class Viewer {
 							$ar[$i+1]+=$this->oy;
 						}
 						imagesetthickness($this->img, 2);
-						imagepolygon($this->img, $ar, count($ar)/2, $this->colors['green']);
+						if(PHP_VERSION_ID<80000) imagepolygon($this->img, $ar, count($ar)/2, $this->colors['green']);
+						else imagepolygon($this->img, $ar, $this->colors['green']);
 						imagesetthickness($this->img, 1);
 					}
 					else if($o->name!='') {

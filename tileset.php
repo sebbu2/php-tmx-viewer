@@ -21,6 +21,9 @@ class TilesetBase {
 	public $height=0;
 	public $terrains=array();
 	public $tiles=array();
+	//internal
+	public $ref=NULL;
+	public $map=NULL;
 	private $filename='';
 	//private $xml=NULL;
 	private static $urls=array(

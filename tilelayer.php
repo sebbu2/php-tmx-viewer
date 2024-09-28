@@ -15,6 +15,8 @@ class TileLayerBase extends Layer {
 	public $visible=1;
 	public $encoding='';
 	public $compression='';
+	//internal
+	public $ref=NULL;
 	private $map=NULL;
 	private $data='';
 	//constructors
