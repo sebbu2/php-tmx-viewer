@@ -52,14 +52,23 @@ else {
 }
 if($ref=='LOCAL') $ref='';
 
-$recur=false;
+if($var=='list' && in_array($ref, array('','LOCAL'))) {
+	require_once('LOCAL_var.php');
+	if(array_key_exists($file, $files)) $file=$files[$file];
+	else {
+		//var_dump($_REQUEST['choice'],$var,$file,$ref);
+		die('Unknown file '.$file.'.');
+	}
+}
 
+$recur=false;
+//var_dump($file, $ref, $recur);
 $res=$map->load($file, $ref, $recur);
 
 //$viewer=new Viewer();
 //$viewer->setMap($map);
 
-ini_set('output_buffering','off');
+//ini_set('output_buffering','off');
 
 $data=ob_get_clean();
 if(!empty($data)) {
@@ -467,7 +476,6 @@ function get_select(obj) {
 <body>
 
 <form action="" method="get">
-<input type="hidden" name="choice" value="list"/>
 <div class="choice">
 <select name="ref" id="ref" onchange="get_select(this);">
 <?php
@@ -490,16 +498,23 @@ foreach($ar as $k=>$v) {
 ?></select>
 <?php
 if(!array_key_exists('ref',$_REQUEST) || $_REQUEST['ref']=='' || $_REQUEST['ref']=='LOCAL') {
+	echo '<input type="hidden" name="choice" value="list"/>'."\r\n";
 	echo '<select name="list" id="map">'."\r\n";
 	echo '<option value=""></option>'."\r\n";
 	//require('local.php');
-	$data=file('LOCAL.htm');
+	/*$data=file('LOCAL.htm');
 	foreach($data as $line) {
 		$file=substr($line, strpos($line,'"')+1, strpos($line,'"',strpos($line,'"')+1)-strpos($line,'"')-1);
 		//var_dump($file);die();
 		assert(strpos($file,'"')===false) or die('quote found in file.');
 		echo '<option value="'.$file.'"';
 		if(array_key_exists('list',$_REQUEST)&&$_REQUEST['list']==$file) echo ' selected="selected"';
+		echo '>'.$file.'</option>'."\r\n";
+	}//*/
+	require_once('LOCAL_var.php');
+	foreach($files as $num=>$file) {
+		echo '<option value="'.$num.'"';
+		if(array_key_exists('list',$_REQUEST)&&$_REQUEST['list']==$num) echo ' selected="selected"';
 		echo '>'.$file.'</option>'."\r\n";
 	}
 	echo '</select>'."\r\n";
@@ -531,8 +546,15 @@ else {
 	}
 }
 ?></select>
+<input type="submit" value="Valider"/>
+</form>
+<form action="" method="get">
 <div class="tr">
 <?php
+if(array_key_exists('choice',$_REQUEST)) echo '<input type="hidden" name="choice" value="'.$_REQUEST['choice'].'"/>'."\r\n";
+if(array_key_exists('ref',$_REQUEST)) echo '<input type="hidden" name="ref" value="'.$_REQUEST['ref'].'"/>'."\r\n";
+if(array_key_exists('list',$_REQUEST)) echo '<input type="hidden" name="list" value="'.$_REQUEST['list'].'"/>'."\r\n";
+if(array_key_exists('url',$_REQUEST)) echo '<input type="hidden" name="url" value="'.$_REQUEST['url'].'"/>'."\r\n";
 if(!array_key_exists('dt',$_REQUEST))
 $dt_='';
 else
@@ -554,8 +576,8 @@ $di_=' checked="checked"';
 <label for="dt">Draw tiles: </label><select id="dt" name="dt"><?php show_select($dt); ?></select><br/>
 <label for="dt">Draw images: </label><select id="di" name="di"><?php show_select($di); ?></select><br/>
 <label for="dt">Draw objects: </label><select id="do" name="do"><?php show_select($do); ?></select><br/>
-</div>
 <input type="submit" value="Valider"/>
+</div>
 </div>
 <div class="content"><table class="content_tab">
 	<tr class="content_t">

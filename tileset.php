@@ -26,6 +26,11 @@ class TilesetBase {
 	public $map=NULL;
 	private $filename='';
 	//private $xml=NULL;
+	private static $local_refs=array(
+		'',
+		'file',
+		'LOCAL',
+		);
 	private static $urls=array(
 		'tmw'=>'https://github.com/themanaworld/tmwa-client-data/raw/master/',
 		'evol'=>'https://github.com/EvolOnline/clientdata-beta/raw/master/',
@@ -52,7 +57,7 @@ class TilesetBase {
 	}
 
 	public static function load_xml($filename, $ref='') {
-		if($ref=='') {
+		if(in_array($ref, TilesetBase::$local_refs)) {
 			return TilesetBase::load_xml_from_file($filename);
 			//return self::load_xml_from_file($filename);
 		}

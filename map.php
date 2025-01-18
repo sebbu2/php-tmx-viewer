@@ -20,6 +20,11 @@ class MapBase {
 	public $filename='';
 	private $xml=NULL;
 	public $ref='';
+	private static $local_refs=array(
+		'',
+		'file',
+		'LOCAL',
+		);
 	private static $urls=array(
 		'tmw'=>'https://github.com/themanaworld/tmwa-client-data/raw/master/',
 		'evol'=>'https://github.com/EvolOnline/clientdata-beta/raw/master/',
@@ -46,7 +51,7 @@ class MapBase {
 	}
 
 	public static function load_xml($filename, $ref='') {
-		if($ref=='') {
+		if(in_array($ref, MapBase::$local_refs)) {
 			return MapBase::load_xml_from_file($filename);
 			//return self::load_xml_from_file($filename);
 		}

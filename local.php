@@ -24,5 +24,6 @@ foreach($files as $file) {
 	echo '>'.$file.'</option>'."\r\n";
 }
 $data=ob_get_flush();
+file_put_contents('LOCAL_var.php', '<?php'."\n".'$files='.var_export($files, true)."\n".'?>');
 file_put_contents('LOCAL.htm',$data);
 ?>

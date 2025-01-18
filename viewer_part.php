@@ -19,6 +19,7 @@ require_once('functions.inc.php');
 $map=new Map();
 
 $file='../../tmw/room.tmx';
+$var=NULL;
 
 if(array_key_exists('choice',$_REQUEST)) {
 	$msg='';
@@ -53,10 +54,19 @@ else {
 	$ref='';
 }
 
+if($var=='list' && in_array($ref, array('','LOCAL'))) {
+	require_once('LOCAL_var.php');
+	if(array_key_exists($file, $files)) $file=$files[$file];
+	else {
+		//var_dump($_REQUEST['choice'],$var,$file,$ref);
+		die('Unknown file '.$file.'.');
+	}
+}
+
 
 /*var_dump($_REQUEST);
 var_dump($file);//*/
-
+//die();
 //echo '<pre>'."\r\n";
 $res=$map->load($file, $ref);
 
